@@ -10,23 +10,23 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 1 of 8 (Foundation and Data Infrastructure)
-Plan: 2 of 5 (complete)
+Plan: 4 of 5 (complete)
 Status: In progress
-Last activity: 2026-02-26 -- Completed 01-02-PLAN.md (SAS Reader and Dataset Profiler)
+Last activity: 2026-02-26 -- Completed 01-04-PLAN.md (Date Conversion and USUBJID Utilities)
 
-Progress: [██░░░░░░░░] ~10%
+Progress: [████░░░░░░] ~15%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 4
 - Average duration: 3.5 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2/5 | 7 min | 3.5 min |
+| 01-foundation | 4/5 | 14 min | 3.5 min |
 
 ## Accumulated Context
 
@@ -41,6 +41,9 @@ Progress: [██░░░░░░░░] ~10%
 - 2026-02-26: [D-0102-01] pyreadstat labels can be None -- use `or ''` not `.get(key, '')`
 - 2026-02-26: [D-0102-02] EDC column matching uses frozenset of 25 known column names with lowercase comparison
 - 2026-02-26: [D-0102-03] String date detection limited to _RAW columns containing DAT in the name
+- 2026-02-26: [D-0104-01] Ambiguous slash-separated dates default to DD/MM/YYYY
+- 2026-02-26: [D-0104-02] extract_usubjid_components with >3 parts joins remainder as subjid
+- 2026-02-26: [D-0104-03] SAS DATETIME uses UTC internally, output is timezone-naive per SDTM convention
 
 ### Pending Todos
 
@@ -54,6 +57,6 @@ Progress: [██░░░░░░░░] ~10%
 
 ## Session Continuity
 
-Last session: 2026-02-26 20:28 UTC
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-02-26 20:30 UTC
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
