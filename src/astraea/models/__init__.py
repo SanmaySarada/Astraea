@@ -4,7 +4,14 @@ All models are re-exported here for convenient imports:
     from astraea.models import VariableMetadata, DatasetProfile, DomainSpec, Codelist
 """
 
+from astraea.models.classification import (
+    ClassificationResult,
+    DomainClassification,
+    DomainPlan,
+    HeuristicScore,
+)
 from astraea.models.controlled_terms import Codelist, CodelistTerm, CTPackage
+from astraea.models.ecrf import ECRFExtractionResult, ECRFField, ECRFForm
 from astraea.models.metadata import DatasetMetadata, VariableMetadata
 from astraea.models.profiling import DatasetProfile, ValueDistribution, VariableProfile
 from astraea.models.sdtm import (
@@ -33,4 +40,13 @@ __all__ = [
     "CodelistTerm",
     "Codelist",
     "CTPackage",
+    # ecrf
+    "ECRFField",
+    "ECRFForm",
+    "ECRFExtractionResult",
+    # classification
+    "HeuristicScore",
+    "DomainClassification",
+    "DomainPlan",
+    "ClassificationResult",
 ]
