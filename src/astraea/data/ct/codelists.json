@@ -1,0 +1,610 @@
+{
+  "version": "2025-09-26",
+  "ig_version": "3.4",
+  "codelists": {
+    "C66731": {
+      "code": "C66731",
+      "name": "Sex",
+      "extensible": false,
+      "variable_mappings": ["SEX"],
+      "terms": {
+        "M": {
+          "submission_value": "M",
+          "synonyms": ["Male"],
+          "definition": "A person who belongs to the sex that normally produces sperm.",
+          "nci_preferred_term": "Male"
+        },
+        "F": {
+          "submission_value": "F",
+          "synonyms": ["Female"],
+          "definition": "A person who belongs to the sex that normally produces ova.",
+          "nci_preferred_term": "Female"
+        },
+        "U": {
+          "submission_value": "U",
+          "synonyms": ["Unknown"],
+          "definition": "Not known, not observed, not recorded, or refused.",
+          "nci_preferred_term": "Unknown"
+        },
+        "UNDIFFERENTIATED": {
+          "submission_value": "UNDIFFERENTIATED",
+          "synonyms": ["Ambiguous"],
+          "definition": "Sex could not be determined; not clearly one or the other.",
+          "nci_preferred_term": "Undifferentiated"
+        }
+      }
+    },
+    "C66790": {
+      "code": "C66790",
+      "name": "No Yes Response",
+      "extensible": false,
+      "variable_mappings": ["DTHFL", "AESER", "AESCAN", "AESCONG", "AESDISAB", "AESDTH", "AESHOSP", "AESLIFE", "AESMIE", "AECONTRT", "MHPRESP", "MHOCCUR"],
+      "terms": {
+        "N": {
+          "submission_value": "N",
+          "synonyms": ["No"],
+          "definition": "The non-affirmative response to a question.",
+          "nci_preferred_term": "No"
+        },
+        "Y": {
+          "submission_value": "Y",
+          "synonyms": ["Yes"],
+          "definition": "The affirmative response to a question.",
+          "nci_preferred_term": "Yes"
+        }
+      }
+    },
+    "C66767": {
+      "code": "C66767",
+      "name": "Race",
+      "extensible": false,
+      "variable_mappings": ["RACE"],
+      "terms": {
+        "AMERICAN INDIAN OR ALASKA NATIVE": {
+          "submission_value": "AMERICAN INDIAN OR ALASKA NATIVE",
+          "synonyms": [],
+          "definition": "A person having origins in any of the original peoples of North and South America (including Central America), and who maintains tribal affiliation or community attachment.",
+          "nci_preferred_term": "American Indian or Alaska Native"
+        },
+        "ASIAN": {
+          "submission_value": "ASIAN",
+          "synonyms": [],
+          "definition": "A person having origins in any of the original peoples of the Far East, Southeast Asia, or the Indian subcontinent.",
+          "nci_preferred_term": "Asian"
+        },
+        "BLACK OR AFRICAN AMERICAN": {
+          "submission_value": "BLACK OR AFRICAN AMERICAN",
+          "synonyms": [],
+          "definition": "A person having origins in any of the Black racial groups of Africa.",
+          "nci_preferred_term": "Black or African American"
+        },
+        "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER": {
+          "submission_value": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+          "synonyms": [],
+          "definition": "A person having origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands.",
+          "nci_preferred_term": "Native Hawaiian or Other Pacific Islander"
+        },
+        "WHITE": {
+          "submission_value": "WHITE",
+          "synonyms": [],
+          "definition": "A person having origins in any of the original peoples of Europe, the Middle East, or North Africa.",
+          "nci_preferred_term": "White"
+        },
+        "OTHER": {
+          "submission_value": "OTHER",
+          "synonyms": [],
+          "definition": "A race category not captured by the other specific race categories.",
+          "nci_preferred_term": "Other Race"
+        },
+        "MULTIPLE": {
+          "submission_value": "MULTIPLE",
+          "synonyms": [],
+          "definition": "A person who identifies with two or more races.",
+          "nci_preferred_term": "Multiracial"
+        },
+        "NOT REPORTED": {
+          "submission_value": "NOT REPORTED",
+          "synonyms": [],
+          "definition": "Not provided or available.",
+          "nci_preferred_term": "Not Reported"
+        },
+        "UNKNOWN": {
+          "submission_value": "UNKNOWN",
+          "synonyms": [],
+          "definition": "Not known, not observed, not recorded, or refused.",
+          "nci_preferred_term": "Unknown"
+        }
+      }
+    },
+    "C66728": {
+      "code": "C66728",
+      "name": "Ethnicity",
+      "extensible": false,
+      "variable_mappings": ["ETHNIC"],
+      "terms": {
+        "HISPANIC OR LATINO": {
+          "submission_value": "HISPANIC OR LATINO",
+          "synonyms": [],
+          "definition": "A person of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin, regardless of race.",
+          "nci_preferred_term": "Hispanic or Latino"
+        },
+        "NOT HISPANIC OR LATINO": {
+          "submission_value": "NOT HISPANIC OR LATINO",
+          "synonyms": [],
+          "definition": "A person not of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin, regardless of race.",
+          "nci_preferred_term": "Not Hispanic or Latino"
+        },
+        "NOT REPORTED": {
+          "submission_value": "NOT REPORTED",
+          "synonyms": [],
+          "definition": "Not provided or available.",
+          "nci_preferred_term": "Not Reported"
+        },
+        "UNKNOWN": {
+          "submission_value": "UNKNOWN",
+          "synonyms": [],
+          "definition": "Not known, not observed, not recorded, or refused.",
+          "nci_preferred_term": "Unknown"
+        }
+      }
+    },
+    "C66742": {
+      "code": "C66742",
+      "name": "Country",
+      "extensible": true,
+      "variable_mappings": ["COUNTRY"],
+      "terms": {
+        "USA": {
+          "submission_value": "USA",
+          "synonyms": ["United States", "US"],
+          "definition": "United States of America",
+          "nci_preferred_term": "United States of America"
+        },
+        "CAN": {
+          "submission_value": "CAN",
+          "synonyms": ["Canada"],
+          "definition": "Canada",
+          "nci_preferred_term": "Canada"
+        },
+        "GBR": {
+          "submission_value": "GBR",
+          "synonyms": ["United Kingdom", "UK", "GB"],
+          "definition": "United Kingdom of Great Britain and Northern Ireland",
+          "nci_preferred_term": "United Kingdom"
+        },
+        "DEU": {
+          "submission_value": "DEU",
+          "synonyms": ["Germany", "DE"],
+          "definition": "Federal Republic of Germany",
+          "nci_preferred_term": "Germany"
+        },
+        "FRA": {
+          "submission_value": "FRA",
+          "synonyms": ["France", "FR"],
+          "definition": "French Republic",
+          "nci_preferred_term": "France"
+        },
+        "JPN": {
+          "submission_value": "JPN",
+          "synonyms": ["Japan", "JP"],
+          "definition": "Japan",
+          "nci_preferred_term": "Japan"
+        },
+        "AUS": {
+          "submission_value": "AUS",
+          "synonyms": ["Australia", "AU"],
+          "definition": "Commonwealth of Australia",
+          "nci_preferred_term": "Australia"
+        },
+        "IND": {
+          "submission_value": "IND",
+          "synonyms": ["India", "IN"],
+          "definition": "Republic of India",
+          "nci_preferred_term": "India"
+        },
+        "BRA": {
+          "submission_value": "BRA",
+          "synonyms": ["Brazil", "BR"],
+          "definition": "Federative Republic of Brazil",
+          "nci_preferred_term": "Brazil"
+        },
+        "MEX": {
+          "submission_value": "MEX",
+          "synonyms": ["Mexico", "MX"],
+          "definition": "United Mexican States",
+          "nci_preferred_term": "Mexico"
+        },
+        "CHN": {
+          "submission_value": "CHN",
+          "synonyms": ["China", "CN"],
+          "definition": "People's Republic of China",
+          "nci_preferred_term": "China"
+        }
+      }
+    },
+    "C66726": {
+      "code": "C66726",
+      "name": "Age Unit",
+      "extensible": false,
+      "variable_mappings": ["AGEU"],
+      "terms": {
+        "YEARS": {
+          "submission_value": "YEARS",
+          "synonyms": ["Year", "yr"],
+          "definition": "A period of time equal to 365.25 days.",
+          "nci_preferred_term": "Year"
+        },
+        "MONTHS": {
+          "submission_value": "MONTHS",
+          "synonyms": ["Month", "mo"],
+          "definition": "A period of time approximately equal to 30.44 days.",
+          "nci_preferred_term": "Month"
+        },
+        "WEEKS": {
+          "submission_value": "WEEKS",
+          "synonyms": ["Week", "wk"],
+          "definition": "A period of time equal to 7 days.",
+          "nci_preferred_term": "Week"
+        },
+        "DAYS": {
+          "submission_value": "DAYS",
+          "synonyms": ["Day", "d"],
+          "definition": "A period of time equal to 24 hours.",
+          "nci_preferred_term": "Day"
+        },
+        "HOURS": {
+          "submission_value": "HOURS",
+          "synonyms": ["Hour", "hr"],
+          "definition": "A period of time equal to 60 minutes.",
+          "nci_preferred_term": "Hour"
+        }
+      }
+    },
+    "C66769": {
+      "code": "C66769",
+      "name": "Route of Administration",
+      "extensible": true,
+      "variable_mappings": ["CMROUTE", "EXROUTE"],
+      "terms": {
+        "ORAL": {
+          "submission_value": "ORAL",
+          "synonyms": ["By mouth", "PO"],
+          "definition": "Administration to or by way of the mouth.",
+          "nci_preferred_term": "Oral Route of Administration"
+        },
+        "INTRAVENOUS": {
+          "submission_value": "INTRAVENOUS",
+          "synonyms": ["IV"],
+          "definition": "Administration within or into a vein or veins.",
+          "nci_preferred_term": "Intravenous Route of Administration"
+        },
+        "SUBCUTANEOUS": {
+          "submission_value": "SUBCUTANEOUS",
+          "synonyms": ["SC", "SubQ"],
+          "definition": "Administration beneath the skin.",
+          "nci_preferred_term": "Subcutaneous Route of Administration"
+        },
+        "INTRAMUSCULAR": {
+          "submission_value": "INTRAMUSCULAR",
+          "synonyms": ["IM"],
+          "definition": "Administration within a muscle.",
+          "nci_preferred_term": "Intramuscular Route of Administration"
+        },
+        "TOPICAL": {
+          "submission_value": "TOPICAL",
+          "synonyms": [],
+          "definition": "Administration to a particular spot on the outer surface of the body.",
+          "nci_preferred_term": "Topical Route of Administration"
+        },
+        "TRANSDERMAL": {
+          "submission_value": "TRANSDERMAL",
+          "synonyms": [],
+          "definition": "Administration through the dermal layer of the skin.",
+          "nci_preferred_term": "Transdermal Route of Administration"
+        },
+        "INHALATION": {
+          "submission_value": "INHALATION",
+          "synonyms": ["Inhaled"],
+          "definition": "Administration by breathing in.",
+          "nci_preferred_term": "Respiratory Route of Administration"
+        },
+        "NASAL": {
+          "submission_value": "NASAL",
+          "synonyms": ["Intranasal"],
+          "definition": "Administration to or by way of the nose.",
+          "nci_preferred_term": "Nasal Route of Administration"
+        },
+        "OPHTHALMIC": {
+          "submission_value": "OPHTHALMIC",
+          "synonyms": ["Ocular"],
+          "definition": "Administration to the eye.",
+          "nci_preferred_term": "Ophthalmic Route of Administration"
+        },
+        "RECTAL": {
+          "submission_value": "RECTAL",
+          "synonyms": ["PR"],
+          "definition": "Administration to the rectum.",
+          "nci_preferred_term": "Rectal Route of Administration"
+        },
+        "SUBLINGUAL": {
+          "submission_value": "SUBLINGUAL",
+          "synonyms": ["SL"],
+          "definition": "Administration beneath the tongue.",
+          "nci_preferred_term": "Sublingual Route of Administration"
+        }
+      }
+    },
+    "C66734": {
+      "code": "C66734",
+      "name": "Severity/Intensity Scale for Adverse Events",
+      "extensible": false,
+      "variable_mappings": ["AESEV"],
+      "terms": {
+        "MILD": {
+          "submission_value": "MILD",
+          "synonyms": [],
+          "definition": "An adverse event that is easily tolerated by the subject, causing minimal discomfort and not interfering with everyday activities.",
+          "nci_preferred_term": "Mild Adverse Event"
+        },
+        "MODERATE": {
+          "submission_value": "MODERATE",
+          "synonyms": [],
+          "definition": "An adverse event that is sufficiently discomforting to interfere with normal everyday activities.",
+          "nci_preferred_term": "Moderate Adverse Event"
+        },
+        "SEVERE": {
+          "submission_value": "SEVERE",
+          "synonyms": [],
+          "definition": "An adverse event that prevents normal everyday activities.",
+          "nci_preferred_term": "Severe Adverse Event"
+        }
+      }
+    },
+    "C66768": {
+      "code": "C66768",
+      "name": "Outcome of Event",
+      "extensible": false,
+      "variable_mappings": ["AEOUT"],
+      "terms": {
+        "RECOVERED/RESOLVED": {
+          "submission_value": "RECOVERED/RESOLVED",
+          "synonyms": ["Resolved"],
+          "definition": "The event has resolved or the subject has recovered.",
+          "nci_preferred_term": "Recovered/Resolved"
+        },
+        "RECOVERING/RESOLVING": {
+          "submission_value": "RECOVERING/RESOLVING",
+          "synonyms": ["Improving"],
+          "definition": "The event is resolving or the subject is recovering.",
+          "nci_preferred_term": "Recovering/Resolving"
+        },
+        "NOT RECOVERED/NOT RESOLVED": {
+          "submission_value": "NOT RECOVERED/NOT RESOLVED",
+          "synonyms": ["Ongoing"],
+          "definition": "The event has not resolved and the subject has not recovered.",
+          "nci_preferred_term": "Not Recovered/Not Resolved"
+        },
+        "RECOVERED/RESOLVED WITH SEQUELAE": {
+          "submission_value": "RECOVERED/RESOLVED WITH SEQUELAE",
+          "synonyms": [],
+          "definition": "The event resolved with clinically significant residual effects.",
+          "nci_preferred_term": "Recovered/Resolved with Sequelae"
+        },
+        "FATAL": {
+          "submission_value": "FATAL",
+          "synonyms": ["Death"],
+          "definition": "The event resulted in death.",
+          "nci_preferred_term": "Fatal"
+        },
+        "UNKNOWN": {
+          "submission_value": "UNKNOWN",
+          "synonyms": [],
+          "definition": "The outcome of the event is not known.",
+          "nci_preferred_term": "Unknown"
+        }
+      }
+    },
+    "C66781": {
+      "code": "C66781",
+      "name": "Unit",
+      "extensible": true,
+      "variable_mappings": ["CMDOSU", "EXDOSU", "LBORRESU", "LBSTRESU", "VSORRESU", "VSSTRESU", "EGORRESU", "EGSTRESU"],
+      "terms": {
+        "kg": {
+          "submission_value": "kg",
+          "synonyms": ["kilogram"],
+          "definition": "A basic unit of mass in the International System of Units equal to 1000 grams.",
+          "nci_preferred_term": "Kilogram"
+        },
+        "g": {
+          "submission_value": "g",
+          "synonyms": ["gram"],
+          "definition": "A metric unit of mass equal to one thousandth of a kilogram.",
+          "nci_preferred_term": "Gram"
+        },
+        "mg": {
+          "submission_value": "mg",
+          "synonyms": ["milligram"],
+          "definition": "A metric unit of mass equal to one thousandth of a gram.",
+          "nci_preferred_term": "Milligram"
+        },
+        "cm": {
+          "submission_value": "cm",
+          "synonyms": ["centimeter"],
+          "definition": "A metric unit of length equal to one hundredth of a meter.",
+          "nci_preferred_term": "Centimeter"
+        },
+        "in": {
+          "submission_value": "in",
+          "synonyms": ["inch"],
+          "definition": "A traditional unit of length equal to 2.54 centimeters.",
+          "nci_preferred_term": "Inch"
+        },
+        "mmHg": {
+          "submission_value": "mmHg",
+          "synonyms": ["millimeters of mercury"],
+          "definition": "A manometric unit of pressure.",
+          "nci_preferred_term": "Millimeter of Mercury"
+        },
+        "beats/min": {
+          "submission_value": "beats/min",
+          "synonyms": ["bpm"],
+          "definition": "Heart rate measured in beats per minute.",
+          "nci_preferred_term": "Beats per Minute"
+        },
+        "breaths/min": {
+          "submission_value": "breaths/min",
+          "synonyms": [],
+          "definition": "Respiratory rate measured in breaths per minute.",
+          "nci_preferred_term": "Breaths per Minute"
+        },
+        "C": {
+          "submission_value": "C",
+          "synonyms": ["Celsius", "degrees C"],
+          "definition": "A unit of temperature.",
+          "nci_preferred_term": "Degree Celsius"
+        },
+        "F": {
+          "submission_value": "F",
+          "synonyms": ["Fahrenheit", "degrees F"],
+          "definition": "A unit of temperature.",
+          "nci_preferred_term": "Degree Fahrenheit"
+        },
+        "mg/dL": {
+          "submission_value": "mg/dL",
+          "synonyms": [],
+          "definition": "Milligrams per deciliter.",
+          "nci_preferred_term": "Milligram per Deciliter"
+        },
+        "mmol/L": {
+          "submission_value": "mmol/L",
+          "synonyms": [],
+          "definition": "Millimoles per liter.",
+          "nci_preferred_term": "Millimole per Liter"
+        },
+        "g/dL": {
+          "submission_value": "g/dL",
+          "synonyms": [],
+          "definition": "Grams per deciliter.",
+          "nci_preferred_term": "Gram per Deciliter"
+        },
+        "g/L": {
+          "submission_value": "g/L",
+          "synonyms": [],
+          "definition": "Grams per liter.",
+          "nci_preferred_term": "Gram per Liter"
+        },
+        "mEq/L": {
+          "submission_value": "mEq/L",
+          "synonyms": [],
+          "definition": "Milliequivalents per liter.",
+          "nci_preferred_term": "Milliequivalent per Liter"
+        },
+        "U/L": {
+          "submission_value": "U/L",
+          "synonyms": ["IU/L"],
+          "definition": "Units per liter.",
+          "nci_preferred_term": "Unit per Liter"
+        },
+        "10^9/L": {
+          "submission_value": "10^9/L",
+          "synonyms": ["x10^9/L", "GI/L"],
+          "definition": "10 to the ninth power per liter.",
+          "nci_preferred_term": "Billion per Liter"
+        },
+        "10^12/L": {
+          "submission_value": "10^12/L",
+          "synonyms": ["x10^12/L", "TI/L"],
+          "definition": "10 to the twelfth power per liter.",
+          "nci_preferred_term": "Trillion per Liter"
+        },
+        "%": {
+          "submission_value": "%",
+          "synonyms": ["percent"],
+          "definition": "A fraction or ratio expressed as part of 100.",
+          "nci_preferred_term": "Percent"
+        },
+        "mL": {
+          "submission_value": "mL",
+          "synonyms": ["milliliter"],
+          "definition": "A metric unit of volume equal to one thousandth of a liter.",
+          "nci_preferred_term": "Milliliter"
+        },
+        "ms": {
+          "submission_value": "ms",
+          "synonyms": ["millisecond", "msec"],
+          "definition": "One thousandth of a second.",
+          "nci_preferred_term": "Millisecond"
+        },
+        "sec": {
+          "submission_value": "sec",
+          "synonyms": ["second", "s"],
+          "definition": "A unit of time equal to one sixtieth of a minute.",
+          "nci_preferred_term": "Second"
+        }
+      }
+    },
+    "C66770": {
+      "code": "C66770",
+      "name": "Frequency",
+      "extensible": true,
+      "variable_mappings": ["CMDOSFRQ", "EXDOSFRQ"],
+      "terms": {
+        "QD": {
+          "submission_value": "QD",
+          "synonyms": ["Once daily", "Every day"],
+          "definition": "Once a day.",
+          "nci_preferred_term": "QD"
+        },
+        "BID": {
+          "submission_value": "BID",
+          "synonyms": ["Twice daily"],
+          "definition": "Twice a day.",
+          "nci_preferred_term": "BID"
+        },
+        "TID": {
+          "submission_value": "TID",
+          "synonyms": ["Three times daily"],
+          "definition": "Three times a day.",
+          "nci_preferred_term": "TID"
+        },
+        "QID": {
+          "submission_value": "QID",
+          "synonyms": ["Four times daily"],
+          "definition": "Four times a day.",
+          "nci_preferred_term": "QID"
+        },
+        "PRN": {
+          "submission_value": "PRN",
+          "synonyms": ["As needed"],
+          "definition": "As needed.",
+          "nci_preferred_term": "PRN"
+        },
+        "QW": {
+          "submission_value": "QW",
+          "synonyms": ["Once weekly", "Every week"],
+          "definition": "Once a week.",
+          "nci_preferred_term": "QW"
+        },
+        "Q2W": {
+          "submission_value": "Q2W",
+          "synonyms": ["Every 2 weeks", "Biweekly"],
+          "definition": "Once every two weeks.",
+          "nci_preferred_term": "Q2W"
+        },
+        "QM": {
+          "submission_value": "QM",
+          "synonyms": ["Once monthly", "Every month"],
+          "definition": "Once a month.",
+          "nci_preferred_term": "QM"
+        },
+        "ONCE": {
+          "submission_value": "ONCE",
+          "synonyms": ["Single dose"],
+          "definition": "One time.",
+          "nci_preferred_term": "Once"
+        }
+      }
+    }
+  }
+}

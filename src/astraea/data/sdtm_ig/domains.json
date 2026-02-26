@@ -1,0 +1,1630 @@
+{
+  "DM": {
+    "domain": "DM",
+    "description": "Demographics",
+    "domain_class": "Special-Purpose",
+    "structure": "One record per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies for all applications or submissions involving the product.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "SUBJID",
+        "label": "Subject Identifier for the Study",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Subject identifier, which must be unique within the study.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "RFSTDTC",
+        "label": "Subject Reference Start Date/Time",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Reference start date/time for the subject in ISO 8601 character format. Usually the date of first dose of study treatment.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "RFENDTC",
+        "label": "Subject Reference End Date/Time",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Reference end date/time for the subject in ISO 8601 character format. Usually the date of last dose of study treatment.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "RFXSTDTC",
+        "label": "Date/Time of First Study Treatment",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "First date/time of study treatment, in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "RFXENDTC",
+        "label": "Date/Time of Last Study Treatment",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Last date/time of study treatment, in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "RFICDTC",
+        "label": "Date/Time of Informed Consent",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of informed consent in ISO 8601 character format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "RFPENDTC",
+        "label": "Date/Time of End of Participation",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time when subject ended participation or follow-up, in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "DTHDTC",
+        "label": "Date/Time of Death",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Date/time of death in ISO 8601 character format.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "DTHFL",
+        "label": "Subject Death Flag",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Indicates the subject died. Should be Y or null.",
+        "codelist_code": "C66790",
+        "order": 12
+      },
+      {
+        "name": "SITEID",
+        "label": "Study Site Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a site within a study.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "BRTHDTC",
+        "label": "Date/Time of Birth",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Date/time of birth in ISO 8601 character format.",
+        "codelist_code": null,
+        "order": 14
+      },
+      {
+        "name": "AGE",
+        "label": "Age",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Age expressed in AGEU. May be derived from BRTHDTC and RFSTDTC.",
+        "codelist_code": null,
+        "order": 15
+      },
+      {
+        "name": "AGEU",
+        "label": "Age Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Units associated with AGE.",
+        "codelist_code": "C66726",
+        "order": 16
+      },
+      {
+        "name": "SEX",
+        "label": "Sex",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Sex of the subject.",
+        "codelist_code": "C66731",
+        "order": 17
+      },
+      {
+        "name": "RACE",
+        "label": "Race",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Race of the subject. Sponsors should refer to FDA guidance for collection of race and ethnicity data.",
+        "codelist_code": "C66767",
+        "order": 18
+      },
+      {
+        "name": "ETHNIC",
+        "label": "Ethnicity",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Ethnicity of the subject.",
+        "codelist_code": "C66728",
+        "order": 19
+      },
+      {
+        "name": "ARMCD",
+        "label": "Planned Arm Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the arm to which the subject was assigned, limited to 20 characters.",
+        "codelist_code": null,
+        "order": 20
+      },
+      {
+        "name": "ARM",
+        "label": "Description of Planned Arm",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the arm to which the subject was assigned.",
+        "codelist_code": null,
+        "order": 21
+      },
+      {
+        "name": "ACTARMCD",
+        "label": "Actual Arm Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the actual arm, limited to 20 characters.",
+        "codelist_code": null,
+        "order": 22
+      },
+      {
+        "name": "ACTARM",
+        "label": "Description of Actual Arm",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Description of the actual arm.",
+        "codelist_code": null,
+        "order": 23
+      },
+      {
+        "name": "COUNTRY",
+        "label": "Country",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Country of the investigational site in which the subject participated in the trial, using ISO 3166-1 alpha-3 codes.",
+        "codelist_code": "C66742",
+        "order": 24
+      },
+      {
+        "name": "DMDTC",
+        "label": "Date/Time of Collection",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Date/time of demographic data collection.",
+        "codelist_code": null,
+        "order": 25
+      },
+      {
+        "name": "DMDY",
+        "label": "Study Day of Collection",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of collection, measured as integer days.",
+        "codelist_code": null,
+        "order": 26
+      }
+    ]
+  },
+  "AE": {
+    "domain": "AE",
+    "description": "Adverse Events",
+    "domain_class": "Events",
+    "structure": "One record per adverse event per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "AESEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness of records within a domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "AESPID",
+        "label": "Sponsor-Defined Identifier",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Sponsor-defined reference number.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "AETERM",
+        "label": "Reported Term for the Adverse Event",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the event.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "AEMODIFY",
+        "label": "Modified Reported Term",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "If AETERM is modified to facilitate coding, then AEMODIFY will contain the modified text.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "AEDECOD",
+        "label": "Dictionary-Derived Term",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Dictionary-derived text description of AETERM. Equivalent to the Preferred Term (PT) in MedDRA.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "AEBODSYS",
+        "label": "Body System or Organ Class",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Dictionary-derived. Body system or organ class used in the coding dictionary (e.g., MedDRA SOC).",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "AESEV",
+        "label": "Severity/Intensity",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "The severity or intensity of the event.",
+        "codelist_code": "C66734",
+        "order": 10
+      },
+      {
+        "name": "AESER",
+        "label": "Serious Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Is this a serious event?",
+        "codelist_code": "C66790",
+        "order": 11
+      },
+      {
+        "name": "AEACN",
+        "label": "Action Taken with Study Treatment",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Describes changes to the study treatment as a result of the event.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "AEREL",
+        "label": "Causality",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Records the investigator's opinion as to the causality of the event to the treatment.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "AEOUT",
+        "label": "Outcome of Adverse Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Description of the outcome of the event.",
+        "codelist_code": "C66768",
+        "order": 14
+      },
+      {
+        "name": "AESCAN",
+        "label": "Involves Cancer",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Was the serious event associated with cancer?",
+        "codelist_code": "C66790",
+        "order": 15
+      },
+      {
+        "name": "AESCONG",
+        "label": "Congenital Anomaly or Birth Defect",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Was the event associated with congenital anomaly or birth defect?",
+        "codelist_code": "C66790",
+        "order": 16
+      },
+      {
+        "name": "AESDISAB",
+        "label": "Persist or Signif Disability/Incapacity",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Did the event result in persistent or significant disability/incapacity?",
+        "codelist_code": "C66790",
+        "order": 17
+      },
+      {
+        "name": "AESDTH",
+        "label": "Results in Death",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Did the AE result in death?",
+        "codelist_code": "C66790",
+        "order": 18
+      },
+      {
+        "name": "AESHOSP",
+        "label": "Requires or Prolongs Hospitalization",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Did the event require or prolong hospitalization?",
+        "codelist_code": "C66790",
+        "order": 19
+      },
+      {
+        "name": "AESLIFE",
+        "label": "Is Life Threatening",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Was the event life threatening?",
+        "codelist_code": "C66790",
+        "order": 20
+      },
+      {
+        "name": "AESMIE",
+        "label": "Other Medically Important Serious Event",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Is the event of sufficient medical importance to report as serious?",
+        "codelist_code": "C66790",
+        "order": 21
+      },
+      {
+        "name": "AECONTRT",
+        "label": "Concomitant or Additional Trtmnt Given",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Was concomitant/additional treatment given for this event?",
+        "codelist_code": "C66790",
+        "order": 22
+      },
+      {
+        "name": "AESTDTC",
+        "label": "Start Date/Time of Adverse Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the adverse event in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 23
+      },
+      {
+        "name": "AEENDTC",
+        "label": "End Date/Time of Adverse Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the adverse event in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 24
+      },
+      {
+        "name": "AESTDY",
+        "label": "Study Day of Start of Adverse Event",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of start of the adverse event relative to the sponsor-defined RFSTDTC.",
+        "codelist_code": null,
+        "order": 25
+      },
+      {
+        "name": "AEENDY",
+        "label": "Study Day of End of Adverse Event",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of end of the adverse event relative to the sponsor-defined RFSTDTC.",
+        "codelist_code": null,
+        "order": 26
+      }
+    ]
+  },
+  "CM": {
+    "domain": "CM",
+    "description": "Concomitant Medications",
+    "domain_class": "Interventions",
+    "structure": "One record per recorded medication occurrence or constant-dosing interval per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "CMSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "CMTRT",
+        "label": "Reported Name of Drug, Med, or Therapy",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim medication name.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "CMMODIFY",
+        "label": "Modified Reported Name",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "If CMTRT is modified for coding, CMMODIFY will contain the modified text.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "CMDECOD",
+        "label": "Standardized Medication Name",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Standardized or dictionary-derived name of CMTRT.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "CMCAT",
+        "label": "Category for Medication",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to define a category of medications.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "CMDOSE",
+        "label": "Dose per Administration",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Amount of CMTRT administered.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "CMDOSU",
+        "label": "Dose Units",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Units for CMDOSE.",
+        "codelist_code": "C66781",
+        "order": 10
+      },
+      {
+        "name": "CMDOSFRQ",
+        "label": "Dosing Frequency per Interval",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Usually expressed as the number of doses per time period.",
+        "codelist_code": "C66770",
+        "order": 11
+      },
+      {
+        "name": "CMROUTE",
+        "label": "Route of Administration",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Route of administration.",
+        "codelist_code": "C66769",
+        "order": 12
+      },
+      {
+        "name": "CMSTDTC",
+        "label": "Start Date/Time of Medication",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the medication in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "CMENDTC",
+        "label": "End Date/Time of Medication",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the medication in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 14
+      },
+      {
+        "name": "CMSTDY",
+        "label": "Study Day of Start of Medication",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of start of medication relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 15
+      },
+      {
+        "name": "CMENDY",
+        "label": "Study Day of End of Medication",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of end of medication relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 16
+      },
+      {
+        "name": "CMINDC",
+        "label": "Indication",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Denotes why a medication was taken or administered.",
+        "codelist_code": null,
+        "order": 17
+      }
+    ]
+  },
+  "EX": {
+    "domain": "EX",
+    "description": "Exposure",
+    "domain_class": "Interventions",
+    "structure": "One record per constant-dosing interval per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "EXSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "EXTRT",
+        "label": "Name of Treatment",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the study treatment.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "EXDOSE",
+        "label": "Dose",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Amount of treatment administered.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "EXDOSU",
+        "label": "Dose Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Units for EXDOSE.",
+        "codelist_code": "C66781",
+        "order": 7
+      },
+      {
+        "name": "EXDOSFRM",
+        "label": "Dose Form",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Dose form of the treatment.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "EXDOSFRQ",
+        "label": "Dosing Frequency per Interval",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Usually expressed as the number of doses per time period.",
+        "codelist_code": "C66770",
+        "order": 9
+      },
+      {
+        "name": "EXROUTE",
+        "label": "Route of Administration",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Route of administration.",
+        "codelist_code": "C66769",
+        "order": 10
+      },
+      {
+        "name": "EXSTDTC",
+        "label": "Start Date/Time of Treatment",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the treatment in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "EXENDTC",
+        "label": "End Date/Time of Treatment",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the treatment in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "EXSTDY",
+        "label": "Study Day of Start of Treatment",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of start of treatment relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "EXENDY",
+        "label": "Study Day of End of Treatment",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of end of treatment relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 14
+      }
+    ]
+  },
+  "LB": {
+    "domain": "LB",
+    "description": "Laboratory Test Results",
+    "domain_class": "Findings",
+    "structure": "One record per lab test per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "LBSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "LBTESTCD",
+        "label": "Lab Test or Examination Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the measurement, test, or examination. Max 8 characters.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "LBTEST",
+        "label": "Lab Test or Examination Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the test or examination used to obtain the measurement or finding.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "LBCAT",
+        "label": "Category for Lab Test",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to define a category of tests (e.g., HEMATOLOGY, CHEMISTRY).",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "LBORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the measurement or finding as originally received or collected.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "LBORRESU",
+        "label": "Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Original units in which the data were collected.",
+        "codelist_code": "C66781",
+        "order": 9
+      },
+      {
+        "name": "LBORNRLO",
+        "label": "Reference Range Lower Limit-Orig Unit",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Lower end of reference range used at the performing laboratory.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "LBORNRHI",
+        "label": "Reference Range Upper Limit-Orig Unit",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Upper end of reference range used at the performing laboratory.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "LBSTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result value for all findings, copied or derived from LBORRES in a standard format.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "LBSTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Used for continuous or numeric results in standard format; copied in standard units from LBORRES.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "LBSTRESU",
+        "label": "Standard Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Standardized units used for LBSTRESC and LBSTRESN.",
+        "codelist_code": "C66781",
+        "order": 14
+      },
+      {
+        "name": "LBSTNRLO",
+        "label": "Reference Range Lower Limit-Std Units",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Lower end of reference range for standardized values.",
+        "codelist_code": null,
+        "order": 15
+      },
+      {
+        "name": "LBSTNRHI",
+        "label": "Reference Range Upper Limit-Std Units",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Upper end of reference range for standardized values.",
+        "codelist_code": null,
+        "order": 16
+      },
+      {
+        "name": "LBNRIND",
+        "label": "Reference Range Indicator",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Indicates where value falls with respect to reference range (e.g., NORMAL, LOW, HIGH).",
+        "codelist_code": null,
+        "order": 17
+      },
+      {
+        "name": "LBSPEC",
+        "label": "Specimen Type",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Defines the type of specimen used for a measurement.",
+        "codelist_code": null,
+        "order": 18
+      },
+      {
+        "name": "VISITNUM",
+        "label": "Visit Number",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Clinical encounter number.",
+        "codelist_code": null,
+        "order": 19
+      },
+      {
+        "name": "VISIT",
+        "label": "Visit Name",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Protocol-defined description of clinical encounter.",
+        "codelist_code": null,
+        "order": 20
+      },
+      {
+        "name": "LBDTC",
+        "label": "Date/Time of Specimen Collection",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of specimen collection in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 21
+      },
+      {
+        "name": "LBDY",
+        "label": "Study Day of Specimen Collection",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of specimen collection relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 22
+      }
+    ]
+  },
+  "VS": {
+    "domain": "VS",
+    "description": "Vital Signs",
+    "domain_class": "Findings",
+    "structure": "One record per vital sign measurement per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "VSSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "VSTESTCD",
+        "label": "Vital Signs Test Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the test. Examples: SYSBP, DIABP, PULSE, WEIGHT, HEIGHT, TEMP, RESP.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "VSTEST",
+        "label": "Vital Signs Test Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the test or examination.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "VSPOS",
+        "label": "Vital Signs Position of Subject",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Position of the subject during the measurement (e.g., STANDING, SITTING, SUPINE).",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "VSORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the vital signs measurement as originally received or collected.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "VSORRESU",
+        "label": "Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Original units in which the data were collected.",
+        "codelist_code": "C66781",
+        "order": 9
+      },
+      {
+        "name": "VSSTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result value for all findings, copied or derived from VSORRES in a standard format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "VSSTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Used for continuous or numeric results in standard format.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "VSSTRESU",
+        "label": "Standard Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Standardized units used for VSSTRESC and VSSTRESN.",
+        "codelist_code": "C66781",
+        "order": 12
+      },
+      {
+        "name": "VISITNUM",
+        "label": "Visit Number",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Clinical encounter number.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "VISIT",
+        "label": "Visit Name",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Protocol-defined description of clinical encounter.",
+        "codelist_code": null,
+        "order": 14
+      },
+      {
+        "name": "VSDTC",
+        "label": "Date/Time of Vital Signs",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of the vital signs measurement in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 15
+      },
+      {
+        "name": "VSDY",
+        "label": "Study Day of Vital Signs",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of vital signs measurement relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 16
+      }
+    ]
+  },
+  "EG": {
+    "domain": "EG",
+    "description": "ECG Test Results",
+    "domain_class": "Findings",
+    "structure": "One record per ECG test per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "EGSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "EGTESTCD",
+        "label": "ECG Test Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the ECG test. Examples: HRMEAN, PRMEAN, QRSDUR, QTMEAN, RRMEAN.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "EGTEST",
+        "label": "ECG Test Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the ECG test or examination.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "EGORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the ECG measurement as originally received or collected.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "EGORRESU",
+        "label": "Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Original units in which the data were collected.",
+        "codelist_code": "C66781",
+        "order": 8
+      },
+      {
+        "name": "EGSTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result value for all findings in a standard format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "EGSTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Used for continuous or numeric results in standard format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "EGSTRESU",
+        "label": "Standard Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Standardized units used for EGSTRESC and EGSTRESN.",
+        "codelist_code": "C66781",
+        "order": 11
+      },
+      {
+        "name": "VISITNUM",
+        "label": "Visit Number",
+        "data_type": "Num",
+        "core": "Exp",
+        "cdisc_notes": "Clinical encounter number.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "VISIT",
+        "label": "Visit Name",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Protocol-defined description of clinical encounter.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "EGDTC",
+        "label": "Date/Time of ECG",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of the ECG measurement in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 14
+      },
+      {
+        "name": "EGDY",
+        "label": "Study Day of ECG",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of ECG measurement relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 15
+      }
+    ]
+  },
+  "MH": {
+    "domain": "MH",
+    "description": "Medical History",
+    "domain_class": "Events",
+    "structure": "One record per medical history event per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "MHSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "MHTERM",
+        "label": "Reported Term for the Medical History",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the medical history event.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "MHMODIFY",
+        "label": "Modified Reported Term",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "If MHTERM is modified to facilitate coding, then MHMODIFY will contain the modified text.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "MHDECOD",
+        "label": "Dictionary-Derived Term",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Dictionary-derived text description of MHTERM.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "MHBODSYS",
+        "label": "Body System or Organ Class",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Dictionary-derived. Body system or organ class.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "MHCAT",
+        "label": "Category for Medical History",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to define a category of medical history events.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "MHPRESP",
+        "label": "Medical History Event Pre-Specified",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used when a specific medical history event is pre-specified on the CRF. Value is Y.",
+        "codelist_code": "C66790",
+        "order": 10
+      },
+      {
+        "name": "MHOCCUR",
+        "label": "Medical History Occurrence",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to indicate whether a pre-specified event occurred. Values are Y or N.",
+        "codelist_code": "C66790",
+        "order": 11
+      },
+      {
+        "name": "MHSTDTC",
+        "label": "Start Date/Time of Medical History",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the medical history event in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "MHENDTC",
+        "label": "End Date/Time of Medical History",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the medical history event in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "MHENRF",
+        "label": "End Relative to Reference Period",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Describes the end of the event relative to the reference period. Expected values: BEFORE, DURING, AFTER.",
+        "codelist_code": null,
+        "order": 14
+      }
+    ]
+  },
+  "DS": {
+    "domain": "DS",
+    "description": "Disposition",
+    "domain_class": "Events",
+    "structure": "One record per disposition status or protocol milestone per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "DSSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "DSTERM",
+        "label": "Reported Term for the Disposition Event",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim name of the disposition event.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "DSDECOD",
+        "label": "Standardized Disposition Term",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Standardized or dictionary-derived text description of DSTERM.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "DSCAT",
+        "label": "Category for Disposition Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to define a category of disposition events (e.g., DISPOSITION EVENT, PROTOCOL MILESTONE).",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "DSSCAT",
+        "label": "Subcategory for Disposition Event",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to define a sub-category of disposition events.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "DSSTDTC",
+        "label": "Start Date/Time of Disposition Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the disposition event in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "DSDY",
+        "label": "Study Day of Start of Disposition Event",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of start of disposition event relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 10
+      }
+    ]
+  },
+  "IE": {
+    "domain": "IE",
+    "description": "Inclusion/Exclusion Criteria Not Met",
+    "domain_class": "Findings",
+    "structure": "One record per inclusion/exclusion criterion not met per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "IESEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness within a dataset for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "IETESTCD",
+        "label": "Incl/Excl Criterion Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name for the criterion (e.g., INCL01, EXCL03). Max 8 characters.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "IETEST",
+        "label": "Incl/Excl Criterion",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Full text of the inclusion or exclusion criterion.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "IECAT",
+        "label": "Incl/Excl Category",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Category: INCLUSION or EXCLUSION.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "IESCAT",
+        "label": "Incl/Excl Subcategory",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Subcategory for the criterion.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "IEORRES",
+        "label": "Incl/Excl Criterion Original Result",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Original result for the criterion (e.g., Y or N).",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "IESTRESC",
+        "label": "Incl/Excl Criterion Result in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Standardized result for the criterion.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "IEDTC",
+        "label": "Date/Time of Collection",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of the assessment in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "IEDY",
+        "label": "Study Day of Collection",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of assessment relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 12
+      }
+    ]
+  }
+}
