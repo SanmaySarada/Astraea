@@ -140,13 +140,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| DATA-05 | Phase 1 | Pending |
-| DATA-06 | Phase 1 | Pending |
-| DATA-07 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete |
+| DATA-02 | Phase 1 | Complete |
+| DATA-03 | Phase 1 | Complete |
+| DATA-04 | Phase 1 | Complete |
+| DATA-05 | Phase 1 | Complete |
+| DATA-06 | Phase 1 | Complete |
+| DATA-07 | Phase 1 | Complete |
 | ECRF-01 | Phase 2 | Pending |
 | ECRF-02 | Phase 2 | Pending |
 | ECRF-03 | Phase 2 | Pending |
@@ -204,8 +204,8 @@
 | HITL-05 | Phase 8 | Pending |
 | HITL-06 | Phase 8 | Pending |
 | HITL-07 | Phase 8 | Pending |
-| CLI-01 | Phase 1 | Pending |
-| CLI-04 | Phase 1 | Pending |
+| CLI-01 | Phase 1 | Complete |
+| CLI-04 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 66 total
