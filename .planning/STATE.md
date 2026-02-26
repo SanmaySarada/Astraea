@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 3/5 complete)
+**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 4/5 complete)
 
 ## Current Position
 
 Phase: 2 of 8 (Source Parsing and Domain Classification)
-Plan: 3 of 5 (Heuristic Domain Scorer)
+Plan: 4 of 5 (Form-Dataset Matcher and LLM Domain Classifier)
 Status: In progress
-Last activity: 2026-02-26 -- Completed 02-03-PLAN.md (Heuristic Domain Scorer)
+Last activity: 2026-02-26 -- Completed 02-04-PLAN.md (Form-Dataset Matcher and LLM Domain Classifier)
 
-Progress: [████████████████░░░░░░░░░░░░░░░░░░░░░░░░] ~28%
+Progress: [██████████████████░░░░░░░░░░░░░░░░░░░░░░] ~31%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~3.3 minutes
+- Total plans completed: 9
+- Average duration: ~3.2 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
-| 02-source-parsing | 3/5 | ~9 min | ~3 min |
+| 02-source-parsing | 4/5 | ~13 min | ~3.3 min |
 
 ## Phase 1 Deliverables
 
@@ -51,7 +51,8 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 | PDF extraction | src/astraea/parsing/pdf_extractor.py | 15 | Done |
 | eCRF parsing | src/astraea/parsing/ecrf_parser.py | 13 | Done |
 | Heuristic domain scorer | src/astraea/classification/heuristic.py | 29 | Done |
-| LLM domain classification | src/astraea/classification/ | -- | Pending |
+| Form-dataset matcher | src/astraea/parsing/form_dataset_matcher.py | 13 | Done |
+| LLM domain classifier | src/astraea/classification/classifier.py | 14 | Done |
 | CLI commands | src/astraea/cli/app.py | -- | Pending |
 
 ## Accumulated Context
@@ -85,6 +86,9 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 - 2026-02-26: [D-0203-01] Segment-boundary matching for filename contains-check prevents false positives
 - 2026-02-26: [D-0203-02] UNCLASSIFIED threshold at 0.3 -- scores below this trigger UNCLASSIFIED return
 - 2026-02-26: [D-0203-03] Common identifiers excluded from variable overlap scoring
+- 2026-02-26: [D-0204-01] Form-dataset matching uses field_name overlap ratio (form fields / clinical vars)
+- 2026-02-26: [D-0204-02] Heuristic-LLM disagreement with heuristic >= 0.8 reduces confidence by min * 0.7
+- 2026-02-26: [D-0204-03] Findings domains (LB, VS, EG, PE, QS, SC, FA) auto-detect transpose pattern
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 ## Session Continuity
 
-Last session: 2026-02-26 21:57 UTC
-Stopped at: Completed 02-03-PLAN.md -- Heuristic Domain Scorer
+Last session: 2026-02-26 22:05 UTC
+Stopped at: Completed 02-04-PLAN.md -- Form-Dataset Matcher and LLM Domain Classifier
 Resume file: None
