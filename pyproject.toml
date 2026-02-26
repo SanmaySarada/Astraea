@@ -26,6 +26,9 @@ dependencies = [
     "langgraph",
     "langchain-anthropic",
     "openpyxl>=3.1",
+    "pymupdf4llm>=0.3.4",
+    "pdfplumber>=0.11",
+    "tenacity>=9.0",
 ]
 
 [project.optional-dependencies]
