@@ -10,23 +10,23 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 1 of 8 (Foundation and Data Infrastructure)
-Plan: 1 of 5 (complete)
+Plan: 2 of 5 (complete)
 Status: In progress
-Last activity: 2026-02-26 -- Completed 01-01-PLAN.md (Project Setup and Data Models)
+Last activity: 2026-02-26 -- Completed 01-02-PLAN.md (SAS Reader and Dataset Profiler)
 
-Progress: [█░░░░░░░░░] ~5%
+Progress: [██░░░░░░░░] ~10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 3 minutes
+- Total plans completed: 2
+- Average duration: 3.5 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1/5 | 3 min | 3 min |
+| 01-foundation | 2/5 | 7 min | 3.5 min |
 
 ## Accumulated Context
 
@@ -38,6 +38,9 @@ Progress: [█░░░░░░░░░] ~5%
 - 2026-02-26: [D-0101-01] Used setuptools.build_meta as build backend (not legacy)
 - 2026-02-26: [D-0101-02] VariableMetadata.storage_width ge=1 (0 bytes invalid in SAS)
 - 2026-02-26: [D-0101-03] VariableSpec.order ge=1 (SDTM ordering is 1-based)
+- 2026-02-26: [D-0102-01] pyreadstat labels can be None -- use `or ''` not `.get(key, '')`
+- 2026-02-26: [D-0102-02] EDC column matching uses frozenset of 25 known column names with lowercase comparison
+- 2026-02-26: [D-0102-03] String date detection limited to _RAW columns containing DAT in the name
 
 ### Pending Todos
 
@@ -51,6 +54,6 @@ Progress: [█░░░░░░░░░] ~5%
 
 ## Session Continuity
 
-Last session: 2026-02-26 20:23 UTC
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-02-26 20:28 UTC
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
