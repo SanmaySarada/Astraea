@@ -41,6 +41,9 @@ Progress: [████░░░░░░] ~15%
 - 2026-02-26: [D-0102-01] pyreadstat labels can be None -- use `or ''` not `.get(key, '')`
 - 2026-02-26: [D-0102-02] EDC column matching uses frozenset of 25 known column names with lowercase comparison
 - 2026-02-26: [D-0102-03] String date detection limited to _RAW columns containing DAT in the name
+- 2026-02-26: [D-0103-01] Path(__file__) approach for bundled data loading (not importlib.resources)
+- 2026-02-26: [D-0103-02] Country codelist uses ISO 3166-1 alpha-3 codes per SDTM-IG v3.4
+- 2026-02-26: [D-0103-03] Extensible codelist validate_term() always returns True for any value
 - 2026-02-26: [D-0104-01] Ambiguous slash-separated dates default to DD/MM/YYYY
 - 2026-02-26: [D-0104-02] extract_usubjid_components with >3 parts joins remainder as subjid
 - 2026-02-26: [D-0104-03] SAS DATETIME uses UTC internally, output is timezone-naive per SDTM convention
