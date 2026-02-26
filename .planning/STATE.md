@@ -5,28 +5,29 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 1 COMPLETE -- Ready for Phase 2 (eCRF Parsing and Domain Classification)
+**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 1/5 complete)
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation and Data Infrastructure) -- COMPLETE
-Plan: 5 of 5 (complete)
-Status: Phase complete
-Last activity: 2026-02-26 -- Completed 01-05-PLAN.md (XPT Writer and CLI)
+Phase: 2 of 8 (Source Parsing and Domain Classification)
+Plan: 1 of 5 (Data Models and LLM Client)
+Status: In progress
+Last activity: 2026-02-26 -- Completed 02-01-PLAN.md (Data Models and LLM Client)
 
-Progress: [██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] ~18%
+Progress: [████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] ~21%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~3.5 minutes
+- Total plans completed: 6
+- Average duration: ~3.4 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
+| 02-source-parsing | 1/5 | ~3 min | ~3 min |
 
 ## Phase 1 Deliverables
 
@@ -40,6 +41,17 @@ Progress: [██████░░░░░░░░░░░░░░░░░
 | **Total** | | **216 tests passing** |
 
 CLI commands available: `astraea profile`, `astraea reference`, `astraea codelist`
+
+## Phase 2 Deliverables (In Progress)
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| eCRF + classification models | src/astraea/models/ecrf.py, classification.py | 35 | Done |
+| LLM client wrapper | src/astraea/llm/client.py | 8 | Done |
+| PDF extraction | src/astraea/parsing/pdf_extractor.py | -- | Pending |
+| eCRF parsing | src/astraea/parsing/ecrf_parser.py | -- | Pending |
+| Domain classification | src/astraea/classification/ | -- | Pending |
+| CLI commands | src/astraea/cli/app.py | -- | Pending |
 
 ## Accumulated Context
 
@@ -62,6 +74,10 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 - 2026-02-26: [D-0104-03] SAS DATETIME uses UTC internally, output is timezone-naive per SDTM convention
 - 2026-02-26: [D-0105-01] XPT writer performs mandatory read-back verification after every write
 - 2026-02-26: [D-0105-02] CLI uses typer.Argument/Option with Rich console for all output formatting
+- 2026-02-26: [D-0201-01] ECRFField.field_name validated for no-spaces (SAS variable names)
+- 2026-02-26: [D-0201-02] ECRFExtractionResult.total_fields as computed @property
+- 2026-02-26: [D-0201-03] DomainClassification includes heuristic_scores for two-stage classification traceability
+- 2026-02-26: [D-0201-04] AstraeaLLMClient.parse() uses keyword-only arguments
 
 ### Pending Todos
 
@@ -75,6 +91,6 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 ## Session Continuity
 
-Last session: 2026-02-26 21:21 UTC
-Stopped at: Completed 01-05-PLAN.md -- Phase 1 complete
+Last session: 2026-02-26 21:53 UTC
+Stopped at: Completed 02-01-PLAN.md -- Data Models and LLM Client
 Resume file: None
