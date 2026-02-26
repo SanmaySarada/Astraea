@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 1/5 complete)
+**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 3/5 complete)
 
 ## Current Position
 
 Phase: 2 of 8 (Source Parsing and Domain Classification)
-Plan: 1 of 5 (Data Models and LLM Client)
+Plan: 3 of 5 (Heuristic Domain Scorer)
 Status: In progress
-Last activity: 2026-02-26 -- Completed 02-01-PLAN.md (Data Models and LLM Client)
+Last activity: 2026-02-26 -- Completed 02-03-PLAN.md (Heuristic Domain Scorer)
 
-Progress: [████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] ~21%
+Progress: [████████████████░░░░░░░░░░░░░░░░░░░░░░░░] ~28%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: ~3.4 minutes
+- Total plans completed: 8
+- Average duration: ~3.3 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
-| 02-source-parsing | 1/5 | ~3 min | ~3 min |
+| 02-source-parsing | 3/5 | ~9 min | ~3 min |
 
 ## Phase 1 Deliverables
 
@@ -50,7 +50,8 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 | LLM client wrapper | src/astraea/llm/client.py | 8 | Done |
 | PDF extraction | src/astraea/parsing/pdf_extractor.py | -- | Pending |
 | eCRF parsing | src/astraea/parsing/ecrf_parser.py | -- | Pending |
-| Domain classification | src/astraea/classification/ | -- | Pending |
+| Heuristic domain scorer | src/astraea/classification/heuristic.py | 29 | Done |
+| LLM domain classification | src/astraea/classification/ | -- | Pending |
 | CLI commands | src/astraea/cli/app.py | -- | Pending |
 
 ## Accumulated Context
@@ -78,6 +79,9 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 - 2026-02-26: [D-0201-02] ECRFExtractionResult.total_fields as computed @property
 - 2026-02-26: [D-0201-03] DomainClassification includes heuristic_scores for two-stage classification traceability
 - 2026-02-26: [D-0201-04] AstraeaLLMClient.parse() uses keyword-only arguments
+- 2026-02-26: [D-0203-01] Segment-boundary matching for filename contains-check prevents false positives
+- 2026-02-26: [D-0203-02] UNCLASSIFIED threshold at 0.3 -- scores below this trigger UNCLASSIFIED return
+- 2026-02-26: [D-0203-03] Common identifiers excluded from variable overlap scoring
 
 ### Pending Todos
 
@@ -91,6 +95,6 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 ## Session Continuity
 
-Last session: 2026-02-26 21:53 UTC
-Stopped at: Completed 02-01-PLAN.md -- Data Models and LLM Client
+Last session: 2026-02-26 21:57 UTC
+Stopped at: Completed 02-03-PLAN.md -- Heuristic Domain Scorer
 Resume file: None
