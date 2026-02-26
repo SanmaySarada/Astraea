@@ -23,7 +23,14 @@ This roadmap derives 8 phases from the 66 v1 requirements, following the natural
 4. System generates USUBJID from STUDYID + SITEID + SUBJID and validates consistency
 5. System writes a valid .xpt file from a pandas DataFrame that passes structural validation
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md -- Project setup, dependencies, and Pydantic data models
+- [ ] 01-02-PLAN.md -- SAS file reader and dataset profiler
+- [ ] 01-03-PLAN.md -- CDISC SDTM-IG and NCI CT bundled reference data
+- [ ] 01-04-PLAN.md -- ISO 8601 date conversion and USUBJID utilities
+- [ ] 01-05-PLAN.md -- XPT writer and CLI integration
 
 ---
 
@@ -143,7 +150,7 @@ This roadmap derives 8 phases from the 66 v1 requirements, following the natural
 
 | Phase | Status | Completed |
 |-------|--------|-----------|
-| 1 - Foundation and Data Infrastructure | Not started | -- |
+| 1 - Foundation and Data Infrastructure | Planned | -- |
 | 2 - Source Parsing and Domain Classification | Not started | -- |
 | 3 - Core Mapping Engine (Demographics) | Not started | -- |
 | 4 - Human Review Gate | Not started | -- |
