@@ -48,8 +48,8 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 |-----------|--------|-------|--------|
 | eCRF + classification models | src/astraea/models/ecrf.py, classification.py | 35 | Done |
 | LLM client wrapper | src/astraea/llm/client.py | 8 | Done |
-| PDF extraction | src/astraea/parsing/pdf_extractor.py | -- | Pending |
-| eCRF parsing | src/astraea/parsing/ecrf_parser.py | -- | Pending |
+| PDF extraction | src/astraea/parsing/pdf_extractor.py | 15 | Done |
+| eCRF parsing | src/astraea/parsing/ecrf_parser.py | 13 | Done |
 | Heuristic domain scorer | src/astraea/classification/heuristic.py | 29 | Done |
 | LLM domain classification | src/astraea/classification/ | -- | Pending |
 | CLI commands | src/astraea/cli/app.py | -- | Pending |
@@ -79,6 +79,9 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 - 2026-02-26: [D-0201-02] ECRFExtractionResult.total_fields as computed @property
 - 2026-02-26: [D-0201-03] DomainClassification includes heuristic_scores for two-stage classification traceability
 - 2026-02-26: [D-0201-04] AstraeaLLMClient.parse() uses keyword-only arguments
+- 2026-02-26: [D-0202-01] Escaped curly braces in ECRF_EXTRACTION_PROMPT for str.format() compatibility
+- 2026-02-26: [D-0202-02] _MIN_FORM_TEXT_LENGTH=50 chars threshold for skipping trivial form pages
+- 2026-02-26: [D-0202-03] Multi-page form concatenation uses markdown horizontal rule separator
 - 2026-02-26: [D-0203-01] Segment-boundary matching for filename contains-check prevents false positives
 - 2026-02-26: [D-0203-02] UNCLASSIFIED threshold at 0.3 -- scores below this trigger UNCLASSIFIED return
 - 2026-02-26: [D-0203-03] Common identifiers excluded from variable overlap scoring
