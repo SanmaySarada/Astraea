@@ -46,7 +46,14 @@ Plans:
 3. System classifies each raw dataset to an SDTM domain with a confidence score and natural language reasoning
 4. System correctly detects when multiple raw datasets should merge into a single SDTM domain (e.g., multiple lab files into LB)
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md -- Pydantic models (eCRF + classification) and LLM client wrapper
+- [ ] 02-02-PLAN.md -- PDF extraction and eCRF parser (pymupdf4llm + Claude structured output)
+- [ ] 02-03-PLAN.md -- Heuristic domain scorer (deterministic filename + variable matching)
+- [ ] 02-04-PLAN.md -- Form-dataset matcher and LLM domain classifier with heuristic fusion
+- [ ] 02-05-PLAN.md -- CLI commands (parse-ecrf, classify) and integration verification
 
 ---
 
