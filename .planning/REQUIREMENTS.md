@@ -1,7 +1,7 @@
 # Requirements: Astraea-SDTM
 
 **Defined:** 2026-02-26
-**Core Value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention — and get better with every correction.
+**Core Value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
 
 ## v1 Requirements
 
@@ -138,17 +138,80 @@
 
 ## Traceability
 
-(To be populated by roadmap creation)
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | — |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 1 | Pending |
+| DATA-04 | Phase 1 | Pending |
+| DATA-05 | Phase 1 | Pending |
+| DATA-06 | Phase 1 | Pending |
+| DATA-07 | Phase 1 | Pending |
+| ECRF-01 | Phase 2 | Pending |
+| ECRF-02 | Phase 2 | Pending |
+| ECRF-03 | Phase 2 | Pending |
+| ECRF-04 | Phase 2 | Pending |
+| CLSF-01 | Phase 2 | Pending |
+| CLSF-02 | Phase 2 | Pending |
+| CLSF-03 | Phase 2 | Pending |
+| CLSF-04 | Phase 2 | Pending |
+| MAP-01 | Phase 3 | Pending |
+| MAP-02 | Phase 3 | Pending |
+| MAP-03 | Phase 3 | Pending |
+| MAP-04 | Phase 3 | Pending |
+| MAP-05 | Phase 3 | Pending |
+| MAP-06 | Phase 3 | Pending |
+| MAP-07 | Phase 3 | Pending |
+| MAP-08 | Phase 3 | Pending |
+| MAP-09 | Phase 3 | Pending |
+| MAP-10 | Phase 3 | Pending |
+| MAP-11 | Phase 3 | Pending |
+| MAP-12 | Phase 3 | Pending |
+| DOM-01 | Phase 3 | Pending |
+| SPEC-01 | Phase 3 | Pending |
+| SPEC-02 | Phase 3 | Pending |
+| SPEC-03 | Phase 3 | Pending |
+| SPEC-04 | Phase 3 | Pending |
+| HITL-01 | Phase 4 | Pending |
+| HITL-02 | Phase 4 | Pending |
+| CLI-02 | Phase 4 | Pending |
+| CLI-03 | Phase 4 | Pending |
+| DOM-02 | Phase 5 | Pending |
+| DOM-03 | Phase 5 | Pending |
+| DOM-04 | Phase 5 | Pending |
+| DOM-08 | Phase 5 | Pending |
+| DOM-09 | Phase 5 | Pending |
+| DOM-11 | Phase 5 | Pending |
+| DOM-12 | Phase 5 | Pending |
+| DOM-13 | Phase 5 | Pending |
+| DOM-05 | Phase 6 | Pending |
+| DOM-06 | Phase 6 | Pending |
+| DOM-07 | Phase 6 | Pending |
+| DOM-10 | Phase 6 | Pending |
+| DOM-14 | Phase 6 | Pending |
+| DOM-15 | Phase 6 | Pending |
+| DOM-16 | Phase 6 | Pending |
+| VAL-01 | Phase 7 | Pending |
+| VAL-02 | Phase 7 | Pending |
+| VAL-03 | Phase 7 | Pending |
+| VAL-04 | Phase 7 | Pending |
+| VAL-05 | Phase 7 | Pending |
+| VAL-06 | Phase 7 | Pending |
+| VAL-07 | Phase 7 | Pending |
+| VAL-08 | Phase 7 | Pending |
+| HITL-03 | Phase 8 | Pending |
+| HITL-04 | Phase 8 | Pending |
+| HITL-05 | Phase 8 | Pending |
+| HITL-06 | Phase 8 | Pending |
+| HITL-07 | Phase 8 | Pending |
+| CLI-01 | Phase 1 | Pending |
+| CLI-04 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 54 total
-- Mapped to phases: 0
-- Unmapped: 54 ⚠️
+- v1 requirements: 66 total
+- Mapped to phases: 66
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-02-26 after initial definition*
+*Last updated: 2026-02-26 after roadmap creation*
