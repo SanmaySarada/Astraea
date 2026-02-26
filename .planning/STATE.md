@@ -5,28 +5,41 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 1 -- Foundation and Data Infrastructure
+**Current focus:** Phase 1 COMPLETE -- Ready for Phase 2 (eCRF Parsing and Domain Classification)
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation and Data Infrastructure)
-Plan: 4 of 5 (complete)
-Status: In progress
-Last activity: 2026-02-26 -- Completed 01-04-PLAN.md (Date Conversion and USUBJID Utilities)
+Phase: 1 of 8 (Foundation and Data Infrastructure) -- COMPLETE
+Plan: 5 of 5 (complete)
+Status: Phase complete
+Last activity: 2026-02-26 -- Completed 01-05-PLAN.md (XPT Writer and CLI)
 
-Progress: [████░░░░░░] ~15%
+Progress: [██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] ~18%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3.5 minutes
+- Total plans completed: 5
+- Average duration: ~3.5 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 4/5 | 14 min | 3.5 min |
+| 01-foundation | 5/5 | ~18 min | ~3.5 min |
+
+## Phase 1 Deliverables
+
+| Component | Module | Tests |
+|-----------|--------|-------|
+| Pydantic data models | src/astraea/models/ | 35 |
+| SAS reader + profiler | src/astraea/io/, src/astraea/profiling/ | 42 |
+| SDTM-IG + CT reference | src/astraea/reference/ | 59 |
+| Date conversion + USUBJID | src/astraea/transforms/ | 80 |
+| XPT writer + CLI | src/astraea/io/xpt_writer.py, src/astraea/cli/ | -- |
+| **Total** | | **216 tests passing** |
+
+CLI commands available: `astraea profile`, `astraea reference`, `astraea codelist`
 
 ## Accumulated Context
 
@@ -47,10 +60,12 @@ Progress: [████░░░░░░] ~15%
 - 2026-02-26: [D-0104-01] Ambiguous slash-separated dates default to DD/MM/YYYY
 - 2026-02-26: [D-0104-02] extract_usubjid_components with >3 parts joins remainder as subjid
 - 2026-02-26: [D-0104-03] SAS DATETIME uses UTC internally, output is timezone-naive per SDTM convention
+- 2026-02-26: [D-0105-01] XPT writer performs mandatory read-back verification after every write
+- 2026-02-26: [D-0105-02] CLI uses typer.Argument/Option with Rich console for all output formatting
 
 ### Pending Todos
 
-(None yet)
+(None)
 
 ### Blockers/Concerns
 
@@ -60,6 +75,6 @@ Progress: [████░░░░░░] ~15%
 
 ## Session Continuity
 
-Last session: 2026-02-26 20:30 UTC
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-02-26 21:21 UTC
+Stopped at: Completed 01-05-PLAN.md -- Phase 1 complete
 Resume file: None
