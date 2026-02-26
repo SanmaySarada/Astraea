@@ -12,7 +12,9 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from astraea.models.classification import ClassificationResult
 from astraea.models.controlled_terms import Codelist
+from astraea.models.ecrf import ECRFExtractionResult, ECRFForm
 from astraea.models.profiling import DatasetProfile
 from astraea.models.sdtm import CoreDesignation, DomainSpec, VariableSpec
 
@@ -222,7 +224,7 @@ def display_codelist(codelist: Codelist, console: Console) -> None:
     table.add_column("NCI Preferred Term")
     table.add_column("Definition", max_width=50)
 
-    for sv, term in sorted(codelist.terms.items()):
+    for _sv, term in sorted(codelist.terms.items()):
         table.add_row(
             term.submission_value,
             term.nci_preferred_term,
@@ -230,6 +232,144 @@ def display_codelist(codelist: Codelist, console: Console) -> None:
         )
 
     console.print(table)
+
+
+def display_ecrf_summary(
+    result: ECRFExtractionResult, console: Console
+) -> None:
+    """Print a summary table of eCRF extraction results.
+
+    Columns: Form Name, Fields, Page Range.
+
+    Args:
+        result: ECRFExtractionResult from eCRF parsing.
+        console: Rich Console for output.
+    """
+    table = Table(title="eCRF Extraction Summary", show_lines=True)
+    table.add_column("Form Name", style="bold cyan", no_wrap=True)
+    table.add_column("Fields", justify="right", style="green")
+    table.add_column("Page Range", style="dim")
+
+    for form in sorted(result.forms, key=lambda f: f.form_name):
+        field_count = str(len(form.fields))
+        if form.page_numbers:
+            pages = sorted(form.page_numbers)
+            page_range = str(pages[0]) if len(pages) == 1 else f"{pages[0]}-{pages[-1]}"
+        else:
+            page_range = ""
+
+        table.add_row(form.form_name, field_count, page_range)
+
+    console.print(table)
+    console.print(
+        f"\n[bold]Total:[/bold] {len(result.forms)} forms, "
+        f"{result.total_fields} fields"
+    )
+
+
+def display_ecrf_form_detail(form: ECRFForm, console: Console) -> None:
+    """Print field-level detail for a single eCRF form.
+
+    Shows: #, Field Name, Type, SAS Label, Coded Values.
+
+    Args:
+        form: ECRFForm to display.
+        console: Rich Console for output.
+    """
+    table = Table(
+        title=f"{form.form_name} ({len(form.fields)} fields)", show_lines=True
+    )
+    table.add_column("#", justify="right", style="dim", width=4)
+    table.add_column("Field Name", style="bold cyan", no_wrap=True)
+    table.add_column("Type", no_wrap=True)
+    table.add_column("SAS Label", max_width=40)
+    table.add_column("Coded Values", max_width=35)
+
+    for field in form.fields:
+        coded_str = ""
+        if field.coded_values:
+            parts = [f"{k}={v}" for k, v in field.coded_values.items()]
+            coded_str = ", ".join(parts)
+            if len(coded_str) > 35:
+                coded_str = coded_str[:32] + "..."
+
+        table.add_row(
+            str(field.field_number),
+            field.field_name,
+            field.data_type,
+            field.sas_label,
+            coded_str,
+        )
+
+    console.print(table)
+
+
+def display_classification(
+    result: ClassificationResult, console: Console
+) -> None:
+    """Print domain classification results.
+
+    Shows: Dataset, Domain, Confidence, Reasoning. Confidence is color-coded:
+    >=0.8 green, 0.5-0.8 yellow, <0.5 red. UNCLASSIFIED datasets in bold red.
+
+    After the main table, shows merge groups if any DomainPlans have >1
+    source dataset.
+
+    Args:
+        result: ClassificationResult from domain classification.
+        console: Rich Console for output.
+    """
+    table = Table(title="Domain Classification", show_lines=True)
+    table.add_column("Dataset", style="bold cyan", no_wrap=True)
+    table.add_column("Domain", no_wrap=True)
+    table.add_column("Confidence", justify="right")
+    table.add_column("Reasoning", max_width=50)
+
+    for cls in sorted(result.classifications, key=lambda c: c.raw_dataset):
+        dataset_name = cls.raw_dataset.replace(".sas7bdat", "")
+
+        if cls.primary_domain == "UNCLASSIFIED":
+            domain_text = Text("UNCLASSIFIED", style="bold red")
+        else:
+            domain_text = Text(cls.primary_domain)
+
+        conf_val = cls.confidence
+        conf_str = f"{conf_val:.2f}"
+        if conf_val >= 0.8:
+            conf_text = Text(conf_str, style="green")
+        elif conf_val >= 0.5:
+            conf_text = Text(conf_str, style="yellow")
+        else:
+            conf_text = Text(conf_str, style="red")
+
+        reasoning = cls.reasoning
+        if len(reasoning) > 50:
+            reasoning = reasoning[:47] + "..."
+
+        table.add_row(dataset_name, domain_text, conf_text, reasoning)
+
+    console.print(table)
+
+    classified_count = len(result.classifications) - len(result.unclassified_datasets)
+    console.print(
+        f"\n[bold]{classified_count}[/bold] classified, "
+        f"[bold]{len(result.unclassified_datasets)}[/bold] unclassified"
+    )
+
+    # Show merge groups
+    merge_plans = [p for p in result.domain_plans if len(p.source_datasets) > 1]
+    if merge_plans:
+        lines: list[str] = []
+        for plan in sorted(merge_plans, key=lambda p: p.domain):
+            datasets = ", ".join(
+                d.replace(".sas7bdat", "") for d in plan.source_datasets
+            )
+            lines.append(
+                f"[bold]{plan.domain}[/bold] ({plan.mapping_pattern}): {datasets}"
+            )
+        console.print(
+            Panel("\n".join(lines), title="Merge Groups", border_style="blue")
+        )
 
 
 def _format_core(core: CoreDesignation) -> Text:

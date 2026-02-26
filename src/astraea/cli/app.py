@@ -1,21 +1,23 @@
 """Astraea CLI application entry point.
 
 Provides commands for profiling SAS datasets, querying SDTM-IG domain
-specifications, and looking up CDISC controlled terminology.
+specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
+and classifying raw datasets to SDTM domains.
 
 Usage:
     astraea profile <data-folder>
     astraea reference <domain>
     astraea codelist <code>
+    astraea parse-ecrf <ecrf-path>
+    astraea classify <data-dir>
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
-from loguru import logger
 from rich.console import Console
 
 app = typer.Typer(
@@ -42,7 +44,7 @@ def profile(
         typer.Argument(help="Directory containing .sas7bdat files"),
     ],
     output: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--output", "-o", help="Write profiles as JSON to this file"),
     ] = None,
     detail: Annotated[
@@ -82,7 +84,7 @@ def profile(
     from astraea.models.profiling import DatasetProfile
 
     profiles: list[DatasetProfile] = []
-    for name, (df, meta) in sorted(datasets.items()):
+    for _name, (df, meta) in sorted(datasets.items()):
         p = profile_dataset(df, meta)
         profiles.append(p)
 
@@ -112,7 +114,7 @@ def reference(
         typer.Argument(help="SDTM domain code (e.g., DM, AE, LB)"),
     ],
     variable: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--variable", "-v", help="Show detail for a specific variable"),
     ] = None,
 ) -> None:
@@ -153,11 +155,11 @@ def reference(
 @app.command()
 def codelist(
     code: Annotated[
-        Optional[str],
+        str | None,
         typer.Argument(help="Codelist code (e.g., C66731) or omit to list all"),
     ] = None,
     variable: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--variable", "-v", help="Look up codelist by SDTM variable name"),
     ] = None,
 ) -> None:
@@ -211,3 +213,266 @@ def codelist(
             table_widget.add_row(cl.code, cl.name, ext, str(len(cl.terms)))
 
     console.print(table_widget)
+
+
+def _check_api_key() -> bool:
+    """Check if ANTHROPIC_API_KEY is set. Print error and return False if not."""
+    import os
+
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        console.print(
+            "[bold red]Error:[/bold red] ANTHROPIC_API_KEY environment variable is not set.\n"
+            "Set it with: [bold]export ANTHROPIC_API_KEY=sk-...[/bold]"
+        )
+        return False
+    return True
+
+
+@app.command(name="parse-ecrf")
+def parse_ecrf_cmd(
+    ecrf_path: Annotated[
+        Path,
+        typer.Argument(help="Path to eCRF PDF file"),
+    ],
+    output: Annotated[
+        Path | None,
+        typer.Option("--output", "-o", help="Save extraction result as JSON"),
+    ] = None,
+    detail: Annotated[
+        bool,
+        typer.Option("--detail", "-d", help="Show field-level detail for each form"),
+    ] = False,
+    cache_dir: Annotated[
+        Path | None,
+        typer.Option("--cache-dir", help="Directory for caching extraction results"),
+    ] = None,
+) -> None:
+    """Parse an eCRF PDF and extract structured form metadata.
+
+    Extracts form definitions, field names, data types, SAS labels, and coded
+    values from an annotated eCRF PDF using LLM-based structured extraction.
+
+    Requires ANTHROPIC_API_KEY to be set.
+    """
+    from astraea.cli.display import display_ecrf_form_detail, display_ecrf_summary
+    from astraea.parsing.ecrf_parser import (
+        load_extraction,
+        parse_ecrf,
+        save_extraction,
+    )
+
+    # Validate path
+    if not ecrf_path.exists():
+        console.print(f"[bold red]Error:[/bold red] File not found: {ecrf_path}")
+        raise typer.Exit(code=1)
+    if ecrf_path.suffix.lower() != ".pdf":
+        console.print(f"[bold red]Error:[/bold red] Expected a PDF file, got: {ecrf_path.suffix}")
+        raise typer.Exit(code=1)
+
+    # Check for cached result
+    if cache_dir is not None:
+        cache_file = cache_dir / f"{ecrf_path.stem}_extraction.json"
+        if cache_file.exists():
+            console.print(f"[bold blue]Loading cached extraction from {cache_file}[/bold blue]")
+            try:
+                result = load_extraction(cache_file)
+                console.print()
+                display_ecrf_summary(result, console)
+                if detail:
+                    for form in sorted(result.forms, key=lambda f: f.form_name):
+                        console.print()
+                        display_ecrf_form_detail(form, console)
+                if output is not None:
+                    output.write_text(result.model_dump_json(indent=2))
+                    console.print(f"\n[green]Extraction saved to {output}[/green]")
+                return
+            except Exception as e:
+                console.print(f"[yellow]Warning: Could not load cache: {e}[/yellow]")
+
+    # API key required for fresh extraction
+    if not _check_api_key():
+        raise typer.Exit(code=1)
+
+    # Step 1: Extract PDF
+    console.print("\n[bold blue][1/2][/bold blue] Extracting PDF...")
+    from astraea.parsing.pdf_extractor import extract_ecrf_pages, group_pages_by_form
+
+    try:
+        pages = extract_ecrf_pages(ecrf_path)
+        form_groups = group_pages_by_form(pages)
+        n_forms = len({k for k in form_groups if k not in {"HEADER", "UNKNOWN"}})
+    except Exception as e:
+        console.print(f"[bold red]Error extracting PDF:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Step 2: Parse forms
+    console.print(f"[bold blue][2/2][/bold blue] Parsing {n_forms} forms...")
+    try:
+        result = parse_ecrf(ecrf_path)
+    except Exception as e:
+        console.print(f"[bold red]Error parsing eCRF:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Display results
+    console.print()
+    display_ecrf_summary(result, console)
+
+    if detail:
+        for form in sorted(result.forms, key=lambda f: f.form_name):
+            console.print()
+            display_ecrf_form_detail(form, console)
+
+    # Save output
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(result.model_dump_json(indent=2))
+        console.print(f"\n[green]Extraction saved to {output}[/green]")
+
+    # Cache result
+    if cache_dir is not None:
+        cache_file = cache_dir / f"{ecrf_path.stem}_extraction.json"
+        save_extraction(result, cache_file)
+        console.print(f"[dim]Cached to {cache_file}[/dim]")
+
+
+@app.command()
+def classify(
+    data_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing .sas7bdat files"),
+    ],
+    ecrf: Annotated[
+        Path | None,
+        typer.Option("--ecrf", help="Path to eCRF PDF for enhanced classification"),
+    ] = None,
+    output: Annotated[
+        Path | None,
+        typer.Option("--output", "-o", help="Save classification result as JSON"),
+    ] = None,
+    cache_dir: Annotated[
+        Path | None,
+        typer.Option("--cache-dir", help="Directory for caching results"),
+    ] = None,
+) -> None:
+    """Classify raw SAS datasets to SDTM domains.
+
+    Profiles all .sas7bdat files and classifies each to an SDTM domain using
+    heuristic analysis and LLM-based semantic matching.
+
+    If --ecrf is provided, parses the eCRF PDF (or loads cached result) and
+    uses form-dataset matching for better classification context.
+
+    Requires ANTHROPIC_API_KEY to be set.
+    """
+    from astraea.classification.classifier import (
+        classify_all,
+        load_classification,
+        save_classification,
+    )
+    from astraea.cli.display import display_classification
+    from astraea.io.sas_reader import read_all_sas_files
+    from astraea.models.profiling import DatasetProfile
+    from astraea.parsing.ecrf_parser import load_extraction, parse_ecrf
+    from astraea.parsing.form_dataset_matcher import match_all_forms
+    from astraea.profiling.profiler import profile_dataset
+
+    # Validate directory
+    if not data_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {data_dir}")
+        raise typer.Exit(code=1)
+
+    sas_files = list(data_dir.glob("*.sas7bdat"))
+    if not sas_files:
+        console.print(f"[bold red]Error:[/bold red] No .sas7bdat files found in {data_dir}")
+        raise typer.Exit(code=1)
+
+    # Check for cached classification result
+    if cache_dir is not None:
+        cache_file = cache_dir / "classification.json"
+        if cache_file.exists():
+            console.print(f"[bold blue]Loading cached classification from {cache_file}[/bold blue]")
+            try:
+                result = load_classification(cache_file)
+                console.print()
+                display_classification(result, console)
+                if output is not None:
+                    output.write_text(result.model_dump_json(indent=2))
+                    console.print(f"\n[green]Classification saved to {output}[/green]")
+                return
+            except Exception as e:
+                console.print(f"[yellow]Warning: Could not load cache: {e}[/yellow]")
+
+    # API key required for fresh classification
+    if not _check_api_key():
+        raise typer.Exit(code=1)
+
+    # Step 1: Profile datasets
+    console.print(f"\n[bold blue][1/3][/bold blue] Profiling {len(sas_files)} datasets...")
+    try:
+        datasets = read_all_sas_files(data_dir)
+    except Exception as e:
+        console.print(f"[bold red]Error reading SAS files:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    profiles: list[DatasetProfile] = []
+    for _name, (df, meta) in sorted(datasets.items()):
+        p = profile_dataset(df, meta)
+        profiles.append(p)
+
+    # Handle eCRF context
+    ecrf_result = None
+    form_matches = None
+    if ecrf is not None:
+        if not ecrf.exists():
+            console.print(f"[bold red]Error:[/bold red] eCRF file not found: {ecrf}")
+            raise typer.Exit(code=1)
+
+        # Try loading cached eCRF extraction
+        if cache_dir is not None:
+            ecrf_cache = cache_dir / f"{ecrf.stem}_extraction.json"
+            if ecrf_cache.exists():
+                console.print("[dim]Loading cached eCRF extraction...[/dim]")
+                try:
+                    ecrf_result = load_extraction(ecrf_cache)
+                except Exception:
+                    ecrf_result = None
+
+        if ecrf_result is None:
+            console.print("[bold blue]Parsing eCRF PDF...[/bold blue]")
+            try:
+                ecrf_result = parse_ecrf(ecrf)
+            except Exception as e:
+                console.print(f"[yellow]Warning: eCRF parsing failed: {e}[/yellow]")
+                console.print("[dim]Continuing without eCRF context...[/dim]")
+
+        if ecrf_result is not None:
+            form_matches = match_all_forms(ecrf_result.forms, profiles)
+
+    # Step 2: Classify
+    console.print(f"[bold blue][2/3][/bold blue] Classifying {len(profiles)} datasets...")
+    try:
+        result = classify_all(
+            profiles=profiles,
+            ecrf_result=ecrf_result,
+            form_matches=form_matches,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Error during classification:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Step 3: Display
+    console.print("[bold blue][3/3][/bold blue] Detecting merge groups...")
+    console.print()
+    display_classification(result, console)
+
+    # Save output
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(result.model_dump_json(indent=2))
+        console.print(f"\n[green]Classification saved to {output}[/green]")
+
+    # Cache result
+    if cache_dir is not None:
+        cache_file = cache_dir / "classification.json"
+        save_classification(result, cache_file)
+        console.print(f"[dim]Cached to {cache_file}[/dim]")
