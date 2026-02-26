@@ -11,6 +11,12 @@ from astraea.transforms.dates import (
     sas_date_to_iso,
     sas_datetime_to_iso,
 )
+from astraea.transforms.usubjid import (
+    extract_usubjid_components,
+    generate_usubjid,
+    generate_usubjid_column,
+    validate_usubjid_consistency,
+)
 
 __all__ = [
     # dates
@@ -19,4 +25,9 @@ __all__ = [
     "parse_string_date_to_iso",
     "format_partial_iso8601",
     "detect_date_format",
+    # usubjid
+    "generate_usubjid",
+    "extract_usubjid_components",
+    "generate_usubjid_column",
+    "validate_usubjid_consistency",
 ]
