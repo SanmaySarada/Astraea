@@ -58,7 +58,7 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
-**Combined test suite: 389 tests passing**
+**Combined test suite: 440 tests passing**
 
 ## Accumulated Context
 
@@ -102,6 +102,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0208-02] pre_extracted_pages parameter avoids redundant PDF extraction in CLI
 - 2026-02-27: [D-0207-01] Heuristic override threshold set at 0.95 (not 0.9) to avoid false overrides
 - 2026-02-27: [D-0207-02] Override replaces LLM domain and uses heuristic score as confidence
+- 2026-02-27: [D-02.1-01-01] Race codelist uses C74457 (not C66767 which is Action Taken)
+- 2026-02-27: [D-02.1-01-02] Country codelist uses ISO3166 key (not a retired NCI C-code)
+- 2026-02-27: [D-02.1-01-03] Age Unit (C66781) variable_mappings narrowed to AGEU only; general Unit is C71620
 - 2026-02-27: [D-02102-01] Plan 02.1-02 expected value for sas_date_to_iso(22738.9999) corrected from "2022-03-30" to "2022-04-04"
 - 2026-02-27: [D-02.1-03-01] ValueError raised for NaN/None/empty USUBJID components (fail-fast over silent corruption)
 - 2026-02-27: [D-02.1-03-02] pd.NA used for invalid USUBJID column rows (preserves pandas NA semantics)
