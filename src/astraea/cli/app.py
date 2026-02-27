@@ -10,6 +10,7 @@ Usage:
     astraea codelist <code>
     astraea parse-ecrf <ecrf-path>
     astraea classify <data-dir>
+    astraea map-domain <data-folder> <ecrf-pdf> <domain>
 """
 
 from __future__ import annotations
@@ -213,6 +214,242 @@ def codelist(
             table_widget.add_row(cl.code, cl.name, ext, str(len(cl.terms)))
 
     console.print(table_widget)
+
+
+# Cross-domain dataset lookup for mapping
+_CROSS_DOMAIN_DATASETS: dict[str, list[str]] = {
+    "DM": ["ex", "ie", "irt", "ds"],
+}
+
+
+@app.command(name="map-domain")
+def map_domain(
+    data_folder: Annotated[
+        Path,
+        typer.Argument(help="Folder containing raw SAS files"),
+    ],
+    ecrf_pdf: Annotated[
+        Path,
+        typer.Argument(help="Path to annotated eCRF PDF"),
+    ],
+    domain: Annotated[
+        str,
+        typer.Argument(help="SDTM domain to map (e.g., 'DM')"),
+    ],
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = "PHA022121-C301",
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Output directory for mapping spec"),
+    ] = Path("output"),
+    source_file: Annotated[
+        str | None,
+        typer.Option(
+            "--source-file",
+            help=(
+                "Override primary SAS file name (e.g., 'dm.sas7bdat'). "
+                "Default: auto-detect by domain name."
+            ),
+        ),
+    ] = None,
+    cache_dir: Annotated[
+        Path | None,
+        typer.Option("--cache-dir", help="Directory for caching eCRF extraction"),
+    ] = None,
+) -> None:
+    """Map a raw SAS dataset to an SDTM domain.
+
+    Profiles the primary SAS file, parses the eCRF, calls the LLM-based
+    mapping engine, and exports results to JSON and Excel.
+
+    The primary SAS file is auto-detected from the domain name (e.g., DM
+    looks for dm.sas7bdat). Use --source-file to override.
+
+    Requires ANTHROPIC_API_KEY to be set.
+    """
+    from astraea.cli.display import display_mapping_spec
+    from astraea.io.sas_reader import read_sas_with_metadata
+    from astraea.llm.client import AstraeaLLMClient
+    from astraea.mapping.engine import MappingEngine
+    from astraea.mapping.exporters import export_to_excel, export_to_json
+    from astraea.models.mapping import StudyMetadata
+    from astraea.models.profiling import DatasetProfile
+    from astraea.parsing.ecrf_parser import load_extraction, parse_ecrf
+    from astraea.parsing.form_dataset_matcher import match_all_forms
+    from astraea.profiling.profiler import profile_dataset
+    from astraea.reference import load_ct_reference, load_sdtm_reference
+
+    # Validate inputs
+    if not data_folder.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {data_folder}")
+        raise typer.Exit(code=1)
+    if not ecrf_pdf.exists():
+        console.print(f"[bold red]Error:[/bold red] eCRF file not found: {ecrf_pdf}")
+        raise typer.Exit(code=1)
+
+    # API key required
+    if not _check_api_key():
+        raise typer.Exit(code=1)
+
+    domain_upper = domain.upper()
+
+    # Step 1: Identify primary SAS file
+    primary_sas = _find_primary_sas(data_folder, domain_upper, source_file)
+    if primary_sas is None:
+        raise typer.Exit(code=1)
+
+    console.print(
+        f"\n[bold blue][1/5][/bold blue] Profiling primary dataset: "
+        f"[cyan]{primary_sas.name}[/cyan]"
+    )
+    try:
+        df, meta = read_sas_with_metadata(primary_sas)
+        primary_profile = profile_dataset(df, meta)
+    except Exception as e:
+        console.print(f"[bold red]Error profiling {primary_sas.name}:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Step 2: Profile cross-domain datasets
+    cross_domain_profiles: dict[str, DatasetProfile] = {}
+    cross_domain_names = _CROSS_DOMAIN_DATASETS.get(domain_upper, [])
+    if cross_domain_names:
+        console.print(
+            f"[bold blue][2/5][/bold blue] Profiling cross-domain sources: "
+            f"{', '.join(cross_domain_names)}"
+        )
+        for cd_name in cross_domain_names:
+            cd_path = data_folder / f"{cd_name.lower()}.sas7bdat"
+            if cd_path.exists():
+                try:
+                    cd_df, cd_meta = read_sas_with_metadata(cd_path)
+                    cross_domain_profiles[cd_name] = profile_dataset(cd_df, cd_meta)
+                except Exception as e:
+                    console.print(
+                        f"[yellow]Warning: Could not profile {cd_name}: {e}[/yellow]"
+                    )
+    else:
+        console.print("[bold blue][2/5][/bold blue] No cross-domain sources for this domain")
+
+    # Step 3: Parse eCRF
+    console.print("[bold blue][3/5][/bold blue] Parsing eCRF...")
+    ecrf_result = None
+    form_matches = None
+
+    # Try cache first
+    if cache_dir is not None:
+        ecrf_cache = cache_dir / f"{ecrf_pdf.stem}_extraction.json"
+        if ecrf_cache.exists():
+            console.print(f"[dim]Loading cached eCRF extraction from {ecrf_cache}[/dim]")
+            try:
+                ecrf_result = load_extraction(ecrf_cache)
+            except Exception:
+                ecrf_result = None
+
+    if ecrf_result is None:
+        try:
+            ecrf_result = parse_ecrf(ecrf_pdf)
+        except Exception as e:
+            console.print(f"[yellow]Warning: eCRF parsing failed: {e}[/yellow]")
+            console.print("[dim]Continuing without eCRF context...[/dim]")
+
+    # Match forms to the primary profile
+    ecrf_forms = []
+    if ecrf_result is not None:
+        form_matches = match_all_forms(ecrf_result.forms, [primary_profile])
+        # Find forms that match this domain's primary dataset
+        for form_name, matches in form_matches.items():
+            for match_file, _score in matches:
+                if match_file == primary_profile.filename:
+                    # Find the form object
+                    for form in ecrf_result.forms:
+                        if form.form_name == form_name:
+                            ecrf_forms.append(form)
+                            break
+
+    # Step 4: Run mapping engine
+    console.print(
+        f"[bold blue][4/5][/bold blue] Mapping domain [bold]{domain_upper}[/bold]..."
+    )
+    try:
+        sdtm_ref = load_sdtm_reference()
+        ct_ref = load_ct_reference()
+        llm_client = AstraeaLLMClient()
+        engine = MappingEngine(llm_client, sdtm_ref, ct_ref)
+
+        study_meta = StudyMetadata(study_id=study_id)
+        spec = engine.map_domain(
+            domain=domain_upper,
+            source_profiles=[primary_profile],
+            ecrf_forms=ecrf_forms,
+            study_metadata=study_meta,
+            cross_domain_profiles=cross_domain_profiles if cross_domain_profiles else None,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Error during mapping:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Step 5: Export and display
+    console.print("[bold blue][5/5][/bold blue] Exporting results...")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    json_path = export_to_json(spec, output_dir / f"{domain_upper}_mapping.json")
+    excel_path = export_to_excel(spec, output_dir / f"{domain_upper}_mapping.xlsx")
+
+    console.print()
+    display_mapping_spec(spec, console)
+
+    console.print(f"\n[green]JSON saved to:[/green]  {json_path}")
+    console.print(f"[green]Excel saved to:[/green] {excel_path}")
+
+
+def _find_primary_sas(
+    data_folder: Path, domain: str, source_file_override: str | None
+) -> Path | None:
+    """Find the primary SAS file for a domain.
+
+    Strategy:
+    1. If source_file_override is given, use it directly.
+    2. Look for exact match: {domain.lower()}.sas7bdat
+    3. Look for prefix match: {domain.lower()}_*.sas7bdat
+    4. If none found, list available files and show error.
+
+    Returns:
+        Path to the SAS file, or None if not found (error printed).
+    """
+    if source_file_override is not None:
+        path = data_folder / source_file_override
+        if not path.exists():
+            console.print(
+                f"[bold red]Error:[/bold red] Specified source file not found: {path}"
+            )
+            return None
+        return path
+
+    # Exact match
+    exact = data_folder / f"{domain.lower()}.sas7bdat"
+    if exact.exists():
+        return exact
+
+    # Prefix match
+    prefix_matches = sorted(data_folder.glob(f"{domain.lower()}_*.sas7bdat"))
+    if prefix_matches:
+        console.print(
+            f"[dim]No exact match for {domain.lower()}.sas7bdat, "
+            f"using {prefix_matches[0].name}[/dim]"
+        )
+        return prefix_matches[0]
+
+    # Not found
+    available = sorted(f.name for f in data_folder.glob("*.sas7bdat"))
+    console.print(
+        f"[bold red]Error:[/bold red] Could not identify primary SAS file for "
+        f"domain {domain}.\n"
+        f"Available files: {', '.join(available[:15])}\n"
+        f"Use [bold]--source-file[/bold] to specify."
+    )
+    return None
 
 
 def _check_api_key() -> bool:

@@ -15,6 +15,7 @@ from rich.text import Text
 from astraea.models.classification import ClassificationResult
 from astraea.models.controlled_terms import Codelist
 from astraea.models.ecrf import ECRFExtractionResult, ECRFForm
+from astraea.models.mapping import ConfidenceLevel, DomainMappingSpec
 from astraea.models.profiling import DatasetProfile
 from astraea.models.sdtm import CoreDesignation, DomainSpec, VariableSpec
 
@@ -369,6 +370,99 @@ def display_classification(
             )
         console.print(
             Panel("\n".join(lines), title="Merge Groups", border_style="blue")
+        )
+
+
+def display_mapping_spec(spec: DomainMappingSpec, console: Console) -> None:
+    """Print mapping specification results with Rich formatting.
+
+    Shows a header panel with domain metadata, a variable mapping table
+    with color-coded confidence, summary counts, unmapped/SUPPQUAL
+    candidates, and output file paths.
+
+    Args:
+        spec: DomainMappingSpec to display.
+        console: Rich Console for output.
+    """
+    # Header panel
+    info_lines = [
+        f"[bold]Domain:[/bold] {spec.domain} -- {spec.domain_label}",
+        f"[bold]Study ID:[/bold] {spec.study_id}",
+        f"[bold]Timestamp:[/bold] {spec.mapping_timestamp}",
+        f"[bold]Model:[/bold] {spec.model_used}",
+        f"[bold]Source:[/bold] {', '.join(spec.source_datasets)}",
+    ]
+    if spec.cross_domain_sources:
+        info_lines.append(
+            f"[bold]Cross-Domain:[/bold] {', '.join(spec.cross_domain_sources)}"
+        )
+    console.print(Panel("\n".join(info_lines), title=f"Mapping Spec: {spec.domain}"))
+
+    # Variable mapping table
+    table = Table(title=f"{spec.domain} Variable Mappings", show_lines=True)
+    table.add_column("#", justify="right", style="dim", width=4)
+    table.add_column("Variable", style="bold cyan", no_wrap=True)
+    table.add_column("Label", max_width=30)
+    table.add_column("Core", no_wrap=True)
+    table.add_column("Source", no_wrap=True)
+    table.add_column("Pattern", no_wrap=True)
+    table.add_column("Confidence", justify="right")
+    table.add_column("Logic", max_width=40)
+
+    for idx, m in enumerate(spec.variable_mappings, start=1):
+        core_text = _format_core(m.core)
+
+        source_str = m.source_variable or ""
+        if m.mapping_pattern.value == "assign" and m.assigned_value:
+            source_str = f'="{m.assigned_value}"'
+
+        conf_str = f"{m.confidence:.2f}"
+        if m.confidence_level == ConfidenceLevel.HIGH:
+            conf_text = Text(conf_str, style="green")
+        elif m.confidence_level == ConfidenceLevel.MEDIUM:
+            conf_text = Text(conf_str, style="yellow")
+        else:
+            conf_text = Text(conf_str, style="red")
+
+        logic = m.mapping_logic
+        if len(logic) > 40:
+            logic = logic[:37] + "..."
+
+        table.add_row(
+            str(idx),
+            m.sdtm_variable,
+            m.sdtm_label[:30] if m.sdtm_label else "",
+            core_text,
+            source_str,
+            m.mapping_pattern.value,
+            conf_text,
+            logic,
+        )
+
+    console.print(table)
+
+    # Summary footer
+    console.print(
+        f"\n[bold]Total:[/bold] {spec.total_variables} variables mapped  "
+        f"[green]HIGH: {spec.high_confidence_count}[/green]  "
+        f"[yellow]MEDIUM: {spec.medium_confidence_count}[/yellow]  "
+        f"[red]LOW: {spec.low_confidence_count}[/red]"
+    )
+    console.print(
+        f"[bold]Required mapped:[/bold] {spec.required_mapped}  "
+        f"[bold]Expected mapped:[/bold] {spec.expected_mapped}"
+    )
+
+    # Unmapped / SUPPQUAL candidates
+    if spec.unmapped_source_variables:
+        console.print(
+            f"\n[dim]Unmapped source variables:[/dim] "
+            f"{', '.join(spec.unmapped_source_variables)}"
+        )
+    if spec.suppqual_candidates:
+        console.print(
+            f"[dim]SUPPQUAL candidates:[/dim] "
+            f"{', '.join(spec.suppqual_candidates)}"
         )
 
 
