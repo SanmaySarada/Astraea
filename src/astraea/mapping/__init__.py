@@ -1,5 +1,10 @@
-"""Mapping engine for SDTM domain variable mapping.
+"""SDTM domain mapping engine.
 
-This package contains the context assembly, LLM agent, and enrichment
-components that map raw clinical data variables to SDTM targets.
+Orchestrates LLM-based variable mapping proposals, validates against
+SDTM-IG and CT reference data, and produces enriched mapping specifications.
 """
+
+from astraea.mapping.context import MappingContextBuilder
+from astraea.mapping.engine import MappingEngine
+
+__all__ = ["MappingContextBuilder", "MappingEngine"]
