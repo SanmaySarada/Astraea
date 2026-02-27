@@ -10,17 +10,17 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 3 of 8 (Core Mapping Engine)
-Plan: 2 of 5
+Plan: 3 of 5
 Status: In progress
-Last activity: 2026-02-27 -- Completed 03-02-PLAN.md (mapping context assembly)
+Last activity: 2026-02-27 -- Completed 03-03-PLAN.md (core mapping engine)
 
-Progress: [███████████████████████░░░░░░░░░░░░░░░░░] ~44%
+Progress: [████████████████████████░░░░░░░░░░░░░░░░] ~47%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
-- Average duration: ~3.1 minutes
+- Total plans completed: 20
+- Average duration: ~3.3 minutes
 
 **By Phase:**
 
@@ -29,7 +29,7 @@ Progress: [███████████████████████
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
-| 03-core-mapping-engine | 2/5 | ~6 min | ~3.0 min |
+| 03-core-mapping-engine | 3/5 | ~12 min | ~4.0 min |
 
 ## Phase 1 Deliverables
 
@@ -79,13 +79,12 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 |-----------|--------|-------|--------|
 | Mapping specification models | src/astraea/models/mapping.py | 30 | Done |
 | Mapping context assembly | src/astraea/mapping/context.py | 13 | Done |
-| DM mapping agent | -- | -- | Pending |
-| Mapping enrichment engine | -- | -- | Pending |
+| System prompt + validation + engine | src/astraea/mapping/prompts.py, validation.py, engine.py | 19 | Done |
 | CLI mapping display | -- | -- | Pending |
 | Integration test | -- | -- | Pending |
-| **Total** | | **43 tests** | **In progress** |
+| **Total** | | **62 tests** | **In progress** |
 
-**Combined test suite: 533 tests passing**
+**Combined test suite: 552 tests passing**
 
 ## Accumulated Context
 
@@ -145,6 +144,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0302-01] build_prompt uses keyword-only arguments for all domain-specific parameters
 - 2026-02-27: [D-0302-02] EDC columns filtered by is_edc_column flag at context assembly time (LLM never sees them)
 - 2026-02-27: [D-0302-03] Large codelists (>20 terms) show first 20 with total count to keep context focused
+- 2026-02-27: [D-0303-01] System prompt includes TRANSPOSE pattern for forward-compatibility with Phase 6
+- 2026-02-27: [D-0303-02] Confidence adjustments: +0.05 CT pass on lookup_recode, cap 0.4 CT failure, cap 0.3 unknown vars
+- 2026-02-27: [D-0303-03] MappingEngine uses keyword-only args for build_prompt to match context builder API
 
 ### Pending Todos
 
@@ -167,5 +169,5 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03-02-PLAN.md (mapping context assembly)
+Stopped at: Completed 03-03-PLAN.md (core mapping engine)
 Resume file: None
