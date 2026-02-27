@@ -12,9 +12,9 @@ from astraea.mapping.transform_registry import (
 
 
 class TestListTransforms:
-    def test_returns_15_transforms(self):
+    def test_returns_16_transforms(self):
         result = list_transforms()
-        assert len(result) == 15
+        assert len(result) == 16
 
     def test_returns_sorted_list(self):
         result = list_transforms()
@@ -38,6 +38,7 @@ class TestListTransforms:
             "validate_ascii",
             "fix_common_non_ascii",
             "optimize_char_lengths",
+            "numeric_to_yn",
         }
         assert set(result) == expected
 
