@@ -14,6 +14,7 @@ from loguru import logger
 from astraea.llm.client import AstraeaLLMClient
 from astraea.mapping.context import MappingContextBuilder
 from astraea.mapping.prompts import MAPPING_SYSTEM_PROMPT, MAPPING_USER_INSTRUCTIONS
+from astraea.mapping.transform_registry import AVAILABLE_TRANSFORMS, get_transform
 from astraea.mapping.validation import check_required_coverage, validate_and_enrich
 from astraea.models.ecrf import ECRFForm
 from astraea.models.mapping import (
@@ -71,6 +72,21 @@ class MappingEngine:
         self._sdtm = sdtm_ref
         self._ct = ct_ref
         self._context_builder = MappingContextBuilder(sdtm_ref, ct_ref)
+        self._transforms = AVAILABLE_TRANSFORMS
+
+    def resolve_transform(self, name: str) -> bool:
+        """Check if a named transform is available in the registry.
+
+        Used to validate that derivation_rule references in mapping specs
+        point to actual transform functions.
+
+        Args:
+            name: Transform function name (e.g., "sas_date_to_iso").
+
+        Returns:
+            True if transform exists, False otherwise.
+        """
+        return get_transform(name) is not None
 
     def map_domain(
         self,
