@@ -23,7 +23,6 @@ from astraea.models.mapping import (
 from astraea.models.sdtm import CoreDesignation
 from astraea.reference import load_ct_reference, load_sdtm_reference
 
-
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
@@ -200,7 +199,7 @@ class TestXPTOutput:
         executor.execute_to_xpt(ae_spec, {"ae": raw_ae_df}, xpt_path)
 
         _, meta = pyreadstat.read_xport(str(xpt_path))
-        labels = dict(zip(meta.column_names, meta.column_labels))
+        labels = dict(zip(meta.column_names, meta.column_labels, strict=True))
         assert labels["STUDYID"] == "Study Identifier"
         assert labels["AETERM"] == "Reported Term for the Adverse Event"
 

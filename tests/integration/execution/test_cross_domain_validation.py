@@ -23,7 +23,6 @@ from astraea.models.mapping import (
 from astraea.models.sdtm import CoreDesignation
 from astraea.reference import load_ct_reference, load_sdtm_reference
 
-
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
