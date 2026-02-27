@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 4 COMPLETE -- Human Review Gate. Ready for Phase 5.
+**Current focus:** Phase 4.1 IN PROGRESS -- FDA Compliance Infrastructure.
 
 ## Current Position
 
-Phase: 4 of 8 (Human Review Gate)
-Plan: 3 of 3
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 04-03-PLAN.md (CLI commands for review workflow)
+Phase: 4.1 of 8 (FDA Compliance Infrastructure)
+Plan: 2 of 5
+Status: In progress
+Last activity: 2026-02-27 -- Completed 04.1-02-PLAN.md (Model extensions and missing CT codelists)
 
-Progress: [████████████████████████████████████░░░░] ~67%
+Progress: [████████████████████████████████████░░░░] ~69%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
+- Total plans completed: 32
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -211,6 +211,9 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 - 2026-02-27: [D-0402-03] Per-variable save_domain_review after every decision for crash recovery
 - 2026-02-27: [D-0403-01] Lazy imports inside command functions for review module (consistent with parse-ecrf, classify patterns)
 - 2026-02-27: [D-0403-02] _apply_corrections rebuilds spec from session decisions, filtering rejected and updating corrected mappings
+- 2026-02-27: [D-04.1-02-01] C66785 variable_mappings set to LAT (standard SDTM laterality variable)
+- 2026-02-27: [D-04.1-02-02] C66789 variable_mappings set to LBSPEC (primary Specimen Condition variable)
+- 2026-02-27: [D-04.1-02-03] VariableOrigin has 6 values including PREDECESSOR for define.xml 2.0 completeness
 
 ### Pending Todos
 
@@ -228,6 +231,16 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
   - Phase 4 BLOCKED until 3.1 completes -- review gate needs correct reference data, model fields, and wired transforms
   - Scope: All items from .planning/PHASE3_AUDIT.md sections 2-6 and 9
   - STATUS: **COMPLETE** -- all 5 plans executed, 686 tests passing
+- Phase 4.1 inserted after Phase 4: FDA Compliance Infrastructure (URGENT)
+  - Triggered by: Comprehensive gap analysis comparing codebase against FDA SDTM requirements in research/fda_sdtm_requirements/ identified 14 CRITICAL gaps in completed phases (1-4)
+  - Phase 5 BLOCKED until 4.1 completes -- every domain expansion needs --DY, --SEQ, sort order, execution pipeline, origin tracking
+  - Scope: 13 success criteria covering derivation utilities, execution pipeline, XPT enforcement, model extensions, missing codelists, cross-domain validation
+  - Key gaps: No dataset execution pipeline (specs only, no actual SDTM DataFrames), no --DY/--SEQ/EPOCH/VISITNUM utilities, no sort/variable order enforcement, no origin tracking, no date imputation flags, no ASCII validation, 4 missing CT codelists
+  - STATUS: In progress (plan 02 of 5 complete)
+- Phases 5, 6, 7 updated with additional FDA requirements:
+  - Phase 5: Updated dependency to Phase 4.1, added requirement for actual .xpt output (not just specs), variable origin metadata
+  - Phase 6: Added mandatory TS domain population (missing TS = FDA rejection), SUPPQUAL referential integrity requirements, unit consistency validation, normal range indicators, Findings-specific codelists
+  - Phase 7: Expanded define.xml requirements (ItemGroupDef, ItemDef, CodeList, MethodDef, CommentDef, ValueListDef, WhereClauseDef), added FDA TRC pre-check, FDA Business Rules (FDAB057/055/039/009/030), cSDRG generation, 5GB size validation, file naming conventions
 
 ### Blockers/Concerns
 
@@ -239,5 +252,5 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 04-03-PLAN.md (CLI commands for review workflow) -- Phase 4 COMPLETE
+Stopped at: Completed 04.1-02-PLAN.md (Model extensions and missing CT codelists)
 Resume file: None
