@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 04 of 05 complete).
+**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 01 of 05 complete).
 
 ## Current Position
 
 Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
-Plan: 4 of 5
+Plan: 1 of 5
 Status: In progress
-Last activity: 2026-02-27 -- Completed 03.1-04-PLAN.md (Model fields, engine wiring, validation fixes)
+Last activity: 2026-02-27 -- Completed 03.1-01-PLAN.md (Add missing CT codelists + C66742 fix)
 
 Progress: [████████████████████████████░░░░░░░░░░░░] ~55%
 
@@ -187,5 +187,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03.1-04-PLAN.md (Model fields, engine wiring, validation fixes)
+Stopped at: Completed 03.1-01-PLAN.md (Add missing CT codelists + C66742 fix)
 Resume file: None
