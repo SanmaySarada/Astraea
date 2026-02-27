@@ -155,6 +155,9 @@ CLI commands available: `astraea execute-domain`
 |-----------|--------|-------|--------|
 | numeric_to_yn transform | src/astraea/transforms/recoding.py | 17 | Done |
 | Preprocessing utilities | src/astraea/execution/preprocessing.py | 15 | Done |
+| LOOKUP_RECODE bug fix | src/astraea/execution/pattern_handlers.py | -- | Done |
+| AE integration test | tests/integration/execution/test_ae_execution.py | 14 | Done |
+| DS integration test (multi-source) | tests/integration/execution/test_ds_execution.py | 9 | Done |
 | MH integration test | tests/integration/execution/test_mh_execution.py | 7 | Done |
 | IE integration test | tests/integration/execution/test_ie_execution.py | 7 | Done |
 | CE integration test | tests/integration/execution/test_ce_execution.py | 7 | Done |
@@ -263,6 +266,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-05-01-01] numeric_to_yn returns None for unexpected values (conservative, don't guess)
 - 2026-02-27: [D-05-01-02] filter_rows uses case-insensitive string matching with .str.strip().str.upper()
 - 2026-02-27: [D-05-01-03] align_multi_source_columns always returns copies, never modifies originals
+- 2026-02-27: [D-05-02-01] AE test uses submission_value inputs for LOOKUP_RECODE (already CT-coded source)
+- 2026-02-27: [D-05-02-02] DS test performs column alignment in fixture setup, not in test body
+- 2026-02-27: [D-05-02-03] Fixed preferred_term -> nci_preferred_term in production LOOKUP_RECODE handler (not just test mock)
 - 2026-02-27: [D-05-03-01] CM test uses synthetic partial dates: 'un UNK 2020' -> '2020', 'un Jun 2019' -> '2019-06'
 - 2026-02-27: [D-05-03-02] EX test applies filter_rows before executor (pre-execution filtering pattern)
 - 2026-02-27: [D-05-03-03] Fixed pre-existing mock bug: preferred_term -> nci_preferred_term in test_pattern_handlers
