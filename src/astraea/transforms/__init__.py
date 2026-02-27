@@ -11,6 +11,10 @@ from astraea.transforms.dates import (
     sas_date_to_iso,
     sas_datetime_to_iso,
 )
+from astraea.transforms.imputation import (
+    get_date_imputation_flag,
+    get_time_imputation_flag,
+)
 from astraea.transforms.usubjid import (
     extract_usubjid_components,
     generate_usubjid,
@@ -25,6 +29,9 @@ __all__ = [
     "parse_string_date_to_iso",
     "format_partial_iso8601",
     "detect_date_format",
+    # imputation flags
+    "get_date_imputation_flag",
+    "get_time_imputation_flag",
     # usubjid
     "generate_usubjid",
     "extract_usubjid_components",

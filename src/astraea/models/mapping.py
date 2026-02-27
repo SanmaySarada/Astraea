@@ -42,6 +42,26 @@ class MappingPattern(StrEnum):
     TRANSPOSE = "transpose"
 
 
+class VariableOrigin(StrEnum):
+    """Variable origin type for define.xml 2.0 Origin element.
+
+    Describes the source of a variable's value:
+    - CRF: Collected on Case Report Form
+    - DERIVED: Calculated from other variables
+    - ASSIGNED: Set by the sponsor (constant values)
+    - PROTOCOL: Defined by the study protocol
+    - EDT: Electronic data transfer (external source)
+    - PREDECESSOR: Carried from a predecessor variable
+    """
+
+    CRF = "CRF"
+    DERIVED = "Derived"
+    ASSIGNED = "Assigned"
+    PROTOCOL = "Protocol"
+    EDT = "eDT"
+    PREDECESSOR = "Predecessor"
+
+
 class ConfidenceLevel(StrEnum):
     """Categorical confidence level derived from a numeric confidence score.
 
@@ -108,6 +128,10 @@ class VariableMappingProposal(BaseModel):
     )
     rationale: str = Field(
         ..., description="Explanation of why this mapping was chosen"
+    )
+    origin: str | None = Field(
+        default=None,
+        description="Proposed origin type (CRF, Derived, Assigned, Protocol, eDT)",
     )
 
 
@@ -203,6 +227,14 @@ class VariableMapping(BaseModel):
     length: int | None = Field(
         default=None,
         description="Character variable length for XPT generation",
+    )
+    origin: VariableOrigin | None = Field(
+        default=None,
+        description="Variable origin type for define.xml (CRF, Derived, Assigned, Protocol, eDT)",
+    )
+    computational_method: str | None = Field(
+        default=None,
+        description="Derivation algorithm description for define.xml MethodDef",
     )
 
 
