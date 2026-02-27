@@ -12,6 +12,16 @@ from astraea.models.classification import (
 )
 from astraea.models.controlled_terms import Codelist, CodelistTerm, CTPackage
 from astraea.models.ecrf import ECRFExtractionResult, ECRFField, ECRFForm
+from astraea.models.mapping import (
+    ConfidenceLevel,
+    DomainMappingProposal,
+    DomainMappingSpec,
+    MappingPattern,
+    StudyMetadata,
+    VariableMapping,
+    VariableMappingProposal,
+    confidence_level_from_score,
+)
 from astraea.models.metadata import DatasetMetadata, VariableMetadata
 from astraea.models.profiling import DatasetProfile, ValueDistribution, VariableProfile
 from astraea.models.sdtm import (
@@ -49,4 +59,13 @@ __all__ = [
     "DomainClassification",
     "DomainPlan",
     "ClassificationResult",
+    # mapping
+    "MappingPattern",
+    "ConfidenceLevel",
+    "confidence_level_from_score",
+    "VariableMappingProposal",
+    "DomainMappingProposal",
+    "VariableMapping",
+    "DomainMappingSpec",
+    "StudyMetadata",
 ]
