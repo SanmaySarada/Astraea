@@ -117,3 +117,53 @@ class TestSDTMReference:
         assert "LBTESTCD" in req
         assert "LBTEST" in req
         assert "LBSEQ" in req
+
+    # ------------------------------------------------------------------
+    # Tests for expanded domains (Gap 2 closure)
+    # ------------------------------------------------------------------
+
+    def test_list_domains_returns_at_least_18(self, ref: SDTMReference) -> None:
+        domains = ref.list_domains()
+        assert len(domains) >= 18
+        for code in ["CE", "DA", "DV", "FA", "PE", "QS", "SC", "SV"]:
+            assert code in domains, f"Missing domain: {code}"
+
+    def test_new_domains_loadable(self, ref: SDTMReference) -> None:
+        """Each new domain should be loadable and have at least 5 variables."""
+        new_domains = ["CE", "DA", "DV", "FA", "PE", "QS", "SC", "SV"]
+        for code in new_domains:
+            spec = ref.get_domain_spec(code)
+            assert spec is not None, f"get_domain_spec('{code}') returned None"
+            assert len(spec.variables) >= 5, (
+                f"{code} has only {len(spec.variables)} variables, expected >= 5"
+            )
+
+    def test_new_domain_classes(self, ref: SDTMReference) -> None:
+        """Verify domain_class for each new domain."""
+        assert ref.get_domain_class("CE") == DomainClass.EVENTS
+        assert ref.get_domain_class("DV") == DomainClass.EVENTS
+        assert ref.get_domain_class("PE") == DomainClass.FINDINGS
+        assert ref.get_domain_class("QS") == DomainClass.FINDINGS
+        assert ref.get_domain_class("SC") == DomainClass.FINDINGS
+        assert ref.get_domain_class("FA") == DomainClass.FINDINGS
+        assert ref.get_domain_class("SV") == DomainClass.SPECIAL_PURPOSE
+        assert ref.get_domain_class("DA") == DomainClass.INTERVENTIONS
+
+    def test_ce_required_variables(self, ref: SDTMReference) -> None:
+        req = ref.get_required_variables("CE")
+        assert "STUDYID" in req
+        assert "USUBJID" in req
+        assert "CESEQ" in req
+        assert "CETERM" in req
+
+    def test_sv_required_variables(self, ref: SDTMReference) -> None:
+        req = ref.get_required_variables("SV")
+        assert "STUDYID" in req
+        assert "USUBJID" in req
+        assert "VISITNUM" in req
+
+    def test_fa_required_variables(self, ref: SDTMReference) -> None:
+        req = ref.get_required_variables("FA")
+        assert "FATESTCD" in req
+        assert "FATEST" in req
+        assert "FAOBJ" in req

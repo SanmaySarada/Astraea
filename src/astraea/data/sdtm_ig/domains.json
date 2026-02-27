@@ -1626,5 +1626,915 @@
         "order": 12
       }
     ]
+  },
+  "CE": {
+    "domain": "CE",
+    "description": "Clinical Events",
+    "domain_class": "Events",
+    "structure": "One record per event per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "CESEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "CEGRPID",
+        "label": "Group ID",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to link related records.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "CETERM",
+        "label": "Reported Term for the Clinical Event",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim or prespecified name of the event.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "CEDECOD",
+        "label": "Dictionary-Derived Term",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Dictionary-derived text description of CETERM.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "CECAT",
+        "label": "Category for Clinical Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to categorize clinical events.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "CESCAT",
+        "label": "Subcategory for Clinical Event",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Further categorization of clinical events.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "CEPRESP",
+        "label": "Clinical Event Pre-Specified",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Whether the clinical event was pre-specified.",
+        "codelist_code": "C66742",
+        "order": 10
+      },
+      {
+        "name": "CEOCCUR",
+        "label": "Clinical Event Occurrence",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Whether the pre-specified event occurred.",
+        "codelist_code": "C66742",
+        "order": 11
+      },
+      {
+        "name": "CESTDTC",
+        "label": "Start Date/Time of Clinical Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "CEENDTC",
+        "label": "End Date/Time of Clinical Event",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "CEDY",
+        "label": "Study Day of Start of Clinical Event",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of event start relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 14
+      }
+    ]
+  },
+  "DV": {
+    "domain": "DV",
+    "description": "Protocol Deviations",
+    "domain_class": "Events",
+    "structure": "One record per deviation per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "DVSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "DVTERM",
+        "label": "Protocol Deviation Term",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Verbatim or prespecified name of the protocol deviation.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "DVDECOD",
+        "label": "Dictionary-Derived Term",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Controlled term for the deviation.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "DVCAT",
+        "label": "Category for Protocol Deviation",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to categorize protocol deviations.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "DVSCAT",
+        "label": "Subcategory for Protocol Deviation",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Further categorization of protocol deviations.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "EPOCH",
+        "label": "Epoch",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "The epoch of the protocol deviation.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "DVSTDTC",
+        "label": "Start Date/Time of Deviation",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of deviation in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "DVENDTC",
+        "label": "End Date/Time of Deviation",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "End date/time of deviation in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 11
+      }
+    ]
+  },
+  "PE": {
+    "domain": "PE",
+    "description": "Physical Examination",
+    "domain_class": "Findings",
+    "structure": "One record per finding per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "PESEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "PETESTCD",
+        "label": "PE Test or Examination Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the measurement, test, or examination.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "PETEST",
+        "label": "PE Test or Examination Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the measurement, test, or examination.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "PECAT",
+        "label": "Category for PE",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to categorize PE observations.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "PEORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the PE measurement in original units.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "PESTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result in a standard format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "PELOC",
+        "label": "Location of PE Assessment",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Anatomical location relevant to the PE.",
+        "codelist_code": "C74456",
+        "order": 10
+      },
+      {
+        "name": "PEMETHOD",
+        "label": "Method of PE",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Method of the PE measurement.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "PEDTC",
+        "label": "Date/Time of PE",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of PE collection in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "PEDY",
+        "label": "Study Day of PE",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Study day of PE relative to RFSTDTC.",
+        "codelist_code": null,
+        "order": 13
+      }
+    ]
+  },
+  "QS": {
+    "domain": "QS",
+    "description": "Questionnaires",
+    "domain_class": "Findings",
+    "structure": "One record per question per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "QSSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "QSTESTCD",
+        "label": "Questionnaire Test Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the questionnaire item.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "QSTEST",
+        "label": "Questionnaire Test Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Full name of the questionnaire item.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "QSCAT",
+        "label": "Category of Question",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to categorize questionnaire items, often the questionnaire name.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "QSSCAT",
+        "label": "Subcategory of Question",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Further categorization of questionnaire items.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "QSORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the questionnaire item as originally collected.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "QSORRESU",
+        "label": "Original Units",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Original units of the result.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "QSSTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result in a standard format.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "QSSTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Numeric result in standardized units.",
+        "codelist_code": null,
+        "order": 12
+      },
+      {
+        "name": "QSSTRESU",
+        "label": "Standard Units",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Standardized units.",
+        "codelist_code": null,
+        "order": 13
+      },
+      {
+        "name": "QSDTC",
+        "label": "Date/Time of Finding",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of QS collection in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 14
+      }
+    ]
+  },
+  "SC": {
+    "domain": "SC",
+    "description": "Subject Characteristics",
+    "domain_class": "Findings",
+    "structure": "One record per characteristic per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "SCSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "SCTESTCD",
+        "label": "Subject Characteristic Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the subject characteristic.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "SCTEST",
+        "label": "Subject Characteristic",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the subject characteristic.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "SCCAT",
+        "label": "Category for Subject Characteristic",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to categorize subject characteristics.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "SCORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the subject characteristic as originally collected.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "SCSTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result in a standard format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "SCSTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Numeric result in standardized units.",
+        "codelist_code": null,
+        "order": 10
+      }
+    ]
+  },
+  "FA": {
+    "domain": "FA",
+    "description": "Findings About",
+    "domain_class": "Findings",
+    "structure": "One record per finding per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "FASEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "FATESTCD",
+        "label": "Findings About Test Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the findings about test.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "FATEST",
+        "label": "Findings About Test Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the findings about test.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "FAOBJ",
+        "label": "Object of the Observation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "The object or event that is the focus of the finding.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "FACAT",
+        "label": "Category for Findings About",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to categorize findings about observations.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "FAORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result of the finding as originally collected.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "FASTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result in a standard format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "FADTC",
+        "label": "Date/Time of Collection",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of collection in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 11
+      }
+    ]
+  },
+  "SV": {
+    "domain": "SV",
+    "description": "Subject Visits",
+    "domain_class": "Special-Purpose",
+    "structure": "One record per visit per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "VISITNUM",
+        "label": "Visit Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Clinical encounter number.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "VISIT",
+        "label": "Visit Name",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Protocol-defined name of the visit.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "VISITDY",
+        "label": "Planned Study Day of Visit",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Planned study day of the visit.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "EPOCH",
+        "label": "Epoch",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "The epoch of the visit.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "SVSTDTC",
+        "label": "Start Date/Time of Visit",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the visit in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "SVENDTC",
+        "label": "End Date/Time of Visit",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the visit in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 9
+      }
+    ]
+  },
+  "DA": {
+    "domain": "DA",
+    "description": "Drug Accountability",
+    "domain_class": "Interventions",
+    "structure": "One record per dispensation per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": null,
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "DASEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "DATESTCD",
+        "label": "Drug Accountability Test Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the accountability test.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "DATEST",
+        "label": "Drug Accountability Test Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the accountability test.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "DACAT",
+        "label": "Category for Drug Accountability",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to categorize drug accountability records.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "DAORRES",
+        "label": "Result or Finding in Original Units",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Result in original units.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "DAORRESU",
+        "label": "Original Units",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Original units of the result.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "DASTRESC",
+        "label": "Character Result/Finding in Std Format",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Contains the result in a standard format.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "DASTRESN",
+        "label": "Numeric Result/Finding in Standard Units",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Numeric result in standardized units.",
+        "codelist_code": null,
+        "order": 11
+      },
+      {
+        "name": "DADTC",
+        "label": "Date/Time of Collection",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Date/time of collection in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 12
+      }
+    ]
   }
 }
