@@ -108,7 +108,11 @@ def _validate_single_proposal(
                 f"{vp.sdtm_variable}: codelist {vp.codelist_code} not found "
                 f"in CT reference"
             )
-            confidence = min(confidence, 0.4)
+            # Don't penalize ASSIGN patterns with trivially correct values
+            # (e.g., DOMAIN="DM", STUDYID=constant) — missing codelist is a
+            # reference gap, not a mapping quality issue
+            if vp.mapping_pattern != "assign":
+                confidence = min(confidence, 0.4)
         else:
             codelist_name = cl.name
 
