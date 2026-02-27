@@ -46,7 +46,7 @@ Plans:
 3. System classifies each raw dataset to an SDTM domain with a confidence score and natural language reasoning
 4. System correctly detects when multiple raw datasets should merge into a single SDTM domain (e.g., multiple lab files into LB)
 
-**Plans:** 5 plans
+**Plans:** 8 plans (5 core + 3 gap closure)
 
 Plans:
 - [ ] 02-01-PLAN.md -- Pydantic models (eCRF + classification) and LLM client wrapper
@@ -54,6 +54,9 @@ Plans:
 - [ ] 02-03-PLAN.md -- Heuristic domain scorer (deterministic filename + variable matching)
 - [ ] 02-04-PLAN.md -- Form-dataset matcher and LLM domain classifier with heuristic fusion
 - [ ] 02-05-PLAN.md -- CLI commands (parse-ecrf, classify) and integration verification
+- [ ] 02-06-PLAN.md -- Gap closure: expand filename patterns + numbered variant matching
+- [ ] 02-07-PLAN.md -- Gap closure: expand SDTM-IG reference bundle + heuristic override
+- [ ] 02-08-PLAN.md -- Gap closure: eCRF error handling + CLI double extraction fix
 
 ---
 
@@ -158,7 +161,7 @@ Plans:
 | Phase | Status | Completed |
 |-------|--------|-----------|
 | 1 - Foundation and Data Infrastructure | Complete | 2026-02-26 |
-| 2 - Source Parsing and Domain Classification | Complete | 2026-02-26 |
+| 2 - Source Parsing and Domain Classification | UAT gap closure | 2026-02-26 |
 | 3 - Core Mapping Engine (Demographics) | Not started | -- |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
