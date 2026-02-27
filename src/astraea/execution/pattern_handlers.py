@@ -134,9 +134,9 @@ def handle_lookup_recode(
             # (CT terms are keyed by submission value, we map raw values to submission values)
             recode_dict: dict[str, str] = {}
             for submission_value, term in codelist.terms.items():
-                # Map the preferred_term (display name) to submission_value
-                if term.preferred_term:
-                    recode_dict[term.preferred_term] = submission_value
+                # Map the nci_preferred_term (display name) to submission_value
+                if term.nci_preferred_term:
+                    recode_dict[term.nci_preferred_term] = submission_value
                 # Also map submission_value to itself (identity)
                 recode_dict[submission_value] = submission_value
 
