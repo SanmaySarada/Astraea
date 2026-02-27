@@ -186,7 +186,24 @@ def classify_dataset(
     final_domain = llm_result.primary_domain.upper()
     final_confidence = llm_result.confidence
 
-    if top_heuristic_score >= 0.9 and top_heuristic_domain == final_domain:
+    if (
+        top_heuristic_score >= 0.95
+        and top_heuristic_domain is not None
+        and top_heuristic_domain != final_domain
+    ):
+        # Override LLM with very-high-confidence heuristic (prevents
+        # hallucination cascading -- Pitfall C1)
+        logger.warning(
+            "Heuristic override (score={h_score:.2f}): using {h_domain} "
+            "instead of LLM {l_domain} for {name}",
+            h_score=top_heuristic_score,
+            h_domain=top_heuristic_domain,
+            l_domain=final_domain,
+            name=dataset_name,
+        )
+        final_domain = top_heuristic_domain
+        final_confidence = top_heuristic_score
+    elif top_heuristic_score >= 0.9 and top_heuristic_domain == final_domain:
         # Strong agreement: boost confidence
         final_confidence = max(top_heuristic_score, llm_result.confidence)
     elif (
@@ -194,7 +211,7 @@ def classify_dataset(
         and top_heuristic_domain is not None
         and top_heuristic_domain != final_domain
     ):
-        # Disagreement with strong heuristic: flag for review
+        # Disagreement with moderate heuristic: flag for review
         logger.warning(
             "Heuristic-LLM disagreement for {name}: "
             "heuristic={h_domain} ({h_score:.2f}), LLM={l_domain} ({l_conf:.2f})",

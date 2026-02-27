@@ -5,15 +5,14 @@ All tests use mocks for the LLM client -- no ANTHROPIC_API_KEY required.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from astraea.classification.classifier import (
-    _LLMClassificationOutput,
     _determine_mapping_pattern,
+    _LLMClassificationOutput,
     classify_all,
     classify_dataset,
     load_classification,
@@ -26,7 +25,6 @@ from astraea.models.classification import (
     HeuristicScore,
 )
 from astraea.models.profiling import DatasetProfile, VariableProfile
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -205,6 +203,97 @@ class TestClassifyDataset:
         call_args = client.parse.call_args
         messages = call_args.kwargs["messages"]
         assert "Adverse Events" in messages[0]["content"]
+
+    def test_heuristic_override_at_1_0(self) -> None:
+        """Heuristic score 1.0 (exact filename match) should override LLM."""
+        profile = _make_profile("ae.sas7bdat", ["AETERM", "AESTDTC"])
+        heuristic_scores = [
+            HeuristicScore(domain="AE", score=1.0, signals=["filename exact match"]),
+        ]
+        # LLM incorrectly says CM
+        client = _make_mock_client(primary_domain="CM", confidence=0.85)
+        ref = _make_mock_ref()
+
+        result = classify_dataset(
+            dataset_name="ae.sas7bdat",
+            profile=profile,
+            heuristic_scores=heuristic_scores,
+            ecrf_form_name=None,
+            client=client,
+            ref=ref,
+        )
+
+        assert result.primary_domain == "AE"  # Heuristic overrides LLM
+        assert result.confidence == pytest.approx(1.0)
+
+    def test_heuristic_override_at_0_95(self) -> None:
+        """Heuristic score 0.95 should override LLM when they disagree."""
+        profile = _make_profile("ae.sas7bdat", ["AETERM"])
+        heuristic_scores = [
+            HeuristicScore(domain="AE", score=0.95, signals=["filename + variables"]),
+        ]
+        # LLM says MH instead of AE
+        client = _make_mock_client(primary_domain="MH", confidence=0.7)
+        ref = _make_mock_ref()
+
+        result = classify_dataset(
+            dataset_name="ae.sas7bdat",
+            profile=profile,
+            heuristic_scores=heuristic_scores,
+            ecrf_form_name=None,
+            client=client,
+            ref=ref,
+        )
+
+        assert result.primary_domain == "AE"  # Heuristic overrides LLM
+        assert result.confidence == pytest.approx(0.95)
+
+    def test_heuristic_0_8_does_not_override(self) -> None:
+        """Heuristic score 0.8 should NOT override LLM, only penalize confidence."""
+        profile = _make_profile("ae.sas7bdat", ["AETERM"])
+        heuristic_scores = [
+            HeuristicScore(domain="AE", score=0.85, signals=["filename"]),
+        ]
+        # LLM says CM
+        client = _make_mock_client(primary_domain="CM", confidence=0.7)
+        ref = _make_mock_ref()
+
+        result = classify_dataset(
+            dataset_name="ae.sas7bdat",
+            profile=profile,
+            heuristic_scores=heuristic_scores,
+            ecrf_form_name=None,
+            client=client,
+            ref=ref,
+        )
+
+        # LLM decision should stand (not overridden)
+        assert result.primary_domain == "CM"
+        # But confidence is penalized: min(0.85, 0.7) * 0.7 = 0.49
+        assert result.confidence == pytest.approx(0.49, abs=0.01)
+
+    def test_heuristic_0_95_agreement_uses_normal_fusion(self) -> None:
+        """Heuristic 0.95 agreeing with LLM should use normal boost, not override."""
+        profile = _make_profile("ae.sas7bdat", ["AETERM"])
+        heuristic_scores = [
+            HeuristicScore(domain="AE", score=0.95, signals=["filename"]),
+        ]
+        # LLM agrees: AE
+        client = _make_mock_client(primary_domain="AE", confidence=0.85)
+        ref = _make_mock_ref()
+
+        result = classify_dataset(
+            dataset_name="ae.sas7bdat",
+            profile=profile,
+            heuristic_scores=heuristic_scores,
+            ecrf_form_name=None,
+            client=client,
+            ref=ref,
+        )
+
+        assert result.primary_domain == "AE"
+        # Normal boost: max(0.95, 0.85) = 0.95
+        assert result.confidence == pytest.approx(0.95)
 
     def test_secondary_domains_and_merge_candidates(self) -> None:
         """Secondary domains and merge_candidates should be passed through."""
