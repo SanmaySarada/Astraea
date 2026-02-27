@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 IN PROGRESS -- eCRF Parsing and Domain Classification (plan 4/5 complete)
+**Current focus:** Phase 2 COMPLETE -- eCRF Parsing and Domain Classification (5/5 plans done)
 
 ## Current Position
 
-Phase: 2 of 8 (Source Parsing and Domain Classification)
-Plan: 4 of 5 (Form-Dataset Matcher and LLM Domain Classifier)
-Status: In progress
-Last activity: 2026-02-26 -- Completed 02-04-PLAN.md (Form-Dataset Matcher and LLM Domain Classifier)
+Phase: 2 of 8 (Source Parsing and Domain Classification) -- COMPLETE
+Plan: 5 of 5 (CLI Commands and Integration Verification) -- COMPLETE
+Status: Phase complete, ready for Phase 3
+Last activity: 2026-02-27 -- Completed 02-05-PLAN.md (CLI Commands and Integration Verification)
 
-Progress: [██████████████████░░░░░░░░░░░░░░░░░░░░░░] ~31%
+Progress: [████████████████████░░░░░░░░░░░░░░░░░░░░] ~38%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: ~3.2 minutes
 
 **By Phase:**
@@ -27,7 +27,7 @@ Progress: [██████████████████░░░░░
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
-| 02-source-parsing | 4/5 | ~13 min | ~3.3 min |
+| 02-source-parsing | 5/5 | ~18 min | ~3.6 min |
 
 ## Phase 1 Deliverables
 
@@ -42,7 +42,7 @@ Progress: [██████████████████░░░░░
 
 CLI commands available: `astraea profile`, `astraea reference`, `astraea codelist`
 
-## Phase 2 Deliverables (In Progress)
+## Phase 2 Deliverables
 
 | Component | Module | Tests | Status |
 |-----------|--------|-------|--------|
@@ -53,7 +53,12 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 | Heuristic domain scorer | src/astraea/classification/heuristic.py | 29 | Done |
 | Form-dataset matcher | src/astraea/parsing/form_dataset_matcher.py | 13 | Done |
 | LLM domain classifier | src/astraea/classification/classifier.py | 14 | Done |
-| CLI commands | src/astraea/cli/app.py | -- | Pending |
+| CLI commands (parse-ecrf, classify) | src/astraea/cli/app.py, display.py | 17 | Done |
+| **Total** | | **144 tests** | **Complete** |
+
+CLI commands available: `astraea parse-ecrf`, `astraea classify`
+
+**Combined test suite: 360 tests passing**
 
 ## Accumulated Context
 
@@ -89,6 +94,9 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 - 2026-02-26: [D-0204-01] Form-dataset matching uses field_name overlap ratio (form fields / clinical vars)
 - 2026-02-26: [D-0204-02] Heuristic-LLM disagreement with heuristic >= 0.8 reduces confidence by min * 0.7
 - 2026-02-26: [D-0204-03] Findings domains (LB, VS, EG, PE, QS, SC, FA) auto-detect transpose pattern
+- 2026-02-27: [D-0205-01] LLM client uses tool-use with forced tool_choice for structured output (not messages.parse)
+- 2026-02-27: [D-0205-02] CLI commands require ANTHROPIC_API_KEY with clear error messages when missing
+- 2026-02-27: [D-0205-03] Classification display includes merge groups panel for multi-source domains
 
 ### Pending Todos
 
@@ -96,12 +104,11 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 ### Blockers/Concerns
 
-- eCRF PDF parsing quality unknown -- prototype early in Phase 2 with real ECRF.pdf
 - Python 3.12 compatibility verified: all dependencies install cleanly on 3.12.12
 - CDISC Rules Engine integration complexity unknown -- may need Phase 7 research spike
 
 ## Session Continuity
 
-Last session: 2026-02-26 22:05 UTC
-Stopped at: Completed 02-04-PLAN.md -- Form-Dataset Matcher and LLM Domain Classifier
+Last session: 2026-02-27 01:14 UTC
+Stopped at: Completed 02-05-PLAN.md -- Phase 2 complete
 Resume file: None
