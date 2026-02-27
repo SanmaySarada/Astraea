@@ -260,6 +260,76 @@
         }
       }
     },
+    "C66785": {
+      "code": "C66785",
+      "name": "Laterality",
+      "extensible": false,
+      "variable_mappings": ["LAT"],
+      "terms": {
+        "LEFT": {
+          "submission_value": "LEFT",
+          "synonyms": ["Left"],
+          "definition": "Being or located on or directed toward the side of the body to the west when facing north.",
+          "nci_preferred_term": "Left"
+        },
+        "RIGHT": {
+          "submission_value": "RIGHT",
+          "synonyms": ["Right"],
+          "definition": "Being or located on or directed toward the side of the body to the east when facing north.",
+          "nci_preferred_term": "Right"
+        },
+        "BILATERAL": {
+          "submission_value": "BILATERAL",
+          "synonyms": ["Bilateral"],
+          "definition": "Affecting both sides of the body.",
+          "nci_preferred_term": "Bilateral"
+        }
+      }
+    },
+    "C66789": {
+      "code": "C66789",
+      "name": "Specimen Condition",
+      "extensible": true,
+      "variable_mappings": ["LBSPEC"],
+      "terms": {
+        "HEMOLYZED": {
+          "submission_value": "HEMOLYZED",
+          "synonyms": ["Hemolyzed"],
+          "definition": "A specimen that has undergone the destruction of red blood cells.",
+          "nci_preferred_term": "Hemolyzed"
+        },
+        "LIPEMIC": {
+          "submission_value": "LIPEMIC",
+          "synonyms": ["Lipemic"],
+          "definition": "A specimen that contains abnormally high levels of lipids.",
+          "nci_preferred_term": "Lipemic"
+        },
+        "ICTERIC": {
+          "submission_value": "ICTERIC",
+          "synonyms": ["Icteric"],
+          "definition": "A specimen that contains abnormally high levels of bilirubin.",
+          "nci_preferred_term": "Icteric"
+        },
+        "CLOTTED": {
+          "submission_value": "CLOTTED",
+          "synonyms": ["Clotted"],
+          "definition": "A specimen that has undergone coagulation.",
+          "nci_preferred_term": "Clotted"
+        },
+        "INSUFFICIENT QUANTITY": {
+          "submission_value": "INSUFFICIENT QUANTITY",
+          "synonyms": ["Insufficient Quantity"],
+          "definition": "A specimen that does not contain enough material for testing.",
+          "nci_preferred_term": "Insufficient Quantity"
+        },
+        "NOT APPLICABLE": {
+          "submission_value": "NOT APPLICABLE",
+          "synonyms": ["Not Applicable"],
+          "definition": "Determination of a value is not relevant in the current context.",
+          "nci_preferred_term": "Not Applicable"
+        }
+      }
+    },
     "C66729": {
       "code": "C66729",
       "name": "Route of Administration",
