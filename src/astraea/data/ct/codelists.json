@@ -34,30 +34,10 @@
         }
       }
     },
-    "C66790": {
-      "code": "C66790",
-      "name": "No Yes Response",
-      "extensible": false,
-      "variable_mappings": ["DTHFL", "AESER", "AESCAN", "AESCONG", "AESDISAB", "AESDTH", "AESHOSP", "AESLIFE", "AESMIE", "AECONTRT", "MHPRESP", "MHOCCUR"],
-      "terms": {
-        "N": {
-          "submission_value": "N",
-          "synonyms": ["No"],
-          "definition": "The non-affirmative response to a question.",
-          "nci_preferred_term": "No"
-        },
-        "Y": {
-          "submission_value": "Y",
-          "synonyms": ["Yes"],
-          "definition": "The affirmative response to a question.",
-          "nci_preferred_term": "Yes"
-        }
-      }
-    },
-    "C66767": {
-      "code": "C66767",
+    "C74457": {
+      "code": "C74457",
       "name": "Race",
-      "extensible": false,
+      "extensible": true,
       "variable_mappings": ["RACE"],
       "terms": {
         "AMERICAN INDIAN OR ALASKA NATIVE": {
@@ -116,8 +96,8 @@
         }
       }
     },
-    "C66728": {
-      "code": "C66728",
+    "C66790": {
+      "code": "C66790",
       "name": "Ethnicity",
       "extensible": false,
       "variable_mappings": ["ETHNIC"],
@@ -150,6 +130,32 @@
     },
     "C66742": {
       "code": "C66742",
+      "name": "No Yes Response",
+      "extensible": false,
+      "variable_mappings": ["DTHFL", "AESER", "AESCAN", "AESCONG", "AESDISAB", "AESDTH", "AESHOSP", "AESLIFE", "AESMIE", "AECONTRT", "MHPRESP", "MHOCCUR"],
+      "terms": {
+        "N": {
+          "submission_value": "N",
+          "synonyms": ["No"],
+          "definition": "The non-affirmative response to a question.",
+          "nci_preferred_term": "No"
+        },
+        "Y": {
+          "submission_value": "Y",
+          "synonyms": ["Yes"],
+          "definition": "The affirmative response to a question.",
+          "nci_preferred_term": "Yes"
+        },
+        "U": {
+          "submission_value": "U",
+          "synonyms": ["Unknown"],
+          "definition": "Not known, not observed, not recorded, or refused.",
+          "nci_preferred_term": "Unknown"
+        }
+      }
+    },
+    "ISO3166": {
+      "code": "ISO3166",
       "name": "Country",
       "extensible": true,
       "variable_mappings": ["COUNTRY"],
@@ -222,8 +228,8 @@
         }
       }
     },
-    "C66726": {
-      "code": "C66726",
+    "C66781": {
+      "code": "C66781",
       "name": "Age Unit",
       "extensible": false,
       "variable_mappings": ["AGEU"],
@@ -260,8 +266,8 @@
         }
       }
     },
-    "C66769": {
-      "code": "C66769",
+    "C66729": {
+      "code": "C66729",
       "name": "Route of Administration",
       "extensible": true,
       "variable_mappings": ["CMROUTE", "EXROUTE"],
@@ -334,8 +340,8 @@
         }
       }
     },
-    "C66734": {
-      "code": "C66734",
+    "C66769": {
+      "code": "C66769",
       "name": "Severity/Intensity Scale for Adverse Events",
       "extensible": false,
       "variable_mappings": ["AESEV"],
@@ -404,8 +410,8 @@
         }
       }
     },
-    "C66781": {
-      "code": "C66781",
+    "C71620": {
+      "code": "C71620",
       "name": "Unit",
       "extensible": true,
       "variable_mappings": ["CMDOSU", "EXDOSU", "LBORRESU", "LBSTRESU", "VSORRESU", "VSSTRESU", "EGORRESU", "EGSTRESU"],
@@ -544,8 +550,8 @@
         }
       }
     },
-    "C66770": {
-      "code": "C66770",
+    "C71113": {
+      "code": "C71113",
       "name": "Frequency",
       "extensible": true,
       "variable_mappings": ["CMDOSFRQ", "EXDOSFRQ"],
