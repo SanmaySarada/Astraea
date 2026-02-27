@@ -103,6 +103,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0207-01] Heuristic override threshold set at 0.95 (not 0.9) to avoid false overrides
 - 2026-02-27: [D-0207-02] Override replaces LLM domain and uses heuristic score as confidence
 - 2026-02-27: [D-02102-01] Plan 02.1-02 expected value for sas_date_to_iso(22738.9999) corrected from "2022-03-30" to "2022-04-04"
+- 2026-02-27: [D-02.1-03-01] ValueError raised for NaN/None/empty USUBJID components (fail-fast over silent corruption)
+- 2026-02-27: [D-02.1-03-02] pd.NA used for invalid USUBJID column rows (preserves pandas NA semantics)
+- 2026-02-27: [D-02.1-03-03] EDC column set expanded from 25 to 29 (subject, sitenumber, site, sitegroup)
 
 ### Pending Todos
 
@@ -124,5 +127,5 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 02.1-02-PLAN.md (Date Conversion Fixes)
+Stopped at: Completed 02.1-03-PLAN.md (USUBJID NaN fix + EDC columns)
 Resume file: None
