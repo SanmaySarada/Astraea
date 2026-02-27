@@ -531,3 +531,111 @@ class TestTrialDesignAndMissingDomains:
         assert len(domains) >= 26
         for code in ["TS", "TA", "TE", "TV", "TI", "SE", "CO", "SUPPQUAL"]:
             assert code in domains, f"Missing domain: {code}"
+
+
+class TestPlan0303CoreDesignationFixes:
+    """Tests for Phase 3.1 Plan 03: core designation, label, variable, and key_variable fixes."""
+
+    # ------------------------------------------------------------------
+    # Core designation fixes (3 variables)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "domain,varname,expected_core",
+        [
+            ("DM", "ARMNRS", "Perm"),
+            ("CM", "CMSTDTC", "Exp"),
+            ("CM", "CMENDTC", "Exp"),
+        ],
+    )
+    def test_core_designation_corrections(
+        self, ref: SDTMReference, domain: str, varname: str, expected_core: str
+    ) -> None:
+        spec = ref.get_variable_spec(domain, varname)
+        assert spec is not None, f"{varname} not found in {domain}"
+        assert spec.core.value == expected_core, (
+            f"{domain}.{varname} core: {spec.core.value}, expected {expected_core}"
+        )
+
+    # ------------------------------------------------------------------
+    # Label fix (EXDOSE)
+    # ------------------------------------------------------------------
+
+    def test_exdose_label_corrected(self, ref: SDTMReference) -> None:
+        spec = ref.get_variable_spec("EX", "EXDOSE")
+        assert spec is not None
+        assert spec.label == "Dose per Administration"
+
+    # ------------------------------------------------------------------
+    # Missing Expected variables (LBBLFL, VSBLFL)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "domain,varname",
+        [
+            ("LB", "LBBLFL"),
+            ("VS", "VSBLFL"),
+        ],
+    )
+    def test_expected_baseline_flag_variables_exist(
+        self, ref: SDTMReference, domain: str, varname: str
+    ) -> None:
+        spec = ref.get_variable_spec(domain, varname)
+        assert spec is not None, f"{varname} not found in {domain}"
+        assert spec.core.value == "Exp", f"{domain}.{varname} core: {spec.core.value}"
+        assert spec.label == "Baseline Flag"
+        assert spec.codelist_code == "C66742"
+
+    # ------------------------------------------------------------------
+    # Missing Permissible variables (10 variables)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "domain,varname",
+        [
+            ("DM", "INVID"),
+            ("DM", "INVNAM"),
+            ("AE", "AETOXGR"),
+            ("AE", "AEREFID"),
+            ("AE", "AEGRPID"),
+            ("CM", "CMCLAS"),
+            ("CM", "CMCLASCD"),
+            ("EX", "EXLOT"),
+            ("LB", "LBMETHOD"),
+            ("VS", "VSLOC"),
+        ],
+    )
+    def test_permissible_variables_exist(
+        self, ref: SDTMReference, domain: str, varname: str
+    ) -> None:
+        spec = ref.get_variable_spec(domain, varname)
+        assert spec is not None, f"{varname} not found in {domain}"
+        assert spec.core.value == "Perm", f"{domain}.{varname} core: {spec.core.value}"
+
+    # ------------------------------------------------------------------
+    # Null key_variables populated (9 domains)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "domain,expected_keys",
+        [
+            ("IE", ["STUDYID", "USUBJID", "IETESTCD"]),
+            ("CE", ["STUDYID", "USUBJID", "CETERM", "CESTDTC"]),
+            ("DV", ["STUDYID", "USUBJID", "DVTERM", "DVSTDTC"]),
+            ("PE", ["STUDYID", "USUBJID", "PETESTCD", "VISITNUM", "PEDTC"]),
+            ("QS", ["STUDYID", "USUBJID", "QSTESTCD", "VISITNUM", "QSDTC", "QSCAT"]),
+            ("SC", ["STUDYID", "USUBJID", "SCTESTCD"]),
+            ("FA", ["STUDYID", "USUBJID", "FATESTCD", "FADTC"]),
+            ("SV", ["STUDYID", "USUBJID", "VISITNUM"]),
+            ("DA", ["STUDYID", "USUBJID", "DATESTCD", "DADTC"]),
+        ],
+    )
+    def test_key_variables_populated(
+        self, ref: SDTMReference, domain: str, expected_keys: list[str]
+    ) -> None:
+        spec = ref.get_domain_spec(domain)
+        assert spec is not None, f"{domain} spec not found"
+        assert spec.key_variables is not None, f"{domain} key_variables still null"
+        assert spec.key_variables == expected_keys, (
+            f"{domain} key_variables: {spec.key_variables}, expected {expected_keys}"
+        )
