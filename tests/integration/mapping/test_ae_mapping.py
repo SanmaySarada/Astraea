@@ -448,11 +448,10 @@ class TestAECTValidation:
         aeout = [
             m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEOUT"
         ]
-        if aeout:
-            if aeout[0].codelist_code is not None:
-                assert aeout[0].codelist_code == "C66768", (
-                    f"AEOUT codelist should be C66768, got {aeout[0].codelist_code}"
-                )
+        if aeout and aeout[0].codelist_code is not None:
+            assert aeout[0].codelist_code == "C66768", (
+                f"AEOUT codelist should be C66768, got {aeout[0].codelist_code}"
+            )
 
     def test_action_references_codelist(
         self, ae_mapping_result: DomainMappingSpec
@@ -461,11 +460,10 @@ class TestAECTValidation:
         aeacn = [
             m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEACN"
         ]
-        if aeacn:
-            if aeacn[0].codelist_code is not None:
-                assert aeacn[0].codelist_code == "C66767", (
-                    f"AEACN codelist should be C66767, got {aeacn[0].codelist_code}"
-                )
+        if aeacn and aeacn[0].codelist_code is not None:
+            assert aeacn[0].codelist_code == "C66767", (
+                f"AEACN codelist should be C66767, got {aeacn[0].codelist_code}"
+            )
 
 
 @pytest.mark.integration

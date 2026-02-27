@@ -12,7 +12,6 @@ Requires ANTHROPIC_API_KEY environment variable to be set.
 
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 

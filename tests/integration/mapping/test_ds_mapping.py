@@ -27,7 +27,6 @@ from astraea.models.ecrf import ECRFField, ECRFForm
 from astraea.models.mapping import (
     ConfidenceLevel,
     DomainMappingSpec,
-    MappingPattern,
     StudyMetadata,
 )
 from astraea.models.profiling import DatasetProfile
