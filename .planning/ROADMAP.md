@@ -161,7 +161,7 @@ Plans:
 | Phase | Status | Completed |
 |-------|--------|-----------|
 | 1 - Foundation and Data Infrastructure | Complete | 2026-02-26 |
-| 2 - Source Parsing and Domain Classification | UAT gap closure | 2026-02-26 |
+| 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
 | 3 - Core Mapping Engine (Demographics) | Not started | -- |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
