@@ -17,17 +17,17 @@
 
 ### eCRF Parsing
 
-- [ ] **ECRF-01**: System parses eCRF PDF files and extracts form-level metadata (form names, visit associations)
-- [ ] **ECRF-02**: System extracts field-level metadata from eCRF (field names, data types, SAS labels, coded value lists, field OIDs)
-- [ ] **ECRF-03**: System associates eCRF forms with raw datasets (matching form fields to dataset variables)
-- [ ] **ECRF-04**: System handles variable eCRF layouts across studies (not hardcoded to one PDF format)
+- [x] **ECRF-01**: System parses eCRF PDF files and extracts form-level metadata (form names, visit associations)
+- [x] **ECRF-02**: System extracts field-level metadata from eCRF (field names, data types, SAS labels, coded value lists, field OIDs)
+- [x] **ECRF-03**: System associates eCRF forms with raw datasets (matching form fields to dataset variables)
+- [x] **ECRF-04**: System handles variable eCRF layouts across studies (not hardcoded to one PDF format)
 
 ### Domain Classification
 
-- [ ] **CLSF-01**: System automatically classifies raw datasets to SDTM domains using eCRF context, variable names, and data content
-- [ ] **CLSF-02**: System handles all three SDTM domain classes: Interventions (CM, EX), Events (AE, CE, MH, DV), Findings (LB, VS, EG, PE)
-- [ ] **CLSF-03**: System detects when multiple raw datasets map to a single SDTM domain (e.g., lb_biochem + lb_hem + lb_urin → LB)
-- [ ] **CLSF-04**: System provides confidence score and reasoning for each domain classification
+- [x] **CLSF-01**: System automatically classifies raw datasets to SDTM domains using eCRF context, variable names, and data content
+- [x] **CLSF-02**: System handles all three SDTM domain classes: Interventions (CM, EX), Events (AE, CE, MH, DV), Findings (LB, VS, EG, PE)
+- [x] **CLSF-03**: System detects when multiple raw datasets map to a single SDTM domain (e.g., lb_biochem + lb_hem + lb_urin → LB)
+- [x] **CLSF-04**: System provides confidence score and reasoning for each domain classification
 
 ### Mapping Engine
 
@@ -147,14 +147,14 @@
 | DATA-05 | Phase 1 | Complete |
 | DATA-06 | Phase 1 | Complete |
 | DATA-07 | Phase 1 | Complete |
-| ECRF-01 | Phase 2 | Pending |
-| ECRF-02 | Phase 2 | Pending |
-| ECRF-03 | Phase 2 | Pending |
-| ECRF-04 | Phase 2 | Pending |
-| CLSF-01 | Phase 2 | Pending |
-| CLSF-02 | Phase 2 | Pending |
-| CLSF-03 | Phase 2 | Pending |
-| CLSF-04 | Phase 2 | Pending |
+| ECRF-01 | Phase 2 | Complete |
+| ECRF-02 | Phase 2 | Complete |
+| ECRF-03 | Phase 2 | Complete |
+| ECRF-04 | Phase 2 | Complete |
+| CLSF-01 | Phase 2 | Complete |
+| CLSF-02 | Phase 2 | Complete |
+| CLSF-03 | Phase 2 | Complete |
+| CLSF-04 | Phase 2 | Complete |
 | MAP-01 | Phase 3 | Pending |
 | MAP-02 | Phase 3 | Pending |
 | MAP-03 | Phase 3 | Pending |
