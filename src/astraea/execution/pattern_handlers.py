@@ -176,16 +176,20 @@ def handle_derivation(
         if study_id is not None:
             return generate_usubjid_column(
                 df,
-                study_id=study_id,
-                site_col=site_col,
-                subject_col=subject_col,
+                studyid_value=study_id,
+                siteid_col=site_col,
+                subjid_col=subject_col,
             )
 
     # Check for registered transforms
     transform_fn = get_transform(rule)
-    if transform_fn is not None and mapping.source_variable is not None:
-        if mapping.source_variable in df.columns:
-            return df[mapping.source_variable].map(transform_fn)
+    has_transform = (
+        transform_fn is not None
+        and mapping.source_variable is not None
+        and mapping.source_variable in df.columns
+    )
+    if has_transform:
+        return df[mapping.source_variable].map(transform_fn)  # type: ignore[index]
 
     logger.warning(
         "Unrecognized derivation rule '{}' for {}; returning None series",
