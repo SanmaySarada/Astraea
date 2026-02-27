@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 COMPLETE -- eCRF Parsing and Domain Classification (5/5 plans done)
+**Current focus:** Phase 2 gap closure -- fixing UAT findings (6/11 plans done)
 
 ## Current Position
 
-Phase: 2 of 8 (Source Parsing and Domain Classification) -- COMPLETE
-Plan: 5 of 5 (CLI Commands and Integration Verification) -- COMPLETE
-Status: Phase complete, ready for Phase 3
-Last activity: 2026-02-27 -- Completed 02-05-PLAN.md (CLI Commands and Integration Verification)
+Phase: 2 of 8 (Source Parsing and Domain Classification) -- Gap closure
+Plan: 6 of 11 (Heuristic Domain Pattern Expansion) -- COMPLETE
+Status: In progress, gap closure plans 07-11 remaining
+Last activity: 2026-02-27 -- Completed 02-06-PLAN.md (Heuristic Domain Pattern Expansion)
 
-Progress: [████████████████████░░░░░░░░░░░░░░░░░░░░] ~38%
+Progress: [██████████████████████░░░░░░░░░░░░░░░░░░] ~42%
 
 ## Performance Metrics
 
@@ -27,7 +27,7 @@ Progress: [████████████████████░░░
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
-| 02-source-parsing | 5/5 | ~18 min | ~3.6 min |
+| 02-source-parsing | 6/11 | ~20 min | ~3.3 min |
 
 ## Phase 1 Deliverables
 
@@ -97,6 +97,7 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0205-01] LLM client uses tool-use with forced tool_choice for structured output (not messages.parse)
 - 2026-02-27: [D-0205-02] CLI commands require ANTHROPIC_API_KEY with clear error messages when missing
 - 2026-02-27: [D-0205-03] Classification display includes merge groups panel for multi-source domains
+- 2026-02-27: [D-0206-01] Digits accepted as valid right-boundary only (not left) in _is_segment_match
 
 ### Pending Todos
 
@@ -109,6 +110,6 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
 ## Session Continuity
 
-Last session: 2026-02-27 01:14 UTC
-Stopped at: Completed 02-05-PLAN.md -- Phase 2 complete
+Last session: 2026-02-27 03:35 UTC
+Stopped at: Completed 02-06-PLAN.md -- Heuristic Domain Pattern Expansion
 Resume file: None
