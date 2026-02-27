@@ -1,12 +1,13 @@
 """Shared LLM client wrapper for the Astraea pipeline.
 
-Wraps the Anthropic SDK with structured output via Pydantic models,
+Wraps the Anthropic SDK with structured output via tool use (Pydantic schemas),
 automatic retry on transient errors, and loguru-based call logging.
 All LLM calls in the pipeline should go through this client.
 """
 
 from __future__ import annotations
 
+import json
 import time
 from typing import TypeVar
 
@@ -25,6 +26,9 @@ T = TypeVar("T", bound=BaseModel)
 
 class AstraeaLLMClient:
     """Anthropic API client with structured output, retry, and logging.
+
+    Uses tool use with forced tool_choice to get guaranteed JSON output
+    matching a Pydantic schema.
 
     Usage::
 
@@ -70,7 +74,9 @@ class AstraeaLLMClient:
     ) -> T:
         """Make a structured output LLM call returning a validated Pydantic model.
 
-        Uses ``client.messages.parse()`` for guaranteed schema-compliant output.
+        Uses tool use with forced tool_choice to guarantee schema-compliant JSON.
+        The Pydantic model's JSON schema is sent as a tool definition, and the
+        model is forced to call that tool, producing valid structured output.
 
         Args:
             model: Claude model ID (e.g., "claude-sonnet-4-20250514").
@@ -88,20 +94,31 @@ class AstraeaLLMClient:
             anthropic.APITimeoutError: After 3 retry attempts.
             anthropic.APIConnectionError: After 3 retry attempts.
             anthropic.RateLimitError: After 3 retry attempts.
+            ValueError: If the model response cannot be parsed into the schema.
         """
         start = time.monotonic()
+
+        tool_name = f"extract_{output_format.__name__}"
+        tool_schema = output_format.model_json_schema()
 
         kwargs: dict = {
             "model": model,
             "max_tokens": max_tokens,
             "temperature": temperature,
             "messages": messages,
-            "output_format": output_format,
+            "tools": [
+                {
+                    "name": tool_name,
+                    "description": f"Extract structured {output_format.__name__} data.",
+                    "input_schema": tool_schema,
+                }
+            ],
+            "tool_choice": {"type": "tool", "name": tool_name},
         }
         if system is not None:
             kwargs["system"] = system
 
-        response = self._client.messages.parse(**kwargs)
+        response = self._client.messages.create(**kwargs)
         elapsed = time.monotonic() - start
 
         logger.info(
@@ -114,4 +131,12 @@ class AstraeaLLMClient:
             lat=elapsed,
         )
 
-        return response.parsed_output
+        # Extract tool use result from response
+        for block in response.content:
+            if block.type == "tool_use" and block.name == tool_name:
+                return output_format.model_validate(block.input)
+
+        raise ValueError(
+            f"No tool_use block found in response for {tool_name}. "
+            f"Response content types: {[b.type for b in response.content]}"
+        )
