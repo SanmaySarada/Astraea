@@ -105,11 +105,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Mapping specification Pydantic models (9 patterns, confidence scoring, LLM output schema)
-- [ ] 03-02-PLAN.md -- Context builder (assembles focused LLM prompts from domain spec + profiles + eCRF + CT)
-- [ ] 03-03-PLAN.md -- Mapping engine core (LLM call orchestrator, system prompt, post-proposal validation/enrichment)
-- [ ] 03-04-PLAN.md -- Excel/JSON exporters and CLI map-domain command with Rich display
-- [ ] 03-05-PLAN.md -- Integration test on real DM data with human verification of mapping quality
+- [x] 03-01-PLAN.md -- Mapping specification Pydantic models (9 patterns, confidence scoring, LLM output schema)
+- [x] 03-02-PLAN.md -- Context builder (assembles focused LLM prompts from domain spec + profiles + eCRF + CT)
+- [x] 03-03-PLAN.md -- Mapping engine core (LLM call orchestrator, system prompt, post-proposal validation/enrichment)
+- [x] 03-04-PLAN.md -- Excel/JSON exporters and CLI map-domain command with Rich display
+- [x] 03-05-PLAN.md -- Integration test on real DM data with human verification of mapping quality
 
 ---
 
@@ -199,7 +199,7 @@ Plans:
 | 1 - Foundation and Data Infrastructure | Complete | 2026-02-26 |
 | 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
 | 2.1 - Reference Data Fixes (INSERTED) | Complete | 2026-02-27 |
-| 3 - Core Mapping Engine (Demographics) | Planning complete | -- |
+| 3 - Core Mapping Engine (Demographics) | Complete | 2026-02-27 |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |

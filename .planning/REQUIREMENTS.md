@@ -31,22 +31,22 @@
 
 ### Mapping Engine
 
-- [ ] **MAP-01**: System handles direct copy mapping (source variable → SDTM variable, same name and content)
-- [ ] **MAP-02**: System handles rename mapping (different variable name, same content — e.g., GENDER → SEX)
-- [ ] **MAP-03**: System handles reformat mapping (same value, different representation — e.g., SAS date → ISO 8601)
-- [ ] **MAP-04**: System handles split mapping (one source variable → multiple SDTM variables)
-- [ ] **MAP-05**: System handles combine mapping (multiple source variables → one SDTM variable — e.g., USUBJID construction)
-- [ ] **MAP-06**: System handles derivation mapping (calculated fields — e.g., AGE from birth date and consent date)
-- [ ] **MAP-07**: System handles lookup/recode mapping (source values → CDISC CT terms — e.g., "Male" → "M")
-- [ ] **MAP-08**: System handles transpose mapping (wide-format source → tall SDTM Findings format with --TESTCD, --TEST, --ORRES rows)
-- [ ] **MAP-09**: System handles variable attribute mapping (label, type, length adjustments per SDTM-IG spec)
-- [ ] **MAP-10**: System provides confidence score (HIGH/MEDIUM/LOW) for every mapping decision
-- [ ] **MAP-11**: System provides natural language explanation for every mapping decision (why this source maps to this target)
-- [ ] **MAP-12**: System handles natural language derivation descriptions ("Calculate AGE from birth date and consent date") and generates executable transformations
+- [x] **MAP-01**: System handles direct copy mapping (source variable → SDTM variable, same name and content)
+- [x] **MAP-02**: System handles rename mapping (different variable name, same content — e.g., GENDER → SEX)
+- [x] **MAP-03**: System handles reformat mapping (same value, different representation — e.g., SAS date → ISO 8601)
+- [x] **MAP-04**: System handles split mapping (one source variable → multiple SDTM variables)
+- [x] **MAP-05**: System handles combine mapping (multiple source variables → one SDTM variable — e.g., USUBJID construction)
+- [x] **MAP-06**: System handles derivation mapping (calculated fields — e.g., AGE from birth date and consent date)
+- [x] **MAP-07**: System handles lookup/recode mapping (source values → CDISC CT terms — e.g., "Male" → "M")
+- [x] **MAP-08**: System handles transpose mapping (wide-format source → tall SDTM Findings format with --TESTCD, --TEST, --ORRES rows)
+- [x] **MAP-09**: System handles variable attribute mapping (label, type, length adjustments per SDTM-IG spec)
+- [x] **MAP-10**: System provides confidence score (HIGH/MEDIUM/LOW) for every mapping decision
+- [x] **MAP-11**: System provides natural language explanation for every mapping decision (why this source maps to this target)
+- [x] **MAP-12**: System handles natural language derivation descriptions ("Calculate AGE from birth date and consent date") and generates executable transformations
 
 ### SDTM Domain Coverage
 
-- [ ] **DOM-01**: System maps Demographics (DM) domain including all required/expected variables
+- [x] **DOM-01**: System maps Demographics (DM) domain including all required/expected variables
 - [ ] **DOM-02**: System maps Adverse Events (AE) domain with start/end dates, severity, causality, seriousness, outcome
 - [ ] **DOM-03**: System maps Concomitant Medications (CM) domain with dose, route, frequency, indication
 - [ ] **DOM-04**: System maps Exposure (EX) domain with precise dosing records per protocol
@@ -65,10 +65,10 @@
 
 ### Mapping Specification
 
-- [ ] **SPEC-01**: System produces mapping specification as Excel workbook (per-domain sheets with standard columns: Variable, Label, Type, Length, Origin, Source, Derivation Algorithm, CT)
-- [ ] **SPEC-02**: System produces mapping specification as structured JSON/YAML for programmatic use
-- [ ] **SPEC-03**: System documents full source-to-target traceability (every SDTM variable traces to its origin)
-- [ ] **SPEC-04**: System presents mapping spec to human reviewer with confidence scores and explanations highlighted
+- [x] **SPEC-01**: System produces mapping specification as Excel workbook (per-domain sheets with standard columns: Variable, Label, Type, Length, Origin, Source, Derivation Algorithm, CT)
+- [x] **SPEC-02**: System produces mapping specification as structured JSON/YAML for programmatic use
+- [x] **SPEC-03**: System documents full source-to-target traceability (every SDTM variable traces to its origin)
+- [x] **SPEC-04**: System presents mapping spec to human reviewer with confidence scores and explanations highlighted
 
 ### Validation
 
@@ -155,23 +155,23 @@
 | CLSF-02 | Phase 2 | Complete |
 | CLSF-03 | Phase 2 | Complete |
 | CLSF-04 | Phase 2 | Complete |
-| MAP-01 | Phase 3 | Pending |
-| MAP-02 | Phase 3 | Pending |
-| MAP-03 | Phase 3 | Pending |
-| MAP-04 | Phase 3 | Pending |
-| MAP-05 | Phase 3 | Pending |
-| MAP-06 | Phase 3 | Pending |
-| MAP-07 | Phase 3 | Pending |
-| MAP-08 | Phase 3 | Pending |
-| MAP-09 | Phase 3 | Pending |
-| MAP-10 | Phase 3 | Pending |
-| MAP-11 | Phase 3 | Pending |
-| MAP-12 | Phase 3 | Pending |
-| DOM-01 | Phase 3 | Pending |
-| SPEC-01 | Phase 3 | Pending |
-| SPEC-02 | Phase 3 | Pending |
-| SPEC-03 | Phase 3 | Pending |
-| SPEC-04 | Phase 3 | Pending |
+| MAP-01 | Phase 3 | Complete |
+| MAP-02 | Phase 3 | Complete |
+| MAP-03 | Phase 3 | Complete |
+| MAP-04 | Phase 3 | Complete |
+| MAP-05 | Phase 3 | Complete |
+| MAP-06 | Phase 3 | Complete |
+| MAP-07 | Phase 3 | Complete |
+| MAP-08 | Phase 3 | Complete |
+| MAP-09 | Phase 3 | Complete |
+| MAP-10 | Phase 3 | Complete |
+| MAP-11 | Phase 3 | Complete |
+| MAP-12 | Phase 3 | Complete |
+| DOM-01 | Phase 3 | Complete |
+| SPEC-01 | Phase 3 | Complete |
+| SPEC-02 | Phase 3 | Complete |
+| SPEC-03 | Phase 3 | Complete |
+| SPEC-04 | Phase 3 | Complete |
 | HITL-01 | Phase 4 | Pending |
 | HITL-02 | Phase 4 | Pending |
 | CLI-02 | Phase 4 | Pending |
@@ -214,4 +214,4 @@
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-02-26 after roadmap creation*
+*Last updated: 2026-02-27 after Phase 3 completion*
