@@ -44,22 +44,41 @@ def validate_for_xpt_v5(
     df: pd.DataFrame,
     column_labels: dict[str, str],
     table_name: str,
+    table_label: str | None = None,
 ) -> list[str]:
     """Validate a DataFrame against XPT v5 constraints.
 
-    Checks table name, column names, column labels, character value
-    lengths, and ASCII compliance. Returns a list of error strings
-    (empty list means valid).
+    Checks table name, column names, column labels, table label,
+    character value lengths, and ASCII compliance. Returns a list of
+    error strings (empty list means valid).
 
     Args:
         df: DataFrame to validate.
         column_labels: Mapping of column name -> label string.
         table_name: XPT dataset name.
+        table_label: Optional dataset label (max 40 characters).
 
     Returns:
         List of validation error messages. Empty if valid.
     """
     errors: list[str] = []
+
+    # Table label validation
+    if table_label is not None and len(table_label) > 40:
+        errors.append(
+            f"Table label exceeds 40 characters ({len(table_label)} chars): "
+            f"'{table_label[:50]}...'"
+        )
+
+    # Unlabeled column warning
+    upper_label_keys = {k.upper() for k in column_labels}
+    for col in df.columns:
+        col_str = str(col)
+        if col_str not in column_labels and col_str.upper() not in upper_label_keys:
+            errors.append(
+                f"Column '{col_str}' has no label defined -- "
+                f"every SDTM variable must have a label"
+            )
 
     # Table name validation
     if len(table_name) > 8:
@@ -126,6 +145,7 @@ def write_xpt_v5(
     path: str | Path,
     table_name: str,
     column_labels: dict[str, str],
+    table_label: str | None = None,
 ) -> None:
     """Write a DataFrame as an XPT v5 (SAS Transport) file with validation.
 
@@ -137,6 +157,7 @@ def write_xpt_v5(
         path: Output file path.
         table_name: XPT dataset name (max 8 chars, alphanumeric).
         column_labels: Mapping of column name -> label string.
+        table_label: Optional dataset label (max 40 characters).
 
     Raises:
         XPTValidationError: If data violates XPT v5 constraints.
@@ -145,7 +166,7 @@ def write_xpt_v5(
     path = Path(path)
 
     # Step 1: Validate
-    errors = validate_for_xpt_v5(df, column_labels, table_name)
+    errors = validate_for_xpt_v5(df, column_labels, table_name, table_label=table_label)
     if errors:
         raise XPTValidationError(errors)
 
@@ -169,13 +190,14 @@ def write_xpt_v5(
     )
 
     # Step 3: Write using pyreadstat
-    pyreadstat.write_xport(
-        df_out,
-        str(path),
+    write_kwargs: dict[str, object] = dict(
         table_name=upper_table,
         column_labels=upper_labels,
         file_format_version=5,
     )
+    if table_label is not None:
+        write_kwargs["table_label"] = table_label
+    pyreadstat.write_xport(df_out, str(path), **write_kwargs)
 
     # Step 4: Read-back verification
     df_readback, meta_readback = pyreadstat.read_xport(str(path))

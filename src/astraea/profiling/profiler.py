@@ -74,11 +74,10 @@ SAS_DATE_FORMATS: frozenset[str] = frozenset(
 # Regex patterns for string date detection.
 _DATE_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("DD Mon YYYY", re.compile(r"^\d{1,2}\s+[A-Za-z]{3}\s+\d{4}$")),
-    ("DD/MM/YYYY", re.compile(r"^\d{1,2}/\d{1,2}/\d{4}$")),
     ("YYYY-MM-DD", re.compile(r"^\d{4}-\d{1,2}-\d{1,2}$")),
-    ("MM/DD/YYYY", re.compile(r"^\d{1,2}/\d{1,2}/\d{4}$")),
     ("DD-Mon-YYYY", re.compile(r"^\d{1,2}-[A-Za-z]{3}-\d{4}$")),
     ("YYYY-MM-DDTHH:MM:SS", re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")),
+    ("SLASH_DATE", re.compile(r"^\d{1,2}/\d{1,2}/\d{4}$")),
 ]
 
 
@@ -99,6 +98,19 @@ def detect_date_format(samples: list[str]) -> str | None:
         matches = sum(1 for s in samples if pattern.match(s.strip()))
         # If >50% of samples match, we have a date pattern
         if matches > len(samples) * 0.5:
+            if format_name == "SLASH_DATE":
+                # Disambiguate DD/MM/YYYY vs MM/DD/YYYY by checking field values
+                for s in samples:
+                    s = s.strip()
+                    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})$", s)
+                    if m:
+                        first, second = int(m.group(1)), int(m.group(2))
+                        if first > 12:
+                            return "DD/MM/YYYY"
+                        if second > 12:
+                            return "MM/DD/YYYY"
+                # All ambiguous -- default to DD/MM/YYYY per project convention (D-0104-01)
+                return "DD/MM/YYYY"
             return format_name
 
     return None
@@ -122,10 +134,13 @@ def _is_sas_date_format(sas_format: str | None) -> bool:
 def _is_potential_string_date_column(name: str) -> bool:
     """Check if column name suggests it might contain string dates.
 
-    Looks for *_RAW columns with DAT in the name (case insensitive).
+    Looks for _RAW columns (case insensitive). All _RAW columns are
+    candidates for string date detection because EDC systems store
+    human-entered dates in _RAW variants. The detect_date_format
+    function will return None if the values don't match any date pattern,
+    so false positives are harmless.
     """
-    upper = name.upper()
-    return "_RAW" in upper and "DAT" in upper
+    return "_RAW" in name.upper()
 
 
 def _compute_sample_values(series: pd.Series, max_samples: int = 10) -> list[str]:
