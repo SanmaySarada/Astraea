@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 4.1 IN PROGRESS -- FDA Compliance Infrastructure.
+**Current focus:** Phase 4.1 COMPLETE -- FDA Compliance Infrastructure. Ready for Phase 5.
 
 ## Current Position
 
 Phase: 4.1 of 8 (FDA Compliance Infrastructure)
-Plan: 4 of 5
-Status: In progress
-Last activity: 2026-02-27 -- Completed 04.1-04-PLAN.md (XPT compliance utilities)
+Plan: 5 of 5
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 04.1-05-PLAN.md (Execution bridge + CLI + integration test)
 
-Progress: [██████████████████████████████████████░░] ~76%
+Progress: [██████████████████████████████████████████] ~79%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 32
-- Average duration: ~3.3 minutes
+- Total plans completed: 33
+- Average duration: ~3.4 minutes
 
 **By Phase:**
 
@@ -32,6 +32,7 @@ Progress: [███████████████████████
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
+| 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 
 ## Phase 1 Deliverables
 
@@ -138,9 +139,14 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 | Pattern handlers + dispatch registry | src/astraea/execution/pattern_handlers.py | 13 | Done |
 | DatasetExecutor class | src/astraea/execution/executor.py | 9 | Done |
 | CrossDomainContext model | src/astraea/execution/executor.py | -- | Done |
-| **Total (so far)** | | **141 new tests** | **In progress** |
+| XPT compliance in executor | src/astraea/execution/executor.py | 8 | Done |
+| execute-domain CLI command | src/astraea/cli/app.py | -- | Done |
+| DM integration test | tests/integration/execution/test_dm_execution.py | 8 | Done |
+| **Total** | | **144 new tests** | **Complete** |
 
-**Combined test suite: 892 tests passing**
+**Combined test suite: 907 tests passing**
+
+CLI commands available: `astraea execute-domain`
 
 ## Accumulated Context
 
@@ -259,7 +265,7 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
   - Phase 5 BLOCKED until 4.1 completes -- every domain expansion needs --DY, --SEQ, sort order, execution pipeline, origin tracking
   - Scope: 13 success criteria covering derivation utilities, execution pipeline, XPT enforcement, model extensions, missing codelists, cross-domain validation
   - Key gaps: No dataset execution pipeline (specs only, no actual SDTM DataFrames), no --DY/--SEQ/EPOCH/VISITNUM utilities, no sort/variable order enforcement, no origin tracking, no date imputation flags, no ASCII validation, 4 missing CT codelists
-  - STATUS: In progress (plans 01-04 of 5 complete)
+  - STATUS: **COMPLETE** -- all 5 plans executed, 907 tests passing
 - Phases 5, 6, 7 updated with additional FDA requirements:
   - Phase 5: Updated dependency to Phase 4.1, added requirement for actual .xpt output (not just specs), variable origin metadata
   - Phase 6: Added mandatory TS domain population (missing TS = FDA rejection), SUPPQUAL referential integrity requirements, unit consistency validation, normal range indicators, Findings-specific codelists
@@ -275,5 +281,5 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 04.1-04-PLAN.md (XPT compliance utilities)
+Stopped at: Completed 04.1-05-PLAN.md (Execution bridge + CLI + integration test) -- Phase 4.1 complete
 Resume file: None
