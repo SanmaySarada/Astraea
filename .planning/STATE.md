@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3 COMPLETE -- Core Mapping Engine (Demographics). Ready for Phase 4.
+**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 02 of 05 complete).
 
 ## Current Position
 
-Phase: 3 of 8 (Core Mapping Engine)
-Plan: 5 of 5
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 03-05-PLAN.md (DM integration test)
+Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
+Plan: 2 of 5
+Status: In progress
+Last activity: 2026-02-27 -- Completed 03.1-02-PLAN.md (Add missing domains)
 
-Progress: [██████████████████████████░░░░░░░░░░░░░░] ~51%
+Progress: [███████████████████████████░░░░░░░░░░░░░] ~53%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -30,6 +30,7 @@ Progress: [███████████████████████
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
+| 03.1-audit-fixes | 2/5 | ~6 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -154,6 +155,9 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-0304-02] Cross-domain datasets hardcoded as dict (DM: [ex, ie, irt, ds]) -- generic resolver deferred
 - 2026-02-27: [D-0304-03] map-domain (hyphenated) used as CLI command name to avoid Python keyword conflict
 - 2026-02-27: [D-0305-01] ASSIGN pattern confidence not penalized for missing codelists (C66734 not bundled)
+- 2026-02-27: [D-03.1-02-01] DomainSpec.domain max_length increased from 4 to 8 to accommodate SUPPQUAL
+- 2026-02-27: [D-03.1-02-02] SUPPQUAL added as pseudo-domain in domains.json (same structure as real domains)
+- 2026-02-27: [D-03.1-02-03] C66738 used as forward-reference codelist for TSPARMCD (not yet in codelists.json)
 
 ### Pending Todos
 
@@ -166,6 +170,10 @@ CLI commands available: `astraea map-domain`
   - Phase 3 BLOCKED until 2.1 completes -- mapper cannot produce correct SDTM with wrong reference data
   - Scope: All 14 Tier 1 items from .planning/PHASE2_AUDIT.md section 9
   - STATUS: **COMPLETE** -- all 4 plans executed, 490 tests passing
+- Phase 3.1 inserted after Phase 3: Audit Fixes + Architectural Wiring (URGENT)
+  - Triggered by: Phase 3 audit found 5 CRITICAL + 14 HIGH + 8 MEDIUM issues + 3 architectural gaps
+  - Phase 4 BLOCKED until 3.1 completes -- review gate needs correct reference data, model fields, and wired transforms
+  - Scope: All items from .planning/PHASE3_AUDIT.md sections 2-6 and 9
 
 ### Blockers/Concerns
 
@@ -176,5 +184,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03-05-PLAN.md (DM integration test) -- Phase 3 COMPLETE
+Stopped at: Completed 03.1-02-PLAN.md (Add missing domains)
 Resume file: None
