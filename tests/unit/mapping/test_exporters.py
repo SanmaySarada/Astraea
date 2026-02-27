@@ -292,6 +292,54 @@ class TestExportToExcel:
         assert summary["LOW Confidence"] == 1
         assert summary["Source Datasets"] == "dm.sas7bdat"
 
+    def test_export_to_excel_suppqual_label_dynamic_domain(
+        self, tmp_path: Path
+    ) -> None:
+        """SUPPQUAL candidate label uses dynamic domain name, not hardcoded 'DM'."""
+        ae_spec = DomainMappingSpec(
+            domain="AE",
+            domain_label="Adverse Events",
+            domain_class="Events",
+            structure="One record per AE per subject",
+            study_id="PHA022121-C301",
+            source_datasets=["ae.sas7bdat"],
+            variable_mappings=[],
+            total_variables=0,
+            required_mapped=0,
+            expected_mapped=0,
+            high_confidence_count=0,
+            medium_confidence_count=0,
+            low_confidence_count=0,
+            mapping_timestamp="2026-02-27T12:00:00Z",
+            model_used="claude-sonnet-4-20250514",
+            unmapped_source_variables=[],
+            suppqual_candidates=["CUSTOM_VAR"],
+        )
+
+        out = tmp_path / "ae_mapping.xlsx"
+        export_to_excel(ae_spec, out)
+
+        wb = load_workbook(out)
+        ws = wb["Unmapped Variables"]
+
+        # SUPPQUAL candidate should say "SUPPAE Candidate", not "SUPPDM Candidate"
+        assert ws.cell(row=2, column=2).value == "CUSTOM_VAR"
+        assert ws.cell(row=2, column=4).value == "SUPPAE Candidate"
+
+    def test_export_to_excel_suppqual_label_dm_domain(
+        self, sample_spec: DomainMappingSpec, tmp_path: Path
+    ) -> None:
+        """SUPPQUAL label for DM domain still says 'SUPPDM Candidate'."""
+        out = tmp_path / "dm_mapping.xlsx"
+        export_to_excel(sample_spec, out)
+
+        wb = load_workbook(out)
+        ws = wb["Unmapped Variables"]
+
+        # ETHNGRP is the SUPPQUAL candidate in the DM sample spec
+        assert ws.cell(row=4, column=2).value == "ETHNGRP"
+        assert ws.cell(row=4, column=4).value == "SUPPDM Candidate"
+
     def test_export_to_excel_creates_parent_dirs(
         self, sample_spec: DomainMappingSpec, tmp_path: Path
     ) -> None:

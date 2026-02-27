@@ -232,6 +232,155 @@ class TestValidateAndEnrich:
         assert mappings[0].confidence_level == ConfidenceLevel.LOW
 
 
+    def test_order_enrichment_from_domain_spec(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """Enrichment populates order from VariableSpec.order."""
+        proposal = _make_proposal([
+            VariableMappingProposal(
+                sdtm_variable="STUDYID",
+                source_dataset=None,
+                source_variable=None,
+                mapping_pattern=MappingPattern.ASSIGN,
+                mapping_logic="Assign constant study ID",
+                assigned_value="PHA022121-C301",
+                confidence=0.99,
+                rationale="Standard constant assignment",
+            ),
+        ])
+
+        domain_spec = sdtm_ref.get_domain_spec("DM")
+        assert domain_spec is not None
+
+        mappings, _issues = validate_and_enrich(proposal, domain_spec, ct_ref)
+
+        # STUDYID should have a positive order from the IG spec
+        assert mappings[0].order > 0
+
+        # Verify it matches the actual spec order
+        studyid_spec = next(
+            v for v in domain_spec.variables if v.name == "STUDYID"
+        )
+        assert mappings[0].order == studyid_spec.order
+
+    def test_order_defaults_to_zero_for_unknown_variable(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """Unknown variable (not in domain spec) gets order=0."""
+        proposal = _make_proposal([
+            VariableMappingProposal(
+                sdtm_variable="FAKEVAR",
+                source_dataset="dm.sas7bdat",
+                source_variable="SOMETHING",
+                mapping_pattern=MappingPattern.DIRECT,
+                mapping_logic="Non-existent variable",
+                confidence=0.90,
+                rationale="Testing unknown variable",
+            ),
+        ])
+
+        domain_spec = sdtm_ref.get_domain_spec("DM")
+        assert domain_spec is not None
+
+        mappings, _issues = validate_and_enrich(proposal, domain_spec, ct_ref)
+        assert mappings[0].order == 0
+
+    def test_lookup_recode_nonextensible_codelist_warning(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """LOOKUP_RECODE with non-extensible codelist (no assigned_value) produces warning."""
+        # C66731 is Sex -- non-extensible
+        proposal = _make_proposal([
+            VariableMappingProposal(
+                sdtm_variable="SEX",
+                source_dataset="dm.sas7bdat",
+                source_variable="SEX_RAW",
+                mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                mapping_logic="Recode raw sex values via CT",
+                codelist_code="C66731",
+                assigned_value=None,
+                confidence=0.85,
+                rationale="Lookup recode for sex",
+            ),
+        ])
+
+        domain_spec = sdtm_ref.get_domain_spec("DM")
+        assert domain_spec is not None
+
+        mappings, issues = validate_and_enrich(proposal, domain_spec, ct_ref)
+
+        # Should have warning about non-extensible codelist with lookup_recode
+        assert any(
+            "non-extensible" in i and "lookup_recode" in i and "runtime" in i
+            for i in issues
+        ), f"Expected non-extensible lookup_recode warning, got: {issues}"
+
+        # Confidence should NOT be penalized (still gets +0.05 boost)
+        assert mappings[0].confidence == pytest.approx(0.90, abs=0.001)
+
+    def test_lookup_recode_extensible_codelist_no_warning(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """LOOKUP_RECODE with extensible codelist should NOT produce the non-extensible warning."""
+        # C74457 is Race -- extensible
+        proposal = _make_proposal([
+            VariableMappingProposal(
+                sdtm_variable="RACE",
+                source_dataset="dm.sas7bdat",
+                source_variable="RACE_RAW",
+                mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                mapping_logic="Recode raw race values via CT",
+                codelist_code="C74457",
+                assigned_value=None,
+                confidence=0.85,
+                rationale="Lookup recode for race",
+            ),
+        ])
+
+        domain_spec = sdtm_ref.get_domain_spec("DM")
+        assert domain_spec is not None
+
+        mappings, issues = validate_and_enrich(proposal, domain_spec, ct_ref)
+
+        # Should NOT have the non-extensible warning
+        assert not any(
+            "non-extensible" in i and "lookup_recode" in i
+            for i in issues
+        ), f"Should not warn for extensible codelist, got: {issues}"
+
+    def test_lookup_recode_nonextensible_with_assigned_value_uses_existing_check(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """LOOKUP_RECODE with non-extensible codelist AND assigned_value uses existing check."""
+        # C66731 is Sex -- non-extensible; "Female" is NOT a valid submission value
+        proposal = _make_proposal([
+            VariableMappingProposal(
+                sdtm_variable="SEX",
+                source_dataset="dm.sas7bdat",
+                source_variable="SEX_RAW",
+                mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                mapping_logic="Recode raw sex values via CT",
+                codelist_code="C66731",
+                assigned_value="Female",  # Invalid submission value
+                confidence=0.85,
+                rationale="Lookup recode for sex",
+            ),
+        ])
+
+        domain_spec = sdtm_ref.get_domain_spec("DM")
+        assert domain_spec is not None
+
+        mappings, issues = validate_and_enrich(proposal, domain_spec, ct_ref)
+
+        # Should have the existing "value not in codelist" error, NOT the new warning
+        assert any("Female" in i and "not in non-extensible" in i for i in issues)
+        # Should NOT have the new lookup_recode warning (assigned_value is present)
+        assert not any(
+            "runtime" in i and "lookup_recode" in i
+            for i in issues
+        )
+
+
 class TestCheckRequiredCoverage:
     """Tests for check_required_coverage function."""
 

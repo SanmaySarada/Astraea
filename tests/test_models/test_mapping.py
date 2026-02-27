@@ -289,6 +289,76 @@ class TestVariableMapping:
         assert mapping.core == CoreDesignation.REQ
         assert mapping.core.value == "Req"
 
+    def test_order_and_length_defaults(self) -> None:
+        """VariableMapping defaults: order=0, length=None."""
+        mapping = VariableMapping(
+            sdtm_variable="AETERM",
+            sdtm_label="Reported Term for the Adverse Event",
+            sdtm_data_type="Char",
+            core=CoreDesignation.REQ,
+            mapping_pattern=MappingPattern.DIRECT,
+            mapping_logic="Direct carry",
+            confidence=0.95,
+            confidence_level=ConfidenceLevel.HIGH,
+            confidence_rationale="Test",
+        )
+        assert mapping.order == 0
+        assert mapping.length is None
+
+    def test_order_and_length_explicit(self) -> None:
+        """VariableMapping accepts explicit order and length values."""
+        mapping = VariableMapping(
+            sdtm_variable="AETERM",
+            sdtm_label="Reported Term for the Adverse Event",
+            sdtm_data_type="Char",
+            core=CoreDesignation.REQ,
+            mapping_pattern=MappingPattern.DIRECT,
+            mapping_logic="Direct carry",
+            confidence=0.95,
+            confidence_level=ConfidenceLevel.HIGH,
+            confidence_rationale="Test",
+            order=5,
+            length=200,
+        )
+        assert mapping.order == 5
+        assert mapping.length == 200
+
+    def test_order_negative_rejected(self) -> None:
+        """order < 0 should be rejected by ge=0 constraint."""
+        with pytest.raises(ValidationError, match="greater than or equal to 0"):
+            VariableMapping(
+                sdtm_variable="AETERM",
+                sdtm_label="Test",
+                sdtm_data_type="Char",
+                core=CoreDesignation.REQ,
+                mapping_pattern=MappingPattern.DIRECT,
+                mapping_logic="test",
+                confidence=0.5,
+                confidence_level=ConfidenceLevel.LOW,
+                confidence_rationale="test",
+                order=-1,
+            )
+
+    def test_order_length_json_roundtrip(self) -> None:
+        """order and length survive JSON round-trip."""
+        mapping = VariableMapping(
+            sdtm_variable="AETERM",
+            sdtm_label="Test",
+            sdtm_data_type="Char",
+            core=CoreDesignation.REQ,
+            mapping_pattern=MappingPattern.DIRECT,
+            mapping_logic="test",
+            confidence=0.5,
+            confidence_level=ConfidenceLevel.LOW,
+            confidence_rationale="test",
+            order=7,
+            length=100,
+        )
+        json_str = mapping.model_dump_json()
+        restored = VariableMapping.model_validate_json(json_str)
+        assert restored.order == 7
+        assert restored.length == 100
+
     def test_data_type_literal(self) -> None:
         """sdtm_data_type must be Char or Num."""
         with pytest.raises(ValidationError, match="sdtm_data_type"):
@@ -337,6 +407,53 @@ class TestDomainMappingSpec:
         assert spec.cross_domain_sources == []
         assert spec.unmapped_source_variables == []
         assert spec.suppqual_candidates == []
+
+    def test_missing_required_variables_default(self) -> None:
+        """missing_required_variables defaults to empty list."""
+        spec = DomainMappingSpec(
+            domain="DM",
+            domain_label="Demographics",
+            domain_class="Special-Purpose",
+            structure="One record per subject",
+            study_id="PHA022121-C301",
+            source_datasets=["dm.sas7bdat"],
+            variable_mappings=[],
+            total_variables=0,
+            required_mapped=0,
+            expected_mapped=0,
+            high_confidence_count=0,
+            medium_confidence_count=0,
+            low_confidence_count=0,
+            mapping_timestamp="2026-02-27T10:00:00Z",
+            model_used="claude-sonnet-4-20250514",
+        )
+        assert spec.missing_required_variables == []
+
+    def test_missing_required_variables_explicit(self) -> None:
+        """Explicit missing_required_variables serializes correctly."""
+        spec = DomainMappingSpec(
+            domain="DM",
+            domain_label="Demographics",
+            domain_class="Special-Purpose",
+            structure="One record per subject",
+            study_id="PHA022121-C301",
+            source_datasets=["dm.sas7bdat"],
+            variable_mappings=[],
+            total_variables=0,
+            required_mapped=0,
+            expected_mapped=0,
+            high_confidence_count=0,
+            medium_confidence_count=0,
+            low_confidence_count=0,
+            mapping_timestamp="2026-02-27T10:00:00Z",
+            model_used="claude-sonnet-4-20250514",
+            missing_required_variables=["STUDYID", "DOMAIN"],
+        )
+        assert spec.missing_required_variables == ["STUDYID", "DOMAIN"]
+
+        # JSON round-trip
+        restored = DomainMappingSpec.model_validate_json(spec.model_dump_json())
+        assert restored.missing_required_variables == ["STUDYID", "DOMAIN"]
 
     def test_summary_counts_non_negative(self) -> None:
         """Summary count fields must be >= 0."""
