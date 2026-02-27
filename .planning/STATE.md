@@ -168,9 +168,13 @@ CLI commands available: `astraea execute-domain`
 | IE mapping test | tests/integration/mapping/test_ie_mapping.py | 7 | Done |
 | CE mapping test | tests/integration/mapping/test_ce_mapping.py | 8 | Done |
 | DV mapping test | tests/integration/mapping/test_dv_mapping.py | 7 | Done |
-| **Total** | | **111 new tests** | **Complete** |
+| AE mapping test (LLM) | tests/integration/mapping/test_ae_mapping.py | 14 | Done |
+| CM mapping test (LLM) | tests/integration/mapping/test_cm_mapping.py | 9 | Done |
+| EX mapping test (LLM, multi-source) | tests/integration/mapping/test_ex_mapping.py | 9 | Done |
+| DS mapping test (LLM, multi-source) | tests/integration/mapping/test_ds_mapping.py | 8 | Done |
+| **Total** | | **151 new tests** | **Complete** |
 
-**Combined test suite: 1042 tests passing**
+**Combined test suite: 1082 tests passing**
 
 ## Accumulated Context
 
@@ -317,5 +321,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-07-PLAN.md (MH, IE, CE, DV mapping integration tests)
+Stopped at: Completed 05-06-PLAN.md (AE, CM, EX, DS LLM mapping integration tests)
 Resume file: None
