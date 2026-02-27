@@ -17,6 +17,37 @@ from datetime import date, datetime, timedelta, timezone
 
 from loguru import logger
 
+
+def _validate_date_components(
+    year: int | None = None,
+    month: int | None = None,
+    day: int | None = None,
+) -> bool:
+    """Validate that date components form a real calendar date.
+
+    Args:
+        year: 4-digit year (1800-2100 range).
+        month: Month (1-12).
+        day: Day (1-31, validated against month/year).
+
+    Returns:
+        True if all provided components are valid, False otherwise.
+    """
+    if year is not None and (year < 1800 or year > 2100):
+        return False
+    if month is not None and (month < 1 or month > 12):
+        return False
+    if day is not None:
+        if day < 1 or day > 31:
+            return False
+        # If we have all three components, validate via datetime.date
+        if year is not None and month is not None:
+            try:
+                date(year, month, day)
+            except ValueError:
+                return False
+    return True
+
 # SAS epoch: 1960-01-01
 SAS_EPOCH = date(1960, 1, 1)
 SAS_EPOCH_DATETIME = datetime(1960, 1, 1, tzinfo=timezone.utc)
@@ -29,6 +60,23 @@ _MONTH_ABBREV: dict[str, int] = {
 }
 
 # Regex patterns for date format detection
+
+# Partial date patterns with UN/UNK for unknown components
+_PATTERN_UN_UNK_YYYY = re.compile(
+    r"^\s*(?:un|unk)\s+(?:un|unk)\s+(\d{4})\s*$",
+    re.IGNORECASE,
+)
+_PATTERN_UN_MON_YYYY = re.compile(
+    r"^\s*(?:un|unk)\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})\s*$",
+    re.IGNORECASE,
+)
+
+# Datetime string pattern: "DD MON YYYY HH:MM"
+_PATTERN_DD_MON_YYYY_HHMM = re.compile(
+    r"^\s*(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*$",
+    re.IGNORECASE,
+)
+
 _PATTERN_DD_MON_YYYY = re.compile(
     r"^\s*(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})\s*$",
     re.IGNORECASE,
@@ -74,7 +122,7 @@ def sas_date_to_iso(sas_numeric: float | None) -> str:
     if _is_nan(sas_numeric):
         return ""
 
-    days = int(sas_numeric)  # type: ignore[arg-type]
+    days = round(sas_numeric)  # type: ignore[arg-type]
     result_date = SAS_EPOCH + timedelta(days=days)
     return result_date.isoformat()
 
@@ -104,7 +152,7 @@ def sas_datetime_to_iso(sas_numeric: float | None) -> str:
     if _is_nan(sas_numeric):
         return ""
 
-    seconds = int(sas_numeric)  # type: ignore[arg-type]
+    seconds = round(sas_numeric)  # type: ignore[arg-type]
     result_dt = SAS_EPOCH_DATETIME + timedelta(seconds=seconds)
     # Format without timezone info (SDTM dates are typically timezone-naive)
     return result_dt.strftime("%Y-%m-%dT%H:%M:%S")
@@ -142,17 +190,61 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
 
     s = str(date_str).strip()
 
+    # "UN UNK YYYY" or "UNK UNK YYYY" -- unknown day and month
+    m = _PATTERN_UN_UNK_YYYY.match(s)
+    if m:
+        year = int(m.group(1))
+        if not _validate_date_components(year=year):
+            logger.warning("Invalid year in date string: '{}'", s)
+            return ""
+        return f"{year:04d}"
+
+    # "UN Mon YYYY" or "UNK Mon YYYY" -- unknown day only
+    m = _PATTERN_UN_MON_YYYY.match(s)
+    if m:
+        month = _MONTH_ABBREV[m.group(1).lower()]
+        year = int(m.group(2))
+        if not _validate_date_components(year=year, month=month):
+            logger.warning("Invalid date components in: '{}'", s)
+            return ""
+        return f"{year:04d}-{month:02d}"
+
+    # "DD MON YYYY HH:MM" -- datetime string (must be before DD Mon YYYY)
+    m = _PATTERN_DD_MON_YYYY_HHMM.match(s)
+    if m:
+        day = int(m.group(1))
+        month = _MONTH_ABBREV[m.group(2).lower()]
+        year = int(m.group(3))
+        hour = int(m.group(4))
+        minute = int(m.group(5))
+        if not _validate_date_components(year=year, month=month, day=day):
+            logger.warning("Invalid date in datetime string: '{}'", s)
+            return ""
+        if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+            logger.warning("Invalid time in datetime string: '{}'", s)
+            return ""
+        return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}"
+
     # "DD Mon YYYY" -- primary format in Fakedata _RAW columns
     m = _PATTERN_DD_MON_YYYY.match(s)
     if m:
         day = int(m.group(1))
         month = _MONTH_ABBREV[m.group(2).lower()]
         year = int(m.group(3))
+        if not _validate_date_components(year=year, month=month, day=day):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
         return f"{year:04d}-{month:02d}-{day:02d}"
 
-    # "YYYY-MM-DD" -- pass through
+    # "YYYY-MM-DD" -- pass through (with validation)
     m = _PATTERN_YYYY_MM_DD.match(s)
     if m:
+        year = int(m.group(1))
+        month = int(m.group(2))
+        day = int(m.group(3))
+        if not _validate_date_components(year=year, month=month, day=day):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
         return s.strip()
 
     # "Mon YYYY" -- partial date
@@ -160,11 +252,19 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
     if m:
         month = _MONTH_ABBREV[m.group(1).lower()]
         year = int(m.group(2))
+        if not _validate_date_components(year=year, month=month):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
         return f"{year:04d}-{month:02d}"
 
     # "YYYY-MM" -- partial, pass through
     m = _PATTERN_YYYY_MM.match(s)
     if m:
+        year = int(m.group(1))
+        month = int(m.group(2))
+        if not _validate_date_components(year=year, month=month):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
         return s.strip()
 
     # Slash-separated: DD/MM/YYYY or MM/DD/YYYY
@@ -188,11 +288,18 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
                 s, day, month,
             )
 
+        if not _validate_date_components(year=year, month=month, day=day):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
         return f"{year:04d}-{month:02d}-{day:02d}"
 
     # "YYYY" -- partial year only
     m = _PATTERN_YYYY.match(s)
     if m:
+        year = int(m.group(1))
+        if not _validate_date_components(year=year):
+            logger.warning("Invalid year: '{}'", s)
+            return ""
         return s.strip()
 
     logger.warning("Could not parse date string: '{}'", s)
@@ -236,6 +343,13 @@ def format_partial_iso8601(
         '2023'
     """
     if year is None:
+        return ""
+
+    if not _validate_date_components(year=year, month=month, day=day):
+        logger.warning(
+            "Invalid date components: year={}, month={}, day={}",
+            year, month, day,
+        )
         return ""
 
     result = f"{year:04d}"
