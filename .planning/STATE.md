@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3 in progress -- Core Mapping Engine (Demographics)
+**Current focus:** Phase 3 COMPLETE -- Core Mapping Engine (Demographics). Ready for Phase 4.
 
 ## Current Position
 
 Phase: 3 of 8 (Core Mapping Engine)
-Plan: 4 of 5
-Status: In progress
-Last activity: 2026-02-27 -- Completed 03-04-PLAN.md (mapping output layer)
+Plan: 5 of 5
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 03-05-PLAN.md (DM integration test)
 
-Progress: [█████████████████████████░░░░░░░░░░░░░░░] ~49%
+Progress: [██████████████████████████░░░░░░░░░░░░░░] ~51%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -29,7 +29,7 @@ Progress: [███████████████████████
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
-| 03-core-mapping-engine | 4/5 | ~17 min | ~4.3 min |
+| 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
 
 ## Phase 1 Deliverables
 
@@ -82,10 +82,10 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 | System prompt + validation + engine | src/astraea/mapping/prompts.py, validation.py, engine.py | 19 | Done |
 | Excel/JSON exporters | src/astraea/mapping/exporters.py | 7 | Done |
 | CLI map-domain + display | src/astraea/cli/app.py, display.py | 5 | Done |
-| Integration test | -- | -- | Pending |
-| **Total** | | **74 tests** | **In progress** |
+| Integration test (DM end-to-end) | tests/integration/mapping/test_dm_mapping.py | 15 | Done |
+| **Total** | | **89 tests** | **Complete** |
 
-**Combined test suite: 564 tests passing**
+**Combined test suite: 579 tests passing**
 
 CLI commands available: `astraea map-domain`
 
@@ -153,6 +153,7 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-0304-01] ANSI escape codes stripped in display tests using regex helper since Rich embeds bold/dim even with no_color
 - 2026-02-27: [D-0304-02] Cross-domain datasets hardcoded as dict (DM: [ex, ie, irt, ds]) -- generic resolver deferred
 - 2026-02-27: [D-0304-03] map-domain (hyphenated) used as CLI command name to avoid Python keyword conflict
+- 2026-02-27: [D-0305-01] ASSIGN pattern confidence not penalized for missing codelists (C66734 not bundled)
 
 ### Pending Todos
 
@@ -175,5 +176,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03-04-PLAN.md (mapping output layer)
+Stopped at: Completed 03-05-PLAN.md (DM integration test) -- Phase 3 COMPLETE
 Resume file: None
