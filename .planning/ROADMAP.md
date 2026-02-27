@@ -186,11 +186,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 04.1-01-PLAN.md -- Derivation utilities (--DY, --SEQ, EPOCH, VISITNUM)
-- [ ] 04.1-02-PLAN.md -- Model extensions (origin, computational_method), imputation flags, missing CT codelists
-- [ ] 04.1-03-PLAN.md -- Execution pipeline core (pattern handlers + DatasetExecutor)
-- [ ] 04.1-04-PLAN.md -- XPT compliance utilities (ASCII validation, character length optimization)
-- [ ] 04.1-05-PLAN.md -- Integration: wire XPT compliance into executor, CLI execute-domain, DM integration test
+- [x] 04.1-01-PLAN.md -- Derivation utilities (--DY, --SEQ, EPOCH, VISITNUM)
+- [x] 04.1-02-PLAN.md -- Model extensions (origin, computational_method), imputation flags, missing CT codelists
+- [x] 04.1-03-PLAN.md -- Execution pipeline core (pattern handlers + DatasetExecutor)
+- [x] 04.1-04-PLAN.md -- XPT compliance utilities (ASCII validation, character length optimization)
+- [x] 04.1-05-PLAN.md -- Integration: wire XPT compliance into executor, CLI execute-domain, DM integration test
 
 ---
 
@@ -277,7 +277,7 @@ Plans:
 | 3 - Core Mapping Engine (Demographics) | Complete | 2026-02-27 |
 | 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Complete | 2026-02-27 |
 | 4 - Human Review Gate | Complete | 2026-02-27 |
-| 4.1 - FDA Compliance Infrastructure (INSERTED) | Not started | -- |
+| 4.1 - FDA Compliance Infrastructure (INSERTED) | Complete | 2026-02-27 |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
 | 7 - Validation and Submission Readiness | Not started | -- |
