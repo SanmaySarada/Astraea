@@ -113,6 +113,34 @@ Plans:
 
 ---
 
+### Phase 3.1: Audit Fixes + Architectural Wiring (INSERTED)
+
+**Goal:** Fix all issues from .planning/PHASE3_AUDIT.md (5 CRITICAL + 14 HIGH + 8 MEDIUM + 3 architectural gaps) so Phase 4 has a complete, correct foundation.
+**Depends on:** Phase 3 (complete)
+**Blocks:** Phase 4
+**Requirements:** All items from PHASE3_AUDIT.md sections 2-6 and 9
+
+**Success Criteria:**
+1. TS domain in domains.json with full variable list
+2. 16 missing codelists added to codelists.json; C66742 has only N,Y
+3. All core designations match SDTM-IG v3.4
+4. Trial Design domains (TA, TE, TV, TI) + SE + CO added
+5. DomainMappingSpec has missing_required_variables; VariableMapping has order + length
+6. SUPPQUAL label bug, profiler date detection, XPT writer gaps all fixed
+7. transforms/ wired into production code (currently zero production imports)
+8. All 579+ tests pass; ruff clean
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 03.1-01-PLAN.md -- Add 16 missing CT codelists + fix C66742 invalid "U" term
+- [ ] 03.1-02-PLAN.md -- Add TS, Trial Design, SE, CO, SUPPQUAL domains to domains.json
+- [ ] 03.1-03-PLAN.md -- Fix core designations, labels, missing variables, null key_variables
+- [ ] 03.1-04-PLAN.md -- Add model fields (order, length, missing_required) + fix SUPPQUAL label bug
+- [ ] 03.1-05-PLAN.md -- Fix profiler date bug, XPT writer gaps, docstrings, transform wiring
+
+---
+
 ### Phase 4: Human Review Gate
 
 **Goal:** A human reviewer can inspect every proposed mapping, approve or correct it interactively, and resume an interrupted review session -- the quality control layer that makes the system trustworthy in a regulated environment.
@@ -200,6 +228,7 @@ Plans:
 | 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
 | 2.1 - Reference Data Fixes (INSERTED) | Complete | 2026-02-27 |
 | 3 - Core Mapping Engine (Demographics) | Complete | 2026-02-27 |
+| 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Not started | -- |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
