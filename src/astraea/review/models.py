@@ -89,13 +89,20 @@ class ReviewDecision(BaseModel):
 
     @model_validator(mode="after")
     def _validate_correction_fields(self) -> ReviewDecision:
-        """Ensure corrected_mapping is provided when status is CORRECTED."""
+        """Ensure corrected_mapping is provided when status is CORRECTED.
+
+        Exception: REJECT corrections have no corrected_mapping (the
+        variable is being removed, not replaced).
+        """
         if self.status == ReviewStatus.CORRECTED:
-            if self.corrected_mapping is None:
-                msg = "corrected_mapping is required when status is CORRECTED"
-                raise ValueError(msg)
             if self.correction_type is None:
                 msg = "correction_type is required when status is CORRECTED"
+                raise ValueError(msg)
+            if (
+                self.corrected_mapping is None
+                and self.correction_type != CorrectionType.REJECT
+            ):
+                msg = "corrected_mapping is required when status is CORRECTED (except REJECT)"
                 raise ValueError(msg)
         return self
 

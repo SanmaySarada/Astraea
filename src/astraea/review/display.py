@@ -16,7 +16,6 @@ from astraea.models.mapping import ConfidenceLevel, DomainMappingSpec, VariableM
 from astraea.models.sdtm import CoreDesignation
 from astraea.review.models import (
     DomainReview,
-    DomainReviewStatus,
     ReviewDecision,
     ReviewStatus,
 )
