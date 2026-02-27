@@ -150,9 +150,14 @@ Plans:
 **Success Criteria:**
 1. System pauses after each domain's mapping and presents a formatted table of proposed mappings with confidence scores highlighted, waiting for human approval or correction
 2. User can approve individual mappings, correct wrong mappings (specifying what was wrong and what is correct), and the system captures structured correction metadata
-3. User can quit a review session and resume it later, picking up exactly where they left off (LangGraph checkpoint)
+3. User can quit a review session and resume it later, picking up exactly where they left off (SQLite session persistence)
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md -- Review data models (HumanCorrection, ReviewSession) and SQLite session persistence
+- [ ] 04-02-PLAN.md -- Review display layer and core reviewer logic (two-tier review, correction capture)
+- [ ] 04-03-PLAN.md -- CLI commands (review-domain, resume, sessions) and interactive verification
 
 ---
 
