@@ -605,6 +605,383 @@
           "nci_preferred_term": "Once"
         }
       }
+    },
+    "C66767": {
+      "code": "C66767",
+      "name": "Action Taken with Study Treatment",
+      "extensible": false,
+      "variable_mappings": ["AEACN"],
+      "terms": {
+        "DOSE NOT CHANGED": {
+          "submission_value": "DOSE NOT CHANGED",
+          "synonyms": [],
+          "definition": "The dose of study treatment was not changed.",
+          "nci_preferred_term": "Dose Not Changed"
+        },
+        "DOSE REDUCED": {
+          "submission_value": "DOSE REDUCED",
+          "synonyms": [],
+          "definition": "The dose of study treatment was reduced.",
+          "nci_preferred_term": "Dose Reduced"
+        },
+        "DOSE INCREASED": {
+          "submission_value": "DOSE INCREASED",
+          "synonyms": [],
+          "definition": "The dose of study treatment was increased.",
+          "nci_preferred_term": "Dose Increased"
+        },
+        "DRUG INTERRUPTED": {
+          "submission_value": "DRUG INTERRUPTED",
+          "synonyms": [],
+          "definition": "Study treatment was temporarily stopped.",
+          "nci_preferred_term": "Drug Interrupted"
+        },
+        "DRUG WITHDRAWN": {
+          "submission_value": "DRUG WITHDRAWN",
+          "synonyms": [],
+          "definition": "Study treatment was permanently stopped.",
+          "nci_preferred_term": "Drug Withdrawn"
+        },
+        "NOT APPLICABLE": {
+          "submission_value": "NOT APPLICABLE",
+          "synonyms": [],
+          "definition": "Determination of action taken is not relevant.",
+          "nci_preferred_term": "Not Applicable"
+        },
+        "UNKNOWN": {
+          "submission_value": "UNKNOWN",
+          "synonyms": [],
+          "definition": "The action taken is not known.",
+          "nci_preferred_term": "Unknown"
+        }
+      }
+    },
+    "C66734": {
+      "code": "C66734",
+      "name": "Domain Abbreviation",
+      "extensible": false,
+      "variable_mappings": ["DOMAIN"],
+      "terms": {
+        "AE": {"submission_value": "AE", "synonyms": [], "definition": "Adverse Events", "nci_preferred_term": "Adverse Events Domain"},
+        "CE": {"submission_value": "CE", "synonyms": [], "definition": "Clinical Events", "nci_preferred_term": "Clinical Events Domain"},
+        "CM": {"submission_value": "CM", "synonyms": [], "definition": "Concomitant Medications", "nci_preferred_term": "Concomitant Medications Domain"},
+        "CO": {"submission_value": "CO", "synonyms": [], "definition": "Comments", "nci_preferred_term": "Comments Domain"},
+        "DA": {"submission_value": "DA", "synonyms": [], "definition": "Drug Accountability", "nci_preferred_term": "Drug Accountability Domain"},
+        "DM": {"submission_value": "DM", "synonyms": [], "definition": "Demographics", "nci_preferred_term": "Demographics Domain"},
+        "DS": {"submission_value": "DS", "synonyms": [], "definition": "Disposition", "nci_preferred_term": "Disposition Domain"},
+        "DV": {"submission_value": "DV", "synonyms": [], "definition": "Protocol Deviations", "nci_preferred_term": "Protocol Deviations Domain"},
+        "EG": {"submission_value": "EG", "synonyms": [], "definition": "ECG Test Results", "nci_preferred_term": "ECG Test Results Domain"},
+        "EX": {"submission_value": "EX", "synonyms": [], "definition": "Exposure", "nci_preferred_term": "Exposure Domain"},
+        "FA": {"submission_value": "FA", "synonyms": [], "definition": "Findings About Events or Interventions", "nci_preferred_term": "Findings About Domain"},
+        "IE": {"submission_value": "IE", "synonyms": [], "definition": "Inclusion/Exclusion Criteria Not Met", "nci_preferred_term": "Inclusion/Exclusion Domain"},
+        "LB": {"submission_value": "LB", "synonyms": [], "definition": "Laboratory Test Results", "nci_preferred_term": "Laboratory Test Results Domain"},
+        "MH": {"submission_value": "MH", "synonyms": [], "definition": "Medical History", "nci_preferred_term": "Medical History Domain"},
+        "PE": {"submission_value": "PE", "synonyms": [], "definition": "Physical Examination", "nci_preferred_term": "Physical Examination Domain"},
+        "QS": {"submission_value": "QS", "synonyms": [], "definition": "Questionnaires", "nci_preferred_term": "Questionnaires Domain"},
+        "SC": {"submission_value": "SC", "synonyms": [], "definition": "Subject Characteristics", "nci_preferred_term": "Subject Characteristics Domain"},
+        "SE": {"submission_value": "SE", "synonyms": [], "definition": "Subject Elements", "nci_preferred_term": "Subject Elements Domain"},
+        "SV": {"submission_value": "SV", "synonyms": [], "definition": "Subject Visits", "nci_preferred_term": "Subject Visits Domain"},
+        "TA": {"submission_value": "TA", "synonyms": [], "definition": "Trial Arms", "nci_preferred_term": "Trial Arms Domain"},
+        "TE": {"submission_value": "TE", "synonyms": [], "definition": "Trial Elements", "nci_preferred_term": "Trial Elements Domain"},
+        "TI": {"submission_value": "TI", "synonyms": [], "definition": "Trial Inclusion/Exclusion Criteria", "nci_preferred_term": "Trial Inclusion/Exclusion Domain"},
+        "TS": {"submission_value": "TS", "synonyms": [], "definition": "Trial Summary", "nci_preferred_term": "Trial Summary Domain"},
+        "TV": {"submission_value": "TV", "synonyms": [], "definition": "Trial Visits", "nci_preferred_term": "Trial Visits Domain"},
+        "VS": {"submission_value": "VS", "synonyms": [], "definition": "Vital Signs", "nci_preferred_term": "Vital Signs Domain"}
+      }
+    },
+    "C78736": {
+      "code": "C78736",
+      "name": "Reference Range Indicator",
+      "extensible": false,
+      "variable_mappings": ["LBNRIND"],
+      "terms": {
+        "NORMAL": {"submission_value": "NORMAL", "synonyms": [], "definition": "Within normal limits.", "nci_preferred_term": "Normal"},
+        "HIGH": {"submission_value": "HIGH", "synonyms": [], "definition": "Above the upper limit of normal.", "nci_preferred_term": "High"},
+        "LOW": {"submission_value": "LOW", "synonyms": [], "definition": "Below the lower limit of normal.", "nci_preferred_term": "Low"},
+        "ABNORMAL": {"submission_value": "ABNORMAL", "synonyms": [], "definition": "Outside normal limits.", "nci_preferred_term": "Abnormal"},
+        "HIGH HIGH": {"submission_value": "HIGH HIGH", "synonyms": [], "definition": "Above the upper limit of the clinically significant range.", "nci_preferred_term": "Critical High"},
+        "LOW LOW": {"submission_value": "LOW LOW", "synonyms": [], "definition": "Below the lower limit of the clinically significant range.", "nci_preferred_term": "Critical Low"}
+      }
+    },
+    "C71148": {
+      "code": "C71148",
+      "name": "Position",
+      "extensible": false,
+      "variable_mappings": ["VSPOS"],
+      "terms": {
+        "SITTING": {"submission_value": "SITTING", "synonyms": [], "definition": "A body position where the subject is seated.", "nci_preferred_term": "Sitting"},
+        "STANDING": {"submission_value": "STANDING", "synonyms": [], "definition": "A body position where the subject is upright on their feet.", "nci_preferred_term": "Standing"},
+        "SUPINE": {"submission_value": "SUPINE", "synonyms": [], "definition": "A body position where the subject is lying face up.", "nci_preferred_term": "Supine"}
+      }
+    },
+    "C66728": {
+      "code": "C66728",
+      "name": "Relation to Reference Period",
+      "extensible": false,
+      "variable_mappings": ["MHENRF"],
+      "terms": {
+        "BEFORE": {"submission_value": "BEFORE", "synonyms": [], "definition": "Prior to the reference period.", "nci_preferred_term": "Before"},
+        "DURING": {"submission_value": "DURING", "synonyms": [], "definition": "Within the reference period.", "nci_preferred_term": "During"},
+        "DURING/AFTER": {"submission_value": "DURING/AFTER", "synonyms": [], "definition": "Starting during and continuing after the reference period.", "nci_preferred_term": "During/After"},
+        "AFTER": {"submission_value": "AFTER", "synonyms": [], "definition": "Following the reference period.", "nci_preferred_term": "After"},
+        "ONGOING": {"submission_value": "ONGOING", "synonyms": [], "definition": "Continuing at the time of the report.", "nci_preferred_term": "Ongoing"}
+      }
+    },
+    "C66727": {
+      "code": "C66727",
+      "name": "Disposition Event",
+      "extensible": true,
+      "variable_mappings": ["DSDECOD"],
+      "terms": {
+        "COMPLETED": {"submission_value": "COMPLETED", "synonyms": [], "definition": "The subject completed the study as planned.", "nci_preferred_term": "Completed"},
+        "SCREEN FAILURE": {"submission_value": "SCREEN FAILURE", "synonyms": [], "definition": "The subject did not meet study entry criteria.", "nci_preferred_term": "Screen Failure"},
+        "ADVERSE EVENT": {"submission_value": "ADVERSE EVENT", "synonyms": [], "definition": "The subject discontinued due to an adverse event.", "nci_preferred_term": "Adverse Event"},
+        "DEATH": {"submission_value": "DEATH", "synonyms": [], "definition": "The subject died during the study.", "nci_preferred_term": "Death"},
+        "LACK OF EFFICACY": {"submission_value": "LACK OF EFFICACY", "synonyms": [], "definition": "The subject discontinued due to lack of therapeutic effect.", "nci_preferred_term": "Lack of Efficacy"},
+        "LOST TO FOLLOW-UP": {"submission_value": "LOST TO FOLLOW-UP", "synonyms": [], "definition": "The subject could not be contacted for follow-up.", "nci_preferred_term": "Lost to Follow-Up"},
+        "PHYSICIAN DECISION": {"submission_value": "PHYSICIAN DECISION", "synonyms": [], "definition": "The investigator decided to discontinue the subject.", "nci_preferred_term": "Physician Decision"},
+        "PROTOCOL VIOLATION": {"submission_value": "PROTOCOL VIOLATION", "synonyms": [], "definition": "The subject violated the study protocol.", "nci_preferred_term": "Protocol Violation"},
+        "WITHDRAWAL BY SUBJECT": {"submission_value": "WITHDRAWAL BY SUBJECT", "synonyms": [], "definition": "The subject chose to withdraw from the study.", "nci_preferred_term": "Withdrawal by Subject"},
+        "OTHER": {"submission_value": "OTHER", "synonyms": [], "definition": "Other reason for disposition not specified.", "nci_preferred_term": "Other"}
+      }
+    },
+    "C65047": {
+      "code": "C65047",
+      "name": "Laboratory Test Code",
+      "extensible": true,
+      "variable_mappings": ["LBTESTCD"],
+      "terms": {
+        "ALB": {"submission_value": "ALB", "synonyms": [], "definition": "Albumin measurement.", "nci_preferred_term": "Albumin"},
+        "ALP": {"submission_value": "ALP", "synonyms": [], "definition": "Alkaline phosphatase measurement.", "nci_preferred_term": "Alkaline Phosphatase"},
+        "ALT": {"submission_value": "ALT", "synonyms": ["SGPT"], "definition": "Alanine aminotransferase measurement.", "nci_preferred_term": "Alanine Aminotransferase"},
+        "AST": {"submission_value": "AST", "synonyms": ["SGOT"], "definition": "Aspartate aminotransferase measurement.", "nci_preferred_term": "Aspartate Aminotransferase"},
+        "BASO": {"submission_value": "BASO", "synonyms": [], "definition": "Basophils measurement.", "nci_preferred_term": "Basophils"},
+        "BILI": {"submission_value": "BILI", "synonyms": [], "definition": "Total bilirubin measurement.", "nci_preferred_term": "Bilirubin"},
+        "BUN": {"submission_value": "BUN", "synonyms": [], "definition": "Blood urea nitrogen measurement.", "nci_preferred_term": "Blood Urea Nitrogen"},
+        "CA": {"submission_value": "CA", "synonyms": [], "definition": "Calcium measurement.", "nci_preferred_term": "Calcium"},
+        "CHOL": {"submission_value": "CHOL", "synonyms": [], "definition": "Cholesterol measurement.", "nci_preferred_term": "Cholesterol"},
+        "CK": {"submission_value": "CK", "synonyms": ["CPK"], "definition": "Creatine kinase measurement.", "nci_preferred_term": "Creatine Kinase"},
+        "CL": {"submission_value": "CL", "synonyms": [], "definition": "Chloride measurement.", "nci_preferred_term": "Chloride"},
+        "CO2": {"submission_value": "CO2", "synonyms": ["BICARB"], "definition": "Carbon dioxide / bicarbonate measurement.", "nci_preferred_term": "Carbon Dioxide"},
+        "CREAT": {"submission_value": "CREAT", "synonyms": [], "definition": "Creatinine measurement.", "nci_preferred_term": "Creatinine"},
+        "EOS": {"submission_value": "EOS", "synonyms": [], "definition": "Eosinophils measurement.", "nci_preferred_term": "Eosinophils"},
+        "GGT": {"submission_value": "GGT", "synonyms": [], "definition": "Gamma glutamyl transferase measurement.", "nci_preferred_term": "Gamma Glutamyl Transferase"},
+        "GLUC": {"submission_value": "GLUC", "synonyms": [], "definition": "Glucose measurement.", "nci_preferred_term": "Glucose"},
+        "HBA1C": {"submission_value": "HBA1C", "synonyms": [], "definition": "Hemoglobin A1C measurement.", "nci_preferred_term": "Hemoglobin A1C"},
+        "HCT": {"submission_value": "HCT", "synonyms": [], "definition": "Hematocrit measurement.", "nci_preferred_term": "Hematocrit"},
+        "HGB": {"submission_value": "HGB", "synonyms": [], "definition": "Hemoglobin measurement.", "nci_preferred_term": "Hemoglobin"},
+        "K": {"submission_value": "K", "synonyms": [], "definition": "Potassium measurement.", "nci_preferred_term": "Potassium"},
+        "LDH": {"submission_value": "LDH", "synonyms": [], "definition": "Lactate dehydrogenase measurement.", "nci_preferred_term": "Lactate Dehydrogenase"},
+        "LYM": {"submission_value": "LYM", "synonyms": [], "definition": "Lymphocytes measurement.", "nci_preferred_term": "Lymphocytes"},
+        "MCH": {"submission_value": "MCH", "synonyms": [], "definition": "Mean corpuscular hemoglobin.", "nci_preferred_term": "Mean Corpuscular Hemoglobin"},
+        "MCHC": {"submission_value": "MCHC", "synonyms": [], "definition": "Mean corpuscular hemoglobin concentration.", "nci_preferred_term": "Mean Corpuscular Hemoglobin Concentration"},
+        "MCV": {"submission_value": "MCV", "synonyms": [], "definition": "Mean corpuscular volume.", "nci_preferred_term": "Mean Corpuscular Volume"},
+        "MG": {"submission_value": "MG", "synonyms": [], "definition": "Magnesium measurement.", "nci_preferred_term": "Magnesium"},
+        "MONO": {"submission_value": "MONO", "synonyms": [], "definition": "Monocytes measurement.", "nci_preferred_term": "Monocytes"},
+        "NEUT": {"submission_value": "NEUT", "synonyms": [], "definition": "Neutrophils measurement.", "nci_preferred_term": "Neutrophils"},
+        "PHOS": {"submission_value": "PHOS", "synonyms": [], "definition": "Phosphorus measurement.", "nci_preferred_term": "Phosphorus"},
+        "PLAT": {"submission_value": "PLAT", "synonyms": [], "definition": "Platelet count.", "nci_preferred_term": "Platelet Count"},
+        "PROT": {"submission_value": "PROT", "synonyms": [], "definition": "Total protein measurement.", "nci_preferred_term": "Protein"},
+        "RBC": {"submission_value": "RBC", "synonyms": [], "definition": "Red blood cell count.", "nci_preferred_term": "Erythrocytes"},
+        "SODIUM": {"submission_value": "SODIUM", "synonyms": ["NA"], "definition": "Sodium measurement.", "nci_preferred_term": "Sodium"},
+        "TRIG": {"submission_value": "TRIG", "synonyms": [], "definition": "Triglycerides measurement.", "nci_preferred_term": "Triglycerides"},
+        "UA": {"submission_value": "UA", "synonyms": [], "definition": "Uric acid measurement.", "nci_preferred_term": "Uric Acid"},
+        "URATE": {"submission_value": "URATE", "synonyms": [], "definition": "Urate measurement.", "nci_preferred_term": "Urate"},
+        "WBC": {"submission_value": "WBC", "synonyms": [], "definition": "White blood cell count.", "nci_preferred_term": "Leukocytes"},
+        "APTT": {"submission_value": "APTT", "synonyms": [], "definition": "Activated partial thromboplastin time.", "nci_preferred_term": "Activated Partial Thromboplastin Time"},
+        "FIBRING": {"submission_value": "FIBRING", "synonyms": [], "definition": "Fibrinogen measurement.", "nci_preferred_term": "Fibrinogen"},
+        "INR": {"submission_value": "INR", "synonyms": [], "definition": "International normalized ratio.", "nci_preferred_term": "International Normalized Ratio"},
+        "PT": {"submission_value": "PT", "synonyms": [], "definition": "Prothrombin time.", "nci_preferred_term": "Prothrombin Time"},
+        "RETIRBC": {"submission_value": "RETIRBC", "synonyms": [], "definition": "Reticulocyte count.", "nci_preferred_term": "Reticulocytes"},
+        "UREAN": {"submission_value": "UREAN", "synonyms": [], "definition": "Urea nitrogen measurement.", "nci_preferred_term": "Urea Nitrogen"}
+      }
+    },
+    "C67154": {
+      "code": "C67154",
+      "name": "Laboratory Test Name",
+      "extensible": true,
+      "variable_mappings": ["LBTEST"],
+      "terms": {
+        "Albumin": {"submission_value": "Albumin", "synonyms": [], "definition": "Albumin measurement.", "nci_preferred_term": "Albumin"},
+        "Alkaline Phosphatase": {"submission_value": "Alkaline Phosphatase", "synonyms": [], "definition": "Alkaline phosphatase measurement.", "nci_preferred_term": "Alkaline Phosphatase"},
+        "Alanine Aminotransferase": {"submission_value": "Alanine Aminotransferase", "synonyms": ["SGPT"], "definition": "Alanine aminotransferase measurement.", "nci_preferred_term": "Alanine Aminotransferase"},
+        "Aspartate Aminotransferase": {"submission_value": "Aspartate Aminotransferase", "synonyms": ["SGOT"], "definition": "Aspartate aminotransferase measurement.", "nci_preferred_term": "Aspartate Aminotransferase"},
+        "Basophils": {"submission_value": "Basophils", "synonyms": [], "definition": "Basophils measurement.", "nci_preferred_term": "Basophils"},
+        "Bilirubin": {"submission_value": "Bilirubin", "synonyms": [], "definition": "Total bilirubin measurement.", "nci_preferred_term": "Bilirubin"},
+        "Blood Urea Nitrogen": {"submission_value": "Blood Urea Nitrogen", "synonyms": [], "definition": "Blood urea nitrogen measurement.", "nci_preferred_term": "Blood Urea Nitrogen"},
+        "Calcium": {"submission_value": "Calcium", "synonyms": [], "definition": "Calcium measurement.", "nci_preferred_term": "Calcium"},
+        "Cholesterol": {"submission_value": "Cholesterol", "synonyms": [], "definition": "Cholesterol measurement.", "nci_preferred_term": "Cholesterol"},
+        "Creatine Kinase": {"submission_value": "Creatine Kinase", "synonyms": ["CPK"], "definition": "Creatine kinase measurement.", "nci_preferred_term": "Creatine Kinase"},
+        "Chloride": {"submission_value": "Chloride", "synonyms": [], "definition": "Chloride measurement.", "nci_preferred_term": "Chloride"},
+        "Carbon Dioxide": {"submission_value": "Carbon Dioxide", "synonyms": ["Bicarbonate"], "definition": "Carbon dioxide / bicarbonate measurement.", "nci_preferred_term": "Carbon Dioxide"},
+        "Creatinine": {"submission_value": "Creatinine", "synonyms": [], "definition": "Creatinine measurement.", "nci_preferred_term": "Creatinine"},
+        "Eosinophils": {"submission_value": "Eosinophils", "synonyms": [], "definition": "Eosinophils measurement.", "nci_preferred_term": "Eosinophils"},
+        "Gamma Glutamyl Transferase": {"submission_value": "Gamma Glutamyl Transferase", "synonyms": [], "definition": "Gamma glutamyl transferase measurement.", "nci_preferred_term": "Gamma Glutamyl Transferase"},
+        "Glucose": {"submission_value": "Glucose", "synonyms": [], "definition": "Glucose measurement.", "nci_preferred_term": "Glucose"},
+        "Hemoglobin A1C": {"submission_value": "Hemoglobin A1C", "synonyms": [], "definition": "Hemoglobin A1C measurement.", "nci_preferred_term": "Hemoglobin A1C"},
+        "Hematocrit": {"submission_value": "Hematocrit", "synonyms": [], "definition": "Hematocrit measurement.", "nci_preferred_term": "Hematocrit"},
+        "Hemoglobin": {"submission_value": "Hemoglobin", "synonyms": [], "definition": "Hemoglobin measurement.", "nci_preferred_term": "Hemoglobin"},
+        "Potassium": {"submission_value": "Potassium", "synonyms": [], "definition": "Potassium measurement.", "nci_preferred_term": "Potassium"},
+        "Lactate Dehydrogenase": {"submission_value": "Lactate Dehydrogenase", "synonyms": [], "definition": "Lactate dehydrogenase measurement.", "nci_preferred_term": "Lactate Dehydrogenase"},
+        "Lymphocytes": {"submission_value": "Lymphocytes", "synonyms": [], "definition": "Lymphocytes measurement.", "nci_preferred_term": "Lymphocytes"},
+        "Mean Corpuscular Hemoglobin": {"submission_value": "Mean Corpuscular Hemoglobin", "synonyms": [], "definition": "Mean corpuscular hemoglobin.", "nci_preferred_term": "Mean Corpuscular Hemoglobin"},
+        "Mean Corpuscular Hemoglobin Concentration": {"submission_value": "Mean Corpuscular Hemoglobin Concentration", "synonyms": [], "definition": "Mean corpuscular hemoglobin concentration.", "nci_preferred_term": "Mean Corpuscular Hemoglobin Concentration"},
+        "Mean Corpuscular Volume": {"submission_value": "Mean Corpuscular Volume", "synonyms": [], "definition": "Mean corpuscular volume.", "nci_preferred_term": "Mean Corpuscular Volume"},
+        "Magnesium": {"submission_value": "Magnesium", "synonyms": [], "definition": "Magnesium measurement.", "nci_preferred_term": "Magnesium"},
+        "Monocytes": {"submission_value": "Monocytes", "synonyms": [], "definition": "Monocytes measurement.", "nci_preferred_term": "Monocytes"},
+        "Neutrophils": {"submission_value": "Neutrophils", "synonyms": [], "definition": "Neutrophils measurement.", "nci_preferred_term": "Neutrophils"},
+        "Phosphorus": {"submission_value": "Phosphorus", "synonyms": [], "definition": "Phosphorus measurement.", "nci_preferred_term": "Phosphorus"},
+        "Platelet Count": {"submission_value": "Platelet Count", "synonyms": [], "definition": "Platelet count.", "nci_preferred_term": "Platelet Count"},
+        "Protein": {"submission_value": "Protein", "synonyms": [], "definition": "Total protein measurement.", "nci_preferred_term": "Protein"},
+        "Erythrocytes": {"submission_value": "Erythrocytes", "synonyms": ["Red Blood Cells"], "definition": "Red blood cell count.", "nci_preferred_term": "Erythrocytes"},
+        "Sodium": {"submission_value": "Sodium", "synonyms": [], "definition": "Sodium measurement.", "nci_preferred_term": "Sodium"},
+        "Triglycerides": {"submission_value": "Triglycerides", "synonyms": [], "definition": "Triglycerides measurement.", "nci_preferred_term": "Triglycerides"},
+        "Uric Acid": {"submission_value": "Uric Acid", "synonyms": [], "definition": "Uric acid measurement.", "nci_preferred_term": "Uric Acid"},
+        "Urate": {"submission_value": "Urate", "synonyms": [], "definition": "Urate measurement.", "nci_preferred_term": "Urate"},
+        "Leukocytes": {"submission_value": "Leukocytes", "synonyms": ["White Blood Cells"], "definition": "White blood cell count.", "nci_preferred_term": "Leukocytes"},
+        "Activated Partial Thromboplastin Time": {"submission_value": "Activated Partial Thromboplastin Time", "synonyms": [], "definition": "Activated partial thromboplastin time.", "nci_preferred_term": "Activated Partial Thromboplastin Time"},
+        "Fibrinogen": {"submission_value": "Fibrinogen", "synonyms": [], "definition": "Fibrinogen measurement.", "nci_preferred_term": "Fibrinogen"},
+        "International Normalized Ratio": {"submission_value": "International Normalized Ratio", "synonyms": [], "definition": "International normalized ratio.", "nci_preferred_term": "International Normalized Ratio"},
+        "Prothrombin Time": {"submission_value": "Prothrombin Time", "synonyms": [], "definition": "Prothrombin time.", "nci_preferred_term": "Prothrombin Time"},
+        "Reticulocytes": {"submission_value": "Reticulocytes", "synonyms": [], "definition": "Reticulocyte count.", "nci_preferred_term": "Reticulocytes"},
+        "Urea Nitrogen": {"submission_value": "Urea Nitrogen", "synonyms": [], "definition": "Urea nitrogen measurement.", "nci_preferred_term": "Urea Nitrogen"}
+      }
+    },
+    "C66741": {
+      "code": "C66741",
+      "name": "Vital Signs Test Code",
+      "extensible": true,
+      "variable_mappings": ["VSTESTCD"],
+      "terms": {
+        "BMI": {"submission_value": "BMI", "synonyms": [], "definition": "Body mass index.", "nci_preferred_term": "Body Mass Index"},
+        "DIABP": {"submission_value": "DIABP", "synonyms": [], "definition": "Diastolic blood pressure.", "nci_preferred_term": "Diastolic Blood Pressure"},
+        "HEIGHT": {"submission_value": "HEIGHT", "synonyms": [], "definition": "Body height.", "nci_preferred_term": "Height"},
+        "HR": {"submission_value": "HR", "synonyms": [], "definition": "Heart rate.", "nci_preferred_term": "Heart Rate"},
+        "OXYSAT": {"submission_value": "OXYSAT", "synonyms": [], "definition": "Oxygen saturation.", "nci_preferred_term": "Oxygen Saturation"},
+        "PULSE": {"submission_value": "PULSE", "synonyms": [], "definition": "Pulse rate.", "nci_preferred_term": "Pulse Rate"},
+        "RESP": {"submission_value": "RESP", "synonyms": [], "definition": "Respiratory rate.", "nci_preferred_term": "Respiratory Rate"},
+        "SYSBP": {"submission_value": "SYSBP", "synonyms": [], "definition": "Systolic blood pressure.", "nci_preferred_term": "Systolic Blood Pressure"},
+        "TEMP": {"submission_value": "TEMP", "synonyms": [], "definition": "Body temperature.", "nci_preferred_term": "Temperature"},
+        "WEIGHT": {"submission_value": "WEIGHT", "synonyms": [], "definition": "Body weight.", "nci_preferred_term": "Weight"}
+      }
+    },
+    "C67153": {
+      "code": "C67153",
+      "name": "Vital Signs Test Name",
+      "extensible": true,
+      "variable_mappings": ["VSTEST"],
+      "terms": {
+        "Body Mass Index": {"submission_value": "Body Mass Index", "synonyms": [], "definition": "Body mass index.", "nci_preferred_term": "Body Mass Index"},
+        "Diastolic Blood Pressure": {"submission_value": "Diastolic Blood Pressure", "synonyms": [], "definition": "Diastolic blood pressure.", "nci_preferred_term": "Diastolic Blood Pressure"},
+        "Height": {"submission_value": "Height", "synonyms": [], "definition": "Body height.", "nci_preferred_term": "Height"},
+        "Heart Rate": {"submission_value": "Heart Rate", "synonyms": [], "definition": "Heart rate.", "nci_preferred_term": "Heart Rate"},
+        "Oxygen Saturation": {"submission_value": "Oxygen Saturation", "synonyms": [], "definition": "Oxygen saturation.", "nci_preferred_term": "Oxygen Saturation"},
+        "Pulse Rate": {"submission_value": "Pulse Rate", "synonyms": [], "definition": "Pulse rate.", "nci_preferred_term": "Pulse Rate"},
+        "Respiratory Rate": {"submission_value": "Respiratory Rate", "synonyms": [], "definition": "Respiratory rate.", "nci_preferred_term": "Respiratory Rate"},
+        "Systolic Blood Pressure": {"submission_value": "Systolic Blood Pressure", "synonyms": [], "definition": "Systolic blood pressure.", "nci_preferred_term": "Systolic Blood Pressure"},
+        "Temperature": {"submission_value": "Temperature", "synonyms": [], "definition": "Body temperature.", "nci_preferred_term": "Temperature"},
+        "Weight": {"submission_value": "Weight", "synonyms": [], "definition": "Body weight.", "nci_preferred_term": "Weight"}
+      }
+    },
+    "C71153": {
+      "code": "C71153",
+      "name": "ECG Test Code",
+      "extensible": true,
+      "variable_mappings": ["EGTESTCD"],
+      "terms": {
+        "ECGHRMN": {"submission_value": "ECGHRMN", "synonyms": [], "definition": "ECG mean heart rate.", "nci_preferred_term": "ECG Mean Heart Rate"},
+        "INTP": {"submission_value": "INTP", "synonyms": [], "definition": "ECG interpretation.", "nci_preferred_term": "Interpretation"},
+        "PRMEAN": {"submission_value": "PRMEAN", "synonyms": [], "definition": "PR interval mean.", "nci_preferred_term": "PR Interval Mean"},
+        "QRSDUR": {"submission_value": "QRSDUR", "synonyms": [], "definition": "QRS duration.", "nci_preferred_term": "QRS Duration"},
+        "QTCBMN": {"submission_value": "QTCBMN", "synonyms": [], "definition": "QTcB interval mean (Bazett correction).", "nci_preferred_term": "QTcB Interval Mean"},
+        "QTCFMN": {"submission_value": "QTCFMN", "synonyms": [], "definition": "QTcF interval mean (Fridericia correction).", "nci_preferred_term": "QTcF Interval Mean"},
+        "QTMEAN": {"submission_value": "QTMEAN", "synonyms": [], "definition": "QT interval mean.", "nci_preferred_term": "QT Interval Mean"},
+        "RRMEAN": {"submission_value": "RRMEAN", "synonyms": [], "definition": "RR interval mean.", "nci_preferred_term": "RR Interval Mean"},
+        "VENRATE": {"submission_value": "VENRATE", "synonyms": [], "definition": "Ventricular rate.", "nci_preferred_term": "Ventricular Heart Rate"}
+      }
+    },
+    "C71152": {
+      "code": "C71152",
+      "name": "ECG Test Name",
+      "extensible": true,
+      "variable_mappings": ["EGTEST"],
+      "terms": {
+        "ECG Mean Heart Rate": {"submission_value": "ECG Mean Heart Rate", "synonyms": [], "definition": "ECG mean heart rate.", "nci_preferred_term": "ECG Mean Heart Rate"},
+        "Interpretation": {"submission_value": "Interpretation", "synonyms": [], "definition": "ECG interpretation.", "nci_preferred_term": "Interpretation"},
+        "PR Interval Mean": {"submission_value": "PR Interval Mean", "synonyms": [], "definition": "PR interval mean.", "nci_preferred_term": "PR Interval Mean"},
+        "QRS Duration": {"submission_value": "QRS Duration", "synonyms": [], "definition": "QRS duration.", "nci_preferred_term": "QRS Duration"},
+        "QTcB Interval Mean": {"submission_value": "QTcB Interval Mean", "synonyms": [], "definition": "QTcB interval mean (Bazett correction).", "nci_preferred_term": "QTcB Interval Mean"},
+        "QTcF Interval Mean": {"submission_value": "QTcF Interval Mean", "synonyms": [], "definition": "QTcF interval mean (Fridericia correction).", "nci_preferred_term": "QTcF Interval Mean"},
+        "QT Interval Mean": {"submission_value": "QT Interval Mean", "synonyms": [], "definition": "QT interval mean.", "nci_preferred_term": "QT Interval Mean"},
+        "RR Interval Mean": {"submission_value": "RR Interval Mean", "synonyms": [], "definition": "RR interval mean.", "nci_preferred_term": "RR Interval Mean"},
+        "Ventricular Heart Rate": {"submission_value": "Ventricular Heart Rate", "synonyms": [], "definition": "Ventricular rate.", "nci_preferred_term": "Ventricular Heart Rate"}
+      }
+    },
+    "C66726": {
+      "code": "C66726",
+      "name": "Pharmaceutical Dosage Form",
+      "extensible": true,
+      "variable_mappings": ["EXDOSFRM"],
+      "terms": {
+        "CAPSULE": {"submission_value": "CAPSULE", "synonyms": [], "definition": "A solid dosage form consisting of a shell and a filling.", "nci_preferred_term": "Capsule"},
+        "CREAM": {"submission_value": "CREAM", "synonyms": [], "definition": "A semisolid emulsion for external application.", "nci_preferred_term": "Cream"},
+        "GEL": {"submission_value": "GEL", "synonyms": [], "definition": "A semisolid system in which a liquid is contained in a matrix.", "nci_preferred_term": "Gel"},
+        "INJECTION": {"submission_value": "INJECTION", "synonyms": [], "definition": "A sterile preparation intended for parenteral use.", "nci_preferred_term": "Injection"},
+        "LOTION": {"submission_value": "LOTION", "synonyms": [], "definition": "A liquid preparation for external application.", "nci_preferred_term": "Lotion"},
+        "OINTMENT": {"submission_value": "OINTMENT", "synonyms": [], "definition": "A semisolid preparation for external application.", "nci_preferred_term": "Ointment"},
+        "PATCH": {"submission_value": "PATCH", "synonyms": [], "definition": "A drug delivery system applied to the skin.", "nci_preferred_term": "Patch"},
+        "POWDER": {"submission_value": "POWDER", "synonyms": [], "definition": "A solid consisting of finely divided particles.", "nci_preferred_term": "Powder"},
+        "SOLUTION": {"submission_value": "SOLUTION", "synonyms": [], "definition": "A liquid preparation containing one or more dissolved substances.", "nci_preferred_term": "Solution"},
+        "SPRAY": {"submission_value": "SPRAY", "synonyms": [], "definition": "A liquid minutely divided as by a jet of air or steam.", "nci_preferred_term": "Spray"},
+        "SUPPOSITORY": {"submission_value": "SUPPOSITORY", "synonyms": [], "definition": "A solid body for insertion into a body cavity.", "nci_preferred_term": "Suppository"},
+        "SUSPENSION": {"submission_value": "SUSPENSION", "synonyms": [], "definition": "A liquid preparation of particles dispersed in a vehicle.", "nci_preferred_term": "Suspension"},
+        "SYRUP": {"submission_value": "SYRUP", "synonyms": [], "definition": "A concentrated aqueous preparation of a sugar.", "nci_preferred_term": "Syrup"},
+        "TABLET": {"submission_value": "TABLET", "synonyms": [], "definition": "A solid dosage form containing medicinal substances.", "nci_preferred_term": "Tablet"}
+      }
+    },
+    "C78734": {
+      "code": "C78734",
+      "name": "Specimen Type",
+      "extensible": true,
+      "variable_mappings": ["LBSPEC"],
+      "terms": {
+        "BLOOD": {"submission_value": "BLOOD", "synonyms": [], "definition": "A fluid that circulates through the body.", "nci_preferred_term": "Blood"},
+        "PLASMA": {"submission_value": "PLASMA", "synonyms": [], "definition": "The fluid portion of blood after cells are removed.", "nci_preferred_term": "Plasma"},
+        "SERUM": {"submission_value": "SERUM", "synonyms": [], "definition": "The fluid portion of blood after coagulation.", "nci_preferred_term": "Serum"},
+        "URINE": {"submission_value": "URINE", "synonyms": [], "definition": "The fluid excreted by the kidneys.", "nci_preferred_term": "Urine"},
+        "WHOLE BLOOD": {"submission_value": "WHOLE BLOOD", "synonyms": [], "definition": "Blood that has not been separated into components.", "nci_preferred_term": "Whole Blood"},
+        "CEREBROSPINAL FLUID": {"submission_value": "CEREBROSPINAL FLUID", "synonyms": ["CSF"], "definition": "The fluid surrounding the brain and spinal cord.", "nci_preferred_term": "Cerebrospinal Fluid"}
+      }
+    },
+    "C99079": {
+      "code": "C99079",
+      "name": "Epoch",
+      "extensible": true,
+      "variable_mappings": ["EPOCH"],
+      "terms": {
+        "SCREENING": {"submission_value": "SCREENING", "synonyms": [], "definition": "The period during which subjects are evaluated for eligibility.", "nci_preferred_term": "Screening"},
+        "RUN-IN": {"submission_value": "RUN-IN", "synonyms": [], "definition": "A period before randomization for baseline stabilization.", "nci_preferred_term": "Run-In"},
+        "TREATMENT": {"submission_value": "TREATMENT", "synonyms": [], "definition": "The period during which treatment is administered.", "nci_preferred_term": "Treatment"},
+        "FOLLOW-UP": {"submission_value": "FOLLOW-UP", "synonyms": [], "definition": "The period after treatment for monitoring.", "nci_preferred_term": "Follow-Up"},
+        "NOT APPLICABLE": {"submission_value": "NOT APPLICABLE", "synonyms": [], "definition": "Epoch is not applicable.", "nci_preferred_term": "Not Applicable"}
+      }
+    },
+    "C74456": {
+      "code": "C74456",
+      "name": "Anatomical Location",
+      "extensible": true,
+      "variable_mappings": ["PELOC"],
+      "terms": {
+        "HEAD": {"submission_value": "HEAD", "synonyms": [], "definition": "The upper part of the body.", "nci_preferred_term": "Head"},
+        "NECK": {"submission_value": "NECK", "synonyms": [], "definition": "The part of the body between the head and trunk.", "nci_preferred_term": "Neck"},
+        "CHEST": {"submission_value": "CHEST", "synonyms": ["THORAX"], "definition": "The area between the neck and abdomen.", "nci_preferred_term": "Chest"},
+        "ABDOMEN": {"submission_value": "ABDOMEN", "synonyms": [], "definition": "The part of the body between the chest and pelvis.", "nci_preferred_term": "Abdomen"},
+        "ARM": {"submission_value": "ARM", "synonyms": ["UPPER EXTREMITY"], "definition": "The upper limb.", "nci_preferred_term": "Arm"},
+        "LEG": {"submission_value": "LEG", "synonyms": ["LOWER EXTREMITY"], "definition": "The lower limb.", "nci_preferred_term": "Leg"},
+        "BACK": {"submission_value": "BACK", "synonyms": [], "definition": "The posterior surface of the trunk.", "nci_preferred_term": "Back"},
+        "HAND": {"submission_value": "HAND", "synonyms": [], "definition": "The terminal part of the upper limb.", "nci_preferred_term": "Hand"},
+        "FOOT": {"submission_value": "FOOT", "synonyms": [], "definition": "The terminal part of the lower limb.", "nci_preferred_term": "Foot"}
+      }
     }
   }
 }
