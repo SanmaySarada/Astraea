@@ -2609,5 +2609,795 @@
       }
     ],
     "key_variables": null
+  },
+  "TS": {
+    "domain": "TS",
+    "description": "Trial Summary",
+    "domain_class": "Trial Design",
+    "structure": "One record per trial summary parameter value",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "TSSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number given to ensure uniqueness of subject records within a domain.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "TSGRPID",
+        "label": "Group ID",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Used to tie together a block of related records in a single domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "TSPARMCD",
+        "label": "Trial Summary Parameter Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the trial summary parameter. Examples: SSTDTC, SPONSOR, TITLE.",
+        "codelist_code": "C66738",
+        "order": 5
+      },
+      {
+        "name": "TSPARM",
+        "label": "Trial Summary Parameter",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Term for the trial summary parameter.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "TSVAL",
+        "label": "Parameter Value",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Value of the trial summary parameter.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "TSVALNF",
+        "label": "Parameter Null Flavor",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Null flavor for the value of the trial summary parameter, when TSVAL is null.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "TSVALCD",
+        "label": "Parameter Value Code",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Code corresponding to TSVAL from an external codelist.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "TSVCDREF",
+        "label": "Name of the Reference Terminology",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Name of the external codelist used to define TSVALCD.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "TSVCDVER",
+        "label": "Version of the Reference Terminology",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Version of the external codelist referenced in TSVCDREF.",
+        "codelist_code": null,
+        "order": 11
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "TSPARMCD",
+      "TSSEQ"
+    ]
+  },
+  "TA": {
+    "domain": "TA",
+    "description": "Trial Arms",
+    "domain_class": "Trial Design",
+    "structure": "One record per planned element per arm",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "ARMCD",
+        "label": "Planned Arm Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the arm, limited to 20 characters.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "ARM",
+        "label": "Description of Planned Arm",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the arm to which the subject was assigned.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "TAETORD",
+        "label": "Planned Order of Element within Arm",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Number that gives the planned order of the element within the arm.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "ETCD",
+        "label": "Element Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the element, limited to 8 characters.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "ELEMENT",
+        "label": "Description of Element",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the element.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "TABRANCH",
+        "label": "Branch",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Condition subject must meet to be assigned to the next element in the arm.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "TATRANS",
+        "label": "Transition Rule",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Rule for transition to the next element.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "EPOCH",
+        "label": "Epoch",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Epoch associated with the element in the arm.",
+        "codelist_code": "C99079",
+        "order": 10
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "ARMCD",
+      "TAETORD"
+    ]
+  },
+  "TE": {
+    "domain": "TE",
+    "description": "Trial Elements",
+    "domain_class": "Trial Design",
+    "structure": "One record per planned element",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "ETCD",
+        "label": "Element Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the element, limited to 8 characters.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "ELEMENT",
+        "label": "Description of Element",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the element.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "TESTRL",
+        "label": "Rule for Start of Element",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Rule describing when the element starts.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "TEENRL",
+        "label": "Rule for End of Element",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Rule describing when the element ends.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "TEDUR",
+        "label": "Planned Duration of Element",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Planned duration of the element in ISO 8601 duration format.",
+        "codelist_code": null,
+        "order": 7
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "ETCD"
+    ]
+  },
+  "TV": {
+    "domain": "TV",
+    "description": "Trial Visits",
+    "domain_class": "Trial Design",
+    "structure": "One record per planned visit per arm",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "VISITNUM",
+        "label": "Visit Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Clinical encounter number.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "VISIT",
+        "label": "Visit Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Protocol-defined description of a clinical encounter.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "VISITDY",
+        "label": "Planned Study Day of Visit",
+        "data_type": "Num",
+        "core": "Perm",
+        "cdisc_notes": "Planned study day of the visit.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "ARMCD",
+        "label": "Planned Arm Code",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the arm, limited to 20 characters.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "ARM",
+        "label": "Description of Planned Arm",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Name of the arm to which the subject was assigned.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "TVSTRL",
+        "label": "Visit Start Rule",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Rule describing when the visit window opens.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "TVENRL",
+        "label": "Visit End Rule",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Rule describing when the visit window closes.",
+        "codelist_code": null,
+        "order": 9
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "VISITNUM",
+      "ARMCD"
+    ]
+  },
+  "TI": {
+    "domain": "TI",
+    "description": "Trial Inclusion/Exclusion Criteria",
+    "domain_class": "Trial Design",
+    "structure": "One record per I/E criterion",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "IETESTCD",
+        "label": "Inclusion/Exclusion Criterion Short Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Short name of the I/E criterion.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "IETEST",
+        "label": "Inclusion/Exclusion Criterion",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Full text of the I/E criterion.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "IECAT",
+        "label": "Inclusion/Exclusion Category",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Category: INCLUSION or EXCLUSION.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "IESCAT",
+        "label": "Inclusion/Exclusion Subcategory",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Further categorization of the criterion.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "TIRL",
+        "label": "Inclusion/Exclusion Criterion Rule",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Rule associated with the I/E criterion.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "TIVERS",
+        "label": "Protocol Criteria Versions",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "The protocol amendment version(s) to which the criterion applies.",
+        "codelist_code": null,
+        "order": 8
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "IETESTCD"
+    ]
+  },
+  "SE": {
+    "domain": "SE",
+    "description": "Subject Elements",
+    "domain_class": "Special-Purpose",
+    "structure": "One record per actual element per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "SESEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within a domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "ETCD",
+        "label": "Element Code",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Short name of the element, limited to 8 characters.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "ELEMENT",
+        "label": "Description of Element",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Name of the element.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "SESTDTC",
+        "label": "Subject Element Start Date/Time",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Start date/time of the element for the subject in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "SEENDTC",
+        "label": "Subject Element End Date/Time",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "End date/time of the element for the subject in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "TAESSION",
+        "label": "Planned Element within Arm Session",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Planned element within arm session.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "EPOCH",
+        "label": "Epoch",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Epoch associated with the element.",
+        "codelist_code": "C99079",
+        "order": 10
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "ETCD",
+      "SESTDTC"
+    ]
+  },
+  "CO": {
+    "domain": "CO",
+    "description": "Comments",
+    "domain_class": "Special-Purpose",
+    "structure": "One record per comment per subject",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "DOMAIN",
+        "label": "Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "COSEQ",
+        "label": "Sequence Number",
+        "data_type": "Num",
+        "core": "Req",
+        "cdisc_notes": "Sequence number to ensure uniqueness within a domain for a subject.",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "RDOMAIN",
+        "label": "Related Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Two-character abbreviation for the related domain.",
+        "codelist_code": "C66734",
+        "order": 5
+      },
+      {
+        "name": "IDVAR",
+        "label": "Identifying Variable",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Identifying variable in the parent dataset.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "IDVARVAL",
+        "label": "Identifying Variable Value",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Value of the identifying variable.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "COREF",
+        "label": "Comment Reference",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Reference identifier for the comment.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "CODTC",
+        "label": "Date/Time of Comment",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Date/time of the comment in ISO 8601 format.",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "COVAL",
+        "label": "Comment",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "The text of the comment.",
+        "codelist_code": null,
+        "order": 10
+      },
+      {
+        "name": "COEVAL",
+        "label": "Evaluator",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "Role of the evaluator who provided the comment.",
+        "codelist_code": null,
+        "order": 11
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "COSEQ"
+    ]
+  },
+  "SUPPQUAL": {
+    "domain": "SUPPQUAL",
+    "description": "Supplemental Qualifiers",
+    "domain_class": "Special-Purpose",
+    "structure": "One record per supplemental qualifier value per subject per parent domain record",
+    "variables": [
+      {
+        "name": "STUDYID",
+        "label": "Study Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Unique identifier for a study.",
+        "codelist_code": null,
+        "order": 1
+      },
+      {
+        "name": "RDOMAIN",
+        "label": "Related Domain Abbreviation",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Two-character abbreviation for the related domain.",
+        "codelist_code": "C66734",
+        "order": 2
+      },
+      {
+        "name": "USUBJID",
+        "label": "Unique Subject Identifier",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Identifier used to uniquely identify a subject across all studies.",
+        "codelist_code": null,
+        "order": 3
+      },
+      {
+        "name": "IDVAR",
+        "label": "Identifying Variable",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Identifying variable in the parent dataset (e.g., AESEQ).",
+        "codelist_code": null,
+        "order": 4
+      },
+      {
+        "name": "IDVARVAL",
+        "label": "Identifying Variable Value",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Value of the identifying variable.",
+        "codelist_code": null,
+        "order": 5
+      },
+      {
+        "name": "QNAM",
+        "label": "Qualifier Variable Name",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "The short name of the supplemental qualifier variable, max 8 characters.",
+        "codelist_code": null,
+        "order": 6
+      },
+      {
+        "name": "QLABEL",
+        "label": "Qualifier Variable Label",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Label for the supplemental qualifier variable, max 40 characters.",
+        "codelist_code": null,
+        "order": 7
+      },
+      {
+        "name": "QVAL",
+        "label": "Data Value",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Value of the supplemental qualifier variable.",
+        "codelist_code": null,
+        "order": 8
+      },
+      {
+        "name": "QORIG",
+        "label": "Origin",
+        "data_type": "Char",
+        "core": "Req",
+        "cdisc_notes": "Origin of the data value (e.g., CRF, ASSIGNED, DERIVED, PROTOCOL).",
+        "codelist_code": null,
+        "order": 9
+      },
+      {
+        "name": "QEVAL",
+        "label": "Evaluator",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Role of the evaluator who provided the data.",
+        "codelist_code": null,
+        "order": 10
+      }
+    ],
+    "key_variables": [
+      "STUDYID",
+      "RDOMAIN",
+      "USUBJID",
+      "IDVAR",
+      "IDVARVAL",
+      "QNAM"
+    ]
   }
 }

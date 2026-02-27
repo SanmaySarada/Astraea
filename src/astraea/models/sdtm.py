@@ -68,7 +68,7 @@ class DomainSpec(BaseModel):
     """
 
     domain: str = Field(
-        ..., min_length=1, max_length=4, description="Domain abbreviation (e.g., 'AE', 'DM')"
+        ..., min_length=1, max_length=8, description="Domain abbreviation (e.g., 'AE', 'DM', 'SUPPQUAL')"
     )
     description: str = Field(..., description="Domain description (e.g., 'Adverse Events')")
     domain_class: DomainClass = Field(..., description="Domain classification")
