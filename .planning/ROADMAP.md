@@ -82,10 +82,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 02.1-01-PLAN.md -- Fix all 9 NCI C-codes in codelists.json + Race extensibility + NY "U" term
-- [ ] 02.1-02-PLAN.md -- Fix date conversion bugs (round(), validation, UN UNK, datetime strings)
-- [ ] 02.1-03-PLAN.md -- Fix USUBJID NaN bug + EDC column set updates
-- [ ] 02.1-04-PLAN.md -- Fix domains.json (codelist assignments, core designations, DA class, null codelists, key_variables)
+- [x] 02.1-01-PLAN.md -- Fix all 9 NCI C-codes in codelists.json + Race extensibility + NY "U" term
+- [x] 02.1-02-PLAN.md -- Fix date conversion bugs (round(), validation, UN UNK, datetime strings)
+- [x] 02.1-03-PLAN.md -- Fix USUBJID NaN bug + EDC column set updates
+- [x] 02.1-04-PLAN.md -- Fix domains.json (codelist assignments, core designations, DA class, null codelists, key_variables)
 
 ---
 
@@ -191,8 +191,8 @@ Plans:
 |-------|--------|-----------|
 | 1 - Foundation and Data Infrastructure | Complete | 2026-02-26 |
 | 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
-| **2.1 - Reference Data Fixes (INSERTED)** | **Planned** | -- |
-| 3 - Core Mapping Engine (Demographics) | Blocked (by 2.1) | -- |
+| 2.1 - Reference Data Fixes (INSERTED) | Complete | 2026-02-27 |
+| 3 - Core Mapping Engine (Demographics) | Not started | -- |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
