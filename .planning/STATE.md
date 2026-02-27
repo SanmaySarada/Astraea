@@ -10,16 +10,16 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 5 of 8 (Event and Intervention Domains)
-Plan: 1 of 7
+Plan: 4 of 7
 Status: In progress
-Last activity: 2026-02-27 -- Completed 05-01-PLAN.md (Execution infrastructure utilities)
+Last activity: 2026-02-27 -- Completed 05-04-PLAN.md (MH, IE, CE, DV domain integration tests)
 
-Progress: [███████████████████████████████████████████░░░░░░░] ~81%
+Progress: [█████████████████████████████████████████████░░░░░] ~85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
+- Total plans completed: 34
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -33,7 +33,7 @@ Progress: [███████████████████████
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
-| 05-event-intervention | 1/7 | ~3 min | ~3.0 min |
+| 05-event-intervention | 4/7 | ~13 min | ~3.3 min |
 
 ## Phase 1 Deliverables
 
@@ -155,9 +155,13 @@ CLI commands available: `astraea execute-domain`
 |-----------|--------|-------|--------|
 | numeric_to_yn transform | src/astraea/transforms/recoding.py | 17 | Done |
 | Preprocessing utilities | src/astraea/execution/preprocessing.py | 15 | Done |
-| **Total** | | **32 new tests** | **In progress** |
+| MH integration test | tests/integration/execution/test_mh_execution.py | 7 | Done |
+| IE integration test | tests/integration/execution/test_ie_execution.py | 7 | Done |
+| CE integration test | tests/integration/execution/test_ce_execution.py | 7 | Done |
+| DV integration test | tests/integration/execution/test_dv_execution.py | 8 | Done |
+| **Total** | | **61 new tests** | **In progress** |
 
-**Combined test suite: 940 tests passing**
+**Combined test suite: 969 tests passing**
 
 ## Accumulated Context
 
@@ -295,5 +299,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-01-PLAN.md (Execution infrastructure utilities)
+Stopped at: Completed 05-04-PLAN.md (MH, IE, CE, DV domain integration tests)
 Resume file: None
