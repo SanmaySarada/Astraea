@@ -133,11 +133,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 03.1-01-PLAN.md -- Add 16 missing CT codelists + fix C66742 invalid "U" term
-- [ ] 03.1-02-PLAN.md -- Add TS, Trial Design, SE, CO, SUPPQUAL domains to domains.json
-- [ ] 03.1-03-PLAN.md -- Fix core designations, labels, missing variables, null key_variables
-- [ ] 03.1-04-PLAN.md -- Add model fields (order, length, missing_required) + fix SUPPQUAL label bug
-- [ ] 03.1-05-PLAN.md -- Fix profiler date bug, XPT writer gaps, docstrings, transform wiring
+- [x] 03.1-01-PLAN.md -- Add 16 missing CT codelists + fix C66742 invalid "U" term
+- [x] 03.1-02-PLAN.md -- Add TS, Trial Design, SE, CO, SUPPQUAL domains to domains.json
+- [x] 03.1-03-PLAN.md -- Fix core designations, labels, missing variables, null key_variables
+- [x] 03.1-04-PLAN.md -- Add model fields (order, length, missing_required) + fix SUPPQUAL label bug
+- [x] 03.1-05-PLAN.md -- Fix profiler date bug, XPT writer gaps, docstrings, transform wiring
 
 ---
 
@@ -228,7 +228,7 @@ Plans:
 | 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
 | 2.1 - Reference Data Fixes (INSERTED) | Complete | 2026-02-27 |
 | 3 - Core Mapping Engine (Demographics) | Complete | 2026-02-27 |
-| 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Not started | -- |
+| 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Complete | 2026-02-27 |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
