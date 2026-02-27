@@ -161,17 +161,51 @@ Plans:
 
 ---
 
+### Phase 4.1: FDA Compliance Infrastructure (INSERTED)
+
+**Goal:** Close all foundational gaps identified by comparing the codebase against FDA SDTM submission requirements -- the missing derivation utilities (--DY, --SEQ, EPOCH, VISITNUM), dataset execution pipeline (spec -> DataFrame -> XPT), variable/sort order enforcement, origin tracking, date imputation flags, character length optimization, ASCII validation, and missing CT codelists -- so that Phase 5+ domain expansion produces submission-ready output, not just mapping specifications.
+**Depends on:** Phase 4 (complete)
+**Blocks:** Phase 5 (every domain needs --DY, --SEQ, sort order, execution pipeline)
+**Requirements:** FDA TRC compliance, P21 validation readiness
+
+**Success Criteria:**
+1. --DY (study day) calculation utility exists in transforms/ and correctly computes INT((--DTC - RFSTDTC) + 1) with day-1 convention, negative pre-treatment days, and partial date handling
+2. --SEQ generation utility produces unique monotonic integer sequences within USUBJID for any domain
+3. EPOCH derivation maps dates to study epochs (SCREENING, BASELINE, TREATMENT, FOLLOW-UP) from SE milestones
+4. VISITNUM/VISIT variables derived from TV (Trial Visits) domain structure or raw visit data
+5. Dataset execution pipeline transforms approved DomainMappingSpec + raw DataFrames into SDTM-compliant DataFrames (applying all mapping patterns: direct, rename, reformat, derivation, lookup/recode, assign)
+6. XPT writer enforces SDTM-IG sort order per domain (DM: STUDYID/USUBJID, AE: STUDYID/USUBJID/AEDECOD/AESTDTC, etc.) and variable column order per domain spec
+7. VariableMapping model extended with origin field (CRF/Derived/Assigned/Protocol/eDT) and computational_method field for define.xml MethodDef
+8. Date imputation flags (--DTF/--TMF) generated when partial dates are converted
+9. Character variable lengths optimized to max observed (not padded to 200) before XPT write
+10. ASCII encoding validated on all character data before XPT write
+11. Missing CT codelists added: C66785 (Laterality), C66789 (Specimen Condition)
+12. Cross-domain USUBJID validation confirms all USUBJIDs in any domain exist in DM
+13. All existing 764+ tests pass + new tests for each utility
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 04.1-01-PLAN.md -- Derivation utilities (--DY, --SEQ, EPOCH, VISITNUM)
+- [ ] 04.1-02-PLAN.md -- Model extensions (origin, computational_method), imputation flags, missing CT codelists
+- [ ] 04.1-03-PLAN.md -- Execution pipeline core (pattern handlers + DatasetExecutor)
+- [ ] 04.1-04-PLAN.md -- XPT compliance utilities (ASCII validation, character length optimization)
+- [ ] 04.1-05-PLAN.md -- Integration: wire XPT compliance into executor, CLI execute-domain, DM integration test
+
+---
+
 ### Phase 5: Event and Intervention Domains
 
-**Goal:** The system maps all Events-class and Interventions-class SDTM domains -- the domains that primarily use direct, rename, recode, and derivation patterns (no transpose required).
-**Depends on:** Phase 4 (needs human review gate for domain-by-domain approval)
+**Goal:** The system maps all Events-class and Interventions-class SDTM domains -- the domains that primarily use direct, rename, recode, and derivation patterns (no transpose required) -- AND executes approved specs to produce actual SDTM datasets using the Phase 4.1 execution pipeline.
+**Depends on:** Phase 4.1 (needs --DY, --SEQ, sort order, execution pipeline, missing codelists)
 **Requirements:** DOM-02, DOM-03, DOM-04, DOM-08, DOM-09, DOM-11, DOM-12, DOM-13
 
 **Success Criteria:**
 1. System produces complete, reviewable mapping specifications for AE, CM, EX, MH, DS, IE, CE, and DV domains
-2. AE domain correctly maps start/end dates, severity, causality, seriousness, and outcome variables with appropriate controlled terminology
+2. AE domain correctly maps start/end dates, severity, causality, seriousness, and outcome variables with appropriate controlled terminology (including C101854 Outcome, C66767 Action Taken)
 3. CM domain correctly maps dose, route, frequency, and indication with CT lookups
-4. All 8 domains pass human review and generate correct SDTM datasets with valid variable attributes
+4. All 8 domains pass human review and generate correct SDTM datasets (actual .xpt files) with --DY, --SEQ, EPOCH, correct sort order, and valid variable attributes
+5. All generated datasets include variable origin metadata for define.xml traceability
 
 **Plans:** (created by /gsd:plan-phase)
 
@@ -179,15 +213,17 @@ Plans:
 
 ### Phase 6: Findings Domains and Complex Transformations
 
-**Goal:** The system maps all Findings-class domains (requiring horizontal-to-vertical transpose), generates SUPPQUAL and RELREC datasets, and handles trial design domains -- the technically hardest transformations in the pipeline.
+**Goal:** The system maps all Findings-class domains (requiring horizontal-to-vertical transpose), generates SUPPQUAL datasets with referential integrity, populates the mandatory TS (Trial Summary) domain, handles trial design domains, and produces actual SDTM .xpt files for all Findings domains -- the technically hardest transformations in the pipeline.
 **Depends on:** Phase 5 (proven domain expansion pattern; transpose builds on mapping engine)
 **Requirements:** DOM-05, DOM-06, DOM-07, DOM-10, DOM-14, DOM-15, DOM-16
 
 **Success Criteria:**
-1. System correctly transposes wide-format lab data into tall SDTM LB format with LBTESTCD, LBTEST, LBORRES, LBORRESU, LBSTRESC, LBSTRESN, LBSTRESU, and normal range variables -- including merging multiple source lab files into a single LB domain
-2. System correctly transposes VS and EG domains with standardized results and handles pre-dose/post-dose EG records
-3. System generates SUPPQUAL datasets when non-standard variables require supplemental qualifiers, and RELREC datasets for cross-domain relationships
-4. System maps PE, SV, and trial design domains (TA, TE, TV, TI, TS) correctly
+1. System correctly transposes wide-format lab data into tall SDTM LB format with LBTESTCD, LBTEST, LBORRES, LBORRESU, LBSTRESC, LBSTRESN, LBSTRESU, and normal range variables -- including merging multiple source lab files into a single LB domain, with unit consistency validation across same test codes
+2. System correctly transposes VS and EG domains with standardized results, position codes (C71148), specimen condition (C66789), laterality (C66785), and handles pre-dose/post-dose EG records
+3. System generates SUPPQUAL datasets with verified referential integrity: every SUPPQUAL record references an existing parent domain record via RDOMAIN/USUBJID/IDVAR/IDVARVAL, correct QNAM naming (max 8 chars), and proper QORIG values
+4. System populates the mandatory TS (Trial Summary) domain with all required parameters: SSTDTC, SENDTC, SPONSOR, INDIC, TRT, PCLAS, STYPE, SDTMVER, and conditional parameters per FDA Business Rules -- missing TS triggers automatic FDA rejection
+5. System maps PE, SV, and trial design domains (TA, TE, TV, TI) correctly with proper sort order and variable order
+6. All generated Findings datasets include --DY, --SEQ, EPOCH, VISITNUM, LBNRIND/VSNRIND (normal range indicators), and date imputation flags where applicable
 
 **Plans:** (created by /gsd:plan-phase)
 
@@ -195,15 +231,21 @@ Plans:
 
 ### Phase 7: Validation and Submission Readiness
 
-**Goal:** The system runs comprehensive P21-style conformance validation on all output datasets and generates the regulatory submission artifacts (define.xml, validation report) required for FDA submission.
+**Goal:** The system runs comprehensive P21-style conformance validation on all output datasets and generates all regulatory submission artifacts (define.xml v2.0+, validation report, cSDRG) required for FDA submission -- including cross-domain consistency checks, computational method documentation, and Technical Rejection Criteria (TRC) compliance verification.
 **Depends on:** Phase 6 (needs all domains generated to validate cross-domain consistency)
 **Requirements:** VAL-01, VAL-02, VAL-03, VAL-04, VAL-05, VAL-06, VAL-07, VAL-08
 
 **Success Criteria:**
 1. System runs terminology, presence, consistency, limit, and format validation rules on every generated dataset and reports issues with severity levels (Error/Warning/Notice) and fix suggestions
 2. System validates during mapping (predict-and-prevent) in addition to post-generation validation
-3. System generates a complete define.xml (v2.0+) with dataset metadata, variable metadata, codelists, value-level metadata, and computational methods
-4. System produces a pre-submission validation report that a statistical programmer can use to confirm submission readiness
+3. System generates a complete define.xml (v2.0+) with: ItemGroupDef (dataset definitions with repeating/structure/purpose), ItemDef (variable definitions with name/label/type/length/format/origin/role/CodeListRef), CodeList definitions (OID/name/extensibility/items), MethodDef (computational methods for all derived variables using formulas from mapping specs), CommentDef (non-standard decisions), ValueListDef (transposed data relationships), WhereClauseDef (subset conditions)
+4. Cross-domain USUBJID validation: all USUBJIDs across all domains verified present in DM
+5. FDA Technical Rejection Criteria (TRC) pre-check: DM present, TS present with mandatory parameters, define.xml present and machine-readable, STUDYID consistent, filenames follow conventions
+6. FDA Business Rule validation: FDAB057 (ethnicity choices), FDAB055 (race self-reported), FDAB039 (normal range boundaries), FDAB009 (paired variables), FDAB030 (standard units)
+7. System generates Clinical Study Data Reviewer's Guide (cSDRG) template with domain mapping rationale, non-standard variable justification, and data handling decisions
+8. System produces a pre-submission validation report with P21 rule alignment, severity categorization, known false-positive whitelist, and submission readiness score
+9. Dataset size validation: total submission size checked against 5GB FDA limit with split recommendations for large domains
+10. All file naming conventions enforced (lowercase domain codes, .xpt extension)
 
 **Plans:** (created by /gsd:plan-phase)
 
@@ -235,6 +277,7 @@ Plans:
 | 3 - Core Mapping Engine (Demographics) | Complete | 2026-02-27 |
 | 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Complete | 2026-02-27 |
 | 4 - Human Review Gate | Complete | 2026-02-27 |
+| 4.1 - FDA Compliance Infrastructure (INSERTED) | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
 | 7 - Validation and Submission Readiness | Not started | -- |
