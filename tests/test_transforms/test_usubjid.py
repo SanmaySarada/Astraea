@@ -39,6 +39,22 @@ class TestGenerateUsubjid:
         """Ensure string conversion works for any input."""
         assert generate_usubjid("301", "04401", "01") == "301-04401-01"
 
+    def test_nan_siteid_raises(self):
+        with pytest.raises(ValueError, match="siteid.*empty or NaN"):
+            generate_usubjid("301", float("nan"), "01")
+
+    def test_nan_subjid_raises(self):
+        with pytest.raises(ValueError, match="subjid.*empty or NaN"):
+            generate_usubjid("301", "04401", float("nan"))
+
+    def test_none_component_raises(self):
+        with pytest.raises(ValueError, match="siteid.*empty or NaN"):
+            generate_usubjid("301", None, "01")
+
+    def test_empty_string_raises(self):
+        with pytest.raises(ValueError, match="studyid.*empty or NaN"):
+            generate_usubjid("", "04401", "01")
+
 
 # ---------------------------------------------------------------------------
 # extract_usubjid_components
@@ -139,6 +155,27 @@ class TestGenerateUsubjidColumn:
         })
         result = generate_usubjid_column(df, studyid_value="301", delimiter=".")
         assert list(result) == ["301.04401.01"]
+
+    def test_nan_produces_na(self):
+        """NaN in source columns should produce pd.NA, not '301-nan-01'."""
+        df = pd.DataFrame({
+            "SITEID": ["04401", None, "04403"],
+            "SUBJID": ["01", "02", "03"],
+        })
+        result = generate_usubjid_column(df, studyid_value="301")
+        assert result.iloc[0] == "301-04401-01"
+        assert pd.isna(result.iloc[1])
+        assert result.iloc[2] == "301-04403-03"
+
+    def test_valid_column_unchanged(self):
+        """Normal DataFrame still produces correct USUBJIDs."""
+        df = pd.DataFrame({
+            "SITEID": ["04401", "04402", "04403"],
+            "SUBJID": ["01", "02", "03"],
+        })
+        result = generate_usubjid_column(df, studyid_value="301")
+        expected = ["301-04401-01", "301-04402-02", "301-04403-03"]
+        assert list(result) == expected
 
 
 # ---------------------------------------------------------------------------
