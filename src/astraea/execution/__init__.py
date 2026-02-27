@@ -5,9 +5,12 @@ Re-exports key classes for convenient imports:
 """
 
 from astraea.execution.executor import CrossDomainContext, DatasetExecutor, ExecutionError
+from astraea.execution.preprocessing import align_multi_source_columns, filter_rows
 
 __all__ = [
     "CrossDomainContext",
     "DatasetExecutor",
     "ExecutionError",
+    "align_multi_source_columns",
+    "filter_rows",
 ]
