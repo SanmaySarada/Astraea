@@ -12,7 +12,7 @@ See: .planning/PROJECT.md
 Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
 Plan: 5 of 5
 Status: Phase complete
-Last activity: 2026-02-27 -- Completed 03.1-05-PLAN.md (Profiler, XPT, prompts, transform registry)
+Last activity: 2026-02-27 -- Completed 03.1-03-PLAN.md (domains.json core/label/variable/key_variables fixes)
 
 Progress: [██████████████████████████████░░░░░░░░░░] ~57%
 
@@ -96,6 +96,7 @@ CLI commands available: `astraea map-domain`
 |-----------|--------|-------|--------|
 | Missing CT codelists (16 added) | src/astraea/data/ct/codelists.json | 16 | Done |
 | Missing SDTM domains (8 added) | src/astraea/data/sdtm_ig/domains.json | 22 | Done |
+| Core/label/variable/key_variable fixes | src/astraea/data/sdtm_ig/domains.json | 25 | Done |
 | Model field fixes (order, length, SUPPQUAL) | src/astraea/models/mapping.py, sdtm.py | 12 | Done |
 | Codelist validation fixes | src/astraea/mapping/validation.py | 8 | Done |
 | Profiler date disambiguation | src/astraea/profiling/profiler.py | 10 | Done |
@@ -104,9 +105,9 @@ CLI commands available: `astraea map-domain`
 | Engine error wrapping | src/astraea/mapping/engine.py | -- | Done |
 | Transform registry | src/astraea/mapping/transform_registry.py | 12 | Done |
 | Docstring corrections | src/astraea/transforms/dates.py | 4 | Done |
-| **Total** | | **60 new tests (plan 05)** | **Complete** |
+| **Total** | | **85 new tests** | **Complete** |
 
-**Combined test suite: 639 tests passing**
+**Combined test suite: 686 tests passing**
 
 ## Accumulated Context
 
@@ -183,6 +184,9 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-03.1-05-02] All _RAW columns checked for string dates (not just *DAT*_RAW) -- false positives harmless
 - 2026-02-27: [D-03.1-05-03] XPT unlabeled column check uses case-insensitive fallback for label key matching
 - 2026-02-27: [D-03.1-05-04] timezone.utc -> UTC alias fixed in dates.py (ruff UP017)
+- 2026-02-27: [D-03.1-03-01] New Permissible variables use empty string for cdisc_notes (VariableSpec requires str, not None)
+- 2026-02-27: [D-03.1-03-02] New variables appended at max_order+N rather than inserted mid-list
+- 2026-02-27: [D-03.1-03-03] Existing tests updated to match corrected core designations (ARMNRS Perm, CMSTDTC/CMENDTC Exp)
 
 ### Pending Todos
 
@@ -199,7 +203,7 @@ CLI commands available: `astraea map-domain`
   - Triggered by: Phase 3 audit found 5 CRITICAL + 14 HIGH + 8 MEDIUM issues + 3 architectural gaps
   - Phase 4 BLOCKED until 3.1 completes -- review gate needs correct reference data, model fields, and wired transforms
   - Scope: All items from .planning/PHASE3_AUDIT.md sections 2-6 and 9
-  - STATUS: **COMPLETE** -- all 5 plans executed, 639 tests passing
+  - STATUS: **COMPLETE** -- all 5 plans executed, 686 tests passing
 
 ### Blockers/Concerns
 
@@ -211,5 +215,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03.1-05-PLAN.md (Profiler, XPT, prompts, transform registry) -- Phase 3.1 COMPLETE
+Stopped at: Completed 03.1-03-PLAN.md (retroactive execution of skipped plan) -- Phase 3.1 COMPLETE
 Resume file: None
