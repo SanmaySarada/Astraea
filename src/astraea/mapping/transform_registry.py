@@ -19,6 +19,7 @@ from astraea.transforms.dates import (
     sas_datetime_to_iso,
 )
 from astraea.transforms.epoch import assign_epoch
+from astraea.transforms.recoding import numeric_to_yn
 from astraea.transforms.imputation import (
     get_date_imputation_flag,
     get_time_imputation_flag,
@@ -56,6 +57,8 @@ AVAILABLE_TRANSFORMS: dict[str, Callable] = {
     "fix_common_non_ascii": fix_common_non_ascii,
     # char length optimization
     "optimize_char_lengths": optimize_char_lengths,
+    # recoding transforms
+    "numeric_to_yn": numeric_to_yn,
 }
 
 
