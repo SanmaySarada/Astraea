@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 5 of 8 (Event and Intervention Domains)
-Plan: 4 of 7
+Plan: 7 of 7
 Status: In progress
-Last activity: 2026-02-27 -- Completed 05-03-PLAN.md (CM and EX domain integration tests)
+Last activity: 2026-02-27 -- Completed 05-07-PLAN.md (MH, IE, CE, DV mapping integration tests)
 
-Progress: [█████████████████████████████████████████████░░░░░] ~85%
+Progress: [██████████████████████████████████████████████████] ~90%
 
 ## Performance Metrics
 
@@ -33,7 +33,7 @@ Progress: [███████████████████████
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
-| 05-event-intervention | 4/7 | ~16 min | ~4.0 min |
+| 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 
 ## Phase 1 Deliverables
 
@@ -164,9 +164,13 @@ CLI commands available: `astraea execute-domain`
 | DV integration test | tests/integration/execution/test_dv_execution.py | 8 | Done |
 | CM integration test | tests/integration/execution/test_cm_execution.py | 10 | Done |
 | EX integration test (filter + merge) | tests/integration/execution/test_ex_execution.py | 9 | Done |
-| **Total** | | **80 new tests** | **In progress** |
+| MH mapping test | tests/integration/mapping/test_mh_mapping.py | 9 | Done |
+| IE mapping test | tests/integration/mapping/test_ie_mapping.py | 7 | Done |
+| CE mapping test | tests/integration/mapping/test_ce_mapping.py | 8 | Done |
+| DV mapping test | tests/integration/mapping/test_dv_mapping.py | 7 | Done |
+| **Total** | | **111 new tests** | **Complete** |
 
-**Combined test suite: 1011 tests passing**
+**Combined test suite: 1042 tests passing**
 
 ## Accumulated Context
 
@@ -272,6 +276,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-05-03-01] CM test uses synthetic partial dates: 'un UNK 2020' -> '2020', 'un Jun 2019' -> '2019-06'
 - 2026-02-27: [D-05-03-02] EX test applies filter_rows before executor (pre-execution filtering pattern)
 - 2026-02-27: [D-05-03-03] Fixed pre-existing mock bug: preferred_term -> nci_preferred_term in test_pattern_handlers
+- 2026-02-27: [D-05-07-01] haemh_screen.sas7bdat (0 rows) excluded from MH multi-source -- no data to contribute
+- 2026-02-27: [D-05-07-02] DV StudyMetadata uses Site_Number/Subject_ID (non-standard) instead of SiteNumber/Subject
+- 2026-02-27: [D-05-07-03] IE Findings-class assertion validates domain_class field directly (no transpose needed)
 
 ### Pending Todos
 
@@ -310,5 +317,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-03-PLAN.md (CM and EX domain integration tests)
+Stopped at: Completed 05-07-PLAN.md (MH, IE, CE, DV mapping integration tests)
 Resume file: None
