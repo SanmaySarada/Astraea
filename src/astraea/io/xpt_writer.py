@@ -196,7 +196,7 @@ def write_xpt_v5(
         file_format_version=5,
     )
     if table_label is not None:
-        write_kwargs["table_label"] = table_label
+        write_kwargs["file_label"] = table_label
     pyreadstat.write_xport(df_out, str(path), **write_kwargs)
 
     # Step 4: Read-back verification
