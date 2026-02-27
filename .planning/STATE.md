@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 4 IN PROGRESS -- Human Review Gate. Plan 2 of 3 complete.
+**Current focus:** Phase 4 COMPLETE -- Human Review Gate. Ready for Phase 5.
 
 ## Current Position
 
 Phase: 4 of 8 (Human Review Gate)
-Plan: 2 of 3
-Status: In progress
-Last activity: 2026-02-27 -- Completed 04-02-PLAN.md (review display + reviewer logic)
+Plan: 3 of 3
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 04-03-PLAN.md (CLI commands for review workflow)
 
-Progress: [█████████████████████████████████░░░░░░░] ~62%
+Progress: [████████████████████████████████████░░░░] ~67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
-| 04-human-review-gate | 2/3 | ~9 min | ~4.5 min |
+| 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 
 ## Phase 1 Deliverables
 
@@ -118,10 +118,12 @@ CLI commands available: `astraea map-domain`
 | Session persistence | src/astraea/review/session.py | 13 | Done |
 | Review display functions | src/astraea/review/display.py | 19 | Done |
 | DomainReviewer logic | src/astraea/review/reviewer.py | 16 | Done |
-| CLI commands (review-domain, resume) | src/astraea/cli/app.py | -- | Pending |
-| **Total** | | **65 tests** | **In Progress** |
+| CLI commands (review-domain, resume, sessions) | src/astraea/cli/app.py | 13 | Done |
+| **Total** | | **78 tests** | **Complete** |
 
-**Combined test suite: 751 tests passing**
+**Combined test suite: 764 tests passing**
+
+CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sessions`
 
 ## Accumulated Context
 
@@ -207,6 +209,8 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-0402-01] ReviewDecision validator allows None corrected_mapping for REJECT correction type
 - 2026-02-27: [D-0402-02] DomainReviewer uses input_callback injection for testability (replaces Rich Prompt.ask)
 - 2026-02-27: [D-0402-03] Per-variable save_domain_review after every decision for crash recovery
+- 2026-02-27: [D-0403-01] Lazy imports inside command functions for review module (consistent with parse-ecrf, classify patterns)
+- 2026-02-27: [D-0403-02] _apply_corrections rebuilds spec from session decisions, filtering rejected and updating corrected mappings
 
 ### Pending Todos
 
@@ -235,5 +239,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 04-02-PLAN.md (review display + reviewer logic)
+Stopped at: Completed 04-03-PLAN.md (CLI commands for review workflow) -- Phase 4 COMPLETE
 Resume file: None
