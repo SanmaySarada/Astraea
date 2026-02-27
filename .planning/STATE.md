@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 4.1 COMPLETE -- FDA Compliance Infrastructure. Ready for Phase 5.
+**Current focus:** Phase 5 IN PROGRESS -- Event and Intervention Domains.
 
 ## Current Position
 
-Phase: 4.1 of 8 (FDA Compliance Infrastructure)
-Plan: 5 of 5
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 04.1-05-PLAN.md (Execution bridge + CLI + integration test)
+Phase: 5 of 8 (Event and Intervention Domains)
+Plan: 1 of 7
+Status: In progress
+Last activity: 2026-02-27 -- Completed 05-01-PLAN.md (Execution infrastructure utilities)
 
-Progress: [██████████████████████████████████████████] ~79%
+Progress: [███████████████████████████████████████████░░░░░░░] ~81%
 
 ## Performance Metrics
 
@@ -33,6 +33,7 @@ Progress: [███████████████████████
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
+| 05-event-intervention | 1/7 | ~3 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -148,6 +149,16 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 
 CLI commands available: `astraea execute-domain`
 
+## Phase 5 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| numeric_to_yn transform | src/astraea/transforms/recoding.py | 17 | Done |
+| Preprocessing utilities | src/astraea/execution/preprocessing.py | 15 | Done |
+| **Total** | | **32 new tests** | **In progress** |
+
+**Combined test suite: 940 tests passing**
+
 ## Accumulated Context
 
 ### Decisions
@@ -243,6 +254,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-04.1-03-01] generate_usubjid_column uses studyid_value/siteid_col/subjid_col parameter names (not study_id/site_col/subject_col)
 - 2026-02-27: [D-04.1-03-02] LOOKUP_RECODE maps preferred_term -> submission_value and submission_value -> submission_value for bidirectional CT matching
 - 2026-02-27: [D-04.1-03-03] Critical variables (STUDYID, DOMAIN, USUBJID) raise ExecutionError on failure; all others log warning and set to None
+- 2026-02-27: [D-05-01-01] numeric_to_yn returns None for unexpected values (conservative, don't guess)
+- 2026-02-27: [D-05-01-02] filter_rows uses case-insensitive string matching with .str.strip().str.upper()
+- 2026-02-27: [D-05-01-03] align_multi_source_columns always returns copies, never modifies originals
 
 ### Pending Todos
 
@@ -281,5 +295,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 04.1-05-PLAN.md (Execution bridge + CLI + integration test) -- Phase 4.1 complete
+Stopped at: Completed 05-01-PLAN.md (Execution infrastructure utilities)
 Resume file: None
