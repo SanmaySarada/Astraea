@@ -48,12 +48,11 @@ class TestSDTMReference:
         assert "USUBJID" in req
         assert "SUBJID" in req
         assert "SEX" in req
-        assert "ARMCD" in req
-        assert "ARM" in req
-        assert "ACTARMCD" in req
-        assert "ACTARM" in req
         assert "COUNTRY" in req
         assert "SITEID" in req
+        # ARMCD, ARM, ACTARMCD, ACTARM are Exp per SDTM-IG v3.4
+        assert "ARMCD" not in req
+        assert "ARM" not in req
 
     def test_get_required_variables_nonexistent_domain(self, ref: SDTMReference) -> None:
         assert ref.get_required_variables("ZZZZ") == []
@@ -63,7 +62,13 @@ class TestSDTMReference:
         assert "RFSTDTC" in exp
         assert "AGE" in exp
         assert "RACE" in exp
-        assert "ETHNIC" in exp
+        # ETHNIC is Perm per SDTM-IG v3.4, not Exp
+        assert "ETHNIC" not in exp
+        # ARM variables are Exp per SDTM-IG v3.4
+        assert "ARMCD" in exp
+        assert "ARM" in exp
+        assert "ACTARMCD" in exp
+        assert "ACTARM" in exp
 
     def test_get_domain_class_events(self, ref: SDTMReference) -> None:
         assert ref.get_domain_class("AE") == DomainClass.EVENTS
@@ -147,7 +152,7 @@ class TestSDTMReference:
         assert ref.get_domain_class("SC") == DomainClass.FINDINGS
         assert ref.get_domain_class("FA") == DomainClass.FINDINGS
         assert ref.get_domain_class("SV") == DomainClass.SPECIAL_PURPOSE
-        assert ref.get_domain_class("DA") == DomainClass.INTERVENTIONS
+        assert ref.get_domain_class("DA") == DomainClass.FINDINGS
 
     def test_ce_required_variables(self, ref: SDTMReference) -> None:
         req = ref.get_required_variables("CE")

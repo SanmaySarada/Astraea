@@ -78,6 +78,10 @@ class DomainSpec(BaseModel):
     variables: list[VariableSpec] = Field(
         default_factory=list, description="Ordered list of variable specifications"
     )
+    key_variables: list[str] | None = Field(
+        default=None,
+        description="Natural key variables for uniqueness validation (e.g., ['STUDYID', 'USUBJID'] for DM)",
+    )
 
 
 class SDTMIGPackage(BaseModel):

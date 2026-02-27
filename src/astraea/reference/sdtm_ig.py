@@ -53,6 +53,7 @@ class SDTMReference:
                 domain_class=DomainClass(data["domain_class"]),
                 structure=data["structure"],
                 variables=variables,
+                key_variables=data.get("key_variables"),
             )
 
         self._package = SDTMIGPackage(
