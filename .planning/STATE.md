@@ -135,9 +135,12 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 | Missing CT codelists (4 added) | src/astraea/data/ct/codelists.json | 16 | Done |
 | ASCII validation + char length optimization | src/astraea/transforms/ | 27 | Done |
 | Transform registry (15 transforms) | src/astraea/mapping/transform_registry.py | 12 | Done |
-| **Total (so far)** | | **119 new tests** | **In progress** |
+| Pattern handlers + dispatch registry | src/astraea/execution/pattern_handlers.py | 13 | Done |
+| DatasetExecutor class | src/astraea/execution/executor.py | 9 | Done |
+| CrossDomainContext model | src/astraea/execution/executor.py | -- | Done |
+| **Total (so far)** | | **141 new tests** | **In progress** |
 
-**Combined test suite: 883 tests passing**
+**Combined test suite: 892 tests passing**
 
 ## Accumulated Context
 
@@ -231,6 +234,9 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 - 2026-02-27: [D-04.1-01-01] Test files placed in tests/test_transforms/ (not tests/unit/transforms/) to match existing project structure
 - 2026-02-27: [D-04.1-01-02] EPOCH uses pre-grouped dict for SE lookup rather than per-row DataFrame filtering for performance
 - 2026-02-27: [D-04.1-01-03] VISITNUM uses Float64 dtype to support decimal values for unplanned visits (e.g., 2.1)
+- 2026-02-27: [D-04.1-03-01] generate_usubjid_column uses studyid_value/siteid_col/subjid_col parameter names (not study_id/site_col/subject_col)
+- 2026-02-27: [D-04.1-03-02] LOOKUP_RECODE maps preferred_term -> submission_value and submission_value -> submission_value for bidirectional CT matching
+- 2026-02-27: [D-04.1-03-03] Critical variables (STUDYID, DOMAIN, USUBJID) raise ExecutionError on failure; all others log warning and set to None
 
 ### Pending Todos
 
@@ -253,7 +259,7 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
   - Phase 5 BLOCKED until 4.1 completes -- every domain expansion needs --DY, --SEQ, sort order, execution pipeline, origin tracking
   - Scope: 13 success criteria covering derivation utilities, execution pipeline, XPT enforcement, model extensions, missing codelists, cross-domain validation
   - Key gaps: No dataset execution pipeline (specs only, no actual SDTM DataFrames), no --DY/--SEQ/EPOCH/VISITNUM utilities, no sort/variable order enforcement, no origin tracking, no date imputation flags, no ASCII validation, 4 missing CT codelists
-  - STATUS: In progress (plan 02 of 5 complete)
+  - STATUS: In progress (plans 01-04 of 5 complete)
 - Phases 5, 6, 7 updated with additional FDA requirements:
   - Phase 5: Updated dependency to Phase 4.1, added requirement for actual .xpt output (not just specs), variable origin metadata
   - Phase 6: Added mandatory TS domain population (missing TS = FDA rejection), SUPPQUAL referential integrity requirements, unit consistency validation, normal range indicators, Findings-specific codelists
