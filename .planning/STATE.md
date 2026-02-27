@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 COMPLETE -- eCRF Parsing and Domain Classification (8/8 plans done, verified)
+**Current focus:** Phase 2.1 — Reference Data Fixes (Critical for Phase 3)
 
 ## Current Position
 
-Phase: 2 of 8 (Source Parsing and Domain Classification) -- COMPLETE (verified)
-Plan: 8 of 8 (Gap closure plans complete) -- COMPLETE
-Status: Phase 2 verified, ready for Phase 3
-Last activity: 2026-02-27 -- Completed gap closure plans 02-06, 02-07, 02-08
+Phase: 2.1 of 8 (Reference Data Fixes)
+Plan: 3 of 4
+Status: In progress
+Last activity: 2026-02-27 -- Completed 02.1-03-PLAN.md (USUBJID NaN fix + EDC columns)
 
 Progress: [████████████████████░░░░░░░░░░░░░░░░░░░░] ~38%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: ~3.1 minutes
 
 **By Phase:**
@@ -102,18 +102,27 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0208-02] pre_extracted_pages parameter avoids redundant PDF extraction in CLI
 - 2026-02-27: [D-0207-01] Heuristic override threshold set at 0.95 (not 0.9) to avoid false overrides
 - 2026-02-27: [D-0207-02] Override replaces LLM domain and uses heuristic score as confidence
+- 2026-02-27: [D-02102-01] Plan 02.1-02 expected value for sas_date_to_iso(22738.9999) corrected from "2022-03-30" to "2022-04-04"
 
 ### Pending Todos
 
 (None)
 
+### Roadmap Evolution
+
+- Phase 2.1 inserted after Phase 2: Reference Data Fixes (Critical for Phase 3) (URGENT)
+  - Triggered by: Comprehensive Phase 2 audit found 9/11 CT codelist C-codes wrong, 19 wrong codelist assignments, 15 wrong core designations, 10 critical code bugs
+  - Phase 3 BLOCKED until 2.1 completes — mapper cannot produce correct SDTM with wrong reference data
+  - Scope: All 14 Tier 1 items from .planning/PHASE2_AUDIT.md §9
+
 ### Blockers/Concerns
 
+- **Phase 3 BLOCKED by Phase 2.1** — reference data errors make correct mapping impossible
 - Python 3.12 compatibility verified: all dependencies install cleanly on 3.12.12
 - CDISC Rules Engine integration complexity unknown -- may need Phase 7 research spike
 
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Phase 2 complete (verified) -- ready for Phase 3
+Stopped at: Completed 02.1-02-PLAN.md (Date Conversion Fixes)
 Resume file: None
