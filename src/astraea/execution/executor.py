@@ -2,12 +2,14 @@
 
 Provides DatasetExecutor, the core class that takes a DomainMappingSpec and
 raw DataFrames and produces a fully-formed SDTM DataFrame with correct
-variable order, derived fields (--DY, --SEQ, EPOCH, VISIT), and only
-mapped columns retained.
+variable order, derived fields (--DY, --SEQ, EPOCH, VISIT), ASCII cleanup,
+character length optimization, sort order enforcement, and only mapped
+columns retained.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -18,6 +20,8 @@ from astraea.execution.pattern_handlers import PATTERN_HANDLERS
 from astraea.models.mapping import DomainMappingSpec, MappingPattern, VariableMapping
 from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
+from astraea.transforms.ascii_validation import fix_common_non_ascii, validate_ascii
+from astraea.transforms.char_length import optimize_char_lengths
 from astraea.transforms.epoch import assign_epoch
 from astraea.transforms.sequence import generate_seq
 from astraea.transforms.study_day import calculate_study_day_column
@@ -85,6 +89,7 @@ class DatasetExecutor:
     ) -> None:
         self.sdtm_ref = sdtm_ref
         self.ct_ref = ct_ref
+        self._last_char_widths: dict[str, int] = {}
 
     def execute(
         self,
@@ -158,6 +163,21 @@ class DatasetExecutor:
         # Step i: Sort rows by domain key variables
         result_df = self._sort_rows(result_df, spec)
 
+        # Step j: Fix common non-ASCII characters
+        result_df = fix_common_non_ascii(result_df)
+
+        # Step k: Validate remaining ASCII (warn only, don't raise)
+        ascii_issues = validate_ascii(result_df)
+        if ascii_issues:
+            logger.warning(
+                "{} non-ASCII issue(s) remain after auto-fix in {} domain",
+                len(ascii_issues),
+                spec.domain,
+            )
+
+        # Step l: Optimize character lengths
+        self._last_char_widths = optimize_char_lengths(result_df)
+
         logger.info(
             "Executed {} domain: {} rows x {} columns",
             spec.domain,
@@ -166,6 +186,101 @@ class DatasetExecutor:
         )
 
         return result_df
+
+    def execute_to_xpt(
+        self,
+        spec: DomainMappingSpec,
+        raw_dfs: dict[str, pd.DataFrame],
+        output_path: Path,
+        cross_domain: CrossDomainContext | None = None,
+        *,
+        study_id: str | None = None,
+        site_col: str = "SiteNumber",
+        subject_col: str = "Subject",
+    ) -> Path:
+        """Execute a mapping spec and write the result as an XPT v5 file.
+
+        Calls execute() to produce the SDTM DataFrame, then writes it to
+        an XPT file with optimized column widths and proper labels.
+
+        Args:
+            spec: Domain mapping specification to execute.
+            raw_dfs: Dictionary of source dataset name -> DataFrame.
+            output_path: Path for the output .xpt file.
+            cross_domain: Optional cross-domain context for --DY, EPOCH, VISIT.
+            study_id: Study identifier for USUBJID generation.
+            site_col: Raw column name for site ID.
+            subject_col: Raw column name for subject ID.
+
+        Returns:
+            The output path where the XPT file was written.
+        """
+        from astraea.io.xpt_writer import write_xpt_v5
+
+        result_df = self.execute(
+            spec,
+            raw_dfs,
+            cross_domain=cross_domain,
+            study_id=study_id,
+            site_col=site_col,
+            subject_col=subject_col,
+        )
+
+        # Build column labels from spec
+        column_labels: dict[str, str] = {}
+        for m in spec.variable_mappings:
+            if m.sdtm_variable in result_df.columns:
+                column_labels[m.sdtm_variable] = m.sdtm_label
+
+        # Write XPT
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        write_xpt_v5(
+            result_df,
+            output_path,
+            table_name=spec.domain.upper(),
+            column_labels=column_labels,
+            table_label=spec.domain_label,
+        )
+
+        logger.info("Wrote XPT: {} -> {}", spec.domain, output_path)
+        return output_path
+
+    @staticmethod
+    def validate_cross_domain_usubjid(
+        dm_df: pd.DataFrame,
+        domain_dfs: dict[str, pd.DataFrame],
+    ) -> list[str]:
+        """Validate that all USUBJIDs across domains exist in DM.
+
+        Args:
+            dm_df: The DM domain DataFrame (reference for valid USUBJIDs).
+            domain_dfs: Dictionary of domain name -> DataFrame to check.
+
+        Returns:
+            List of error messages for USUBJIDs missing from DM.
+            Empty list means all USUBJIDs are consistent.
+        """
+        errors: list[str] = []
+
+        if "USUBJID" not in dm_df.columns:
+            errors.append("DM domain is missing USUBJID column")
+            return errors
+
+        dm_subjects = set(dm_df["USUBJID"].dropna().unique())
+
+        for domain_name, domain_df in sorted(domain_dfs.items()):
+            if "USUBJID" not in domain_df.columns:
+                continue
+            domain_subjects = set(domain_df["USUBJID"].dropna().unique())
+            orphans = domain_subjects - dm_subjects
+            for orphan in sorted(orphans):
+                errors.append(
+                    f"USUBJID '{orphan}' in {domain_name} not found in DM"
+                )
+
+        return errors
 
     def _merge_raw(self, raw_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
         """Merge multiple source DataFrames into one, working on copies."""
