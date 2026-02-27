@@ -144,9 +144,10 @@ class TestCodelistCCodesVerified:
         cl = ct.lookup_codelist("C66742")
         assert cl is not None
         assert cl.name == "No Yes Response"
-        assert "U" in cl.terms
         assert "Y" in cl.terms
         assert "N" in cl.terms
+        # U was removed per SDTM-IG v3.4 (C66742 is non-extensible: Y/N only)
+        assert "U" not in cl.terms
 
     def test_country_code_is_iso3166(self, ct: CTReference) -> None:
         cl = ct.lookup_codelist("ISO3166")

@@ -396,3 +396,138 @@ class TestDomainsJsonCorrections:
                 assert spec.codelist_code == "C66734", (
                     f"{domain_code}.DOMAIN codelist: {spec.codelist_code}"
                 )
+
+
+class TestTrialDesignAndMissingDomains:
+    """Tests for TS, TA, TE, TV, TI, SE, CO, SUPPQUAL domains (Phase 3.1 Plan 02)."""
+
+    # ------------------------------------------------------------------
+    # TS domain tests
+    # ------------------------------------------------------------------
+
+    def test_ts_domain_loads(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("TS")
+        assert spec is not None
+        assert spec.domain == "TS"
+        assert spec.description == "Trial Summary"
+
+    def test_ts_domain_class_is_trial_design(self, ref: SDTMReference) -> None:
+        assert ref.get_domain_class("TS") == DomainClass.TRIAL_DESIGN
+
+    def test_ts_has_11_variables(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("TS")
+        assert spec is not None
+        assert len(spec.variables) == 11
+
+    def test_ts_key_variables(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("TS")
+        assert spec is not None
+        assert spec.key_variables == ["STUDYID", "TSPARMCD", "TSSEQ"]
+
+    def test_ts_required_variables(self, ref: SDTMReference) -> None:
+        req = ref.get_required_variables("TS")
+        for var in ["STUDYID", "DOMAIN", "TSSEQ", "TSPARMCD", "TSPARM", "TSVAL"]:
+            assert var in req, f"TS missing required variable {var}"
+
+    def test_ts_tsparmcd_has_codelist(self, ref: SDTMReference) -> None:
+        spec = ref.get_variable_spec("TS", "TSPARMCD")
+        assert spec is not None
+        assert spec.codelist_code == "C66738"
+
+    # ------------------------------------------------------------------
+    # Trial Design domains parametrized tests
+    # ------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "domain_code,min_vars",
+        [("TA", 10), ("TE", 7), ("TV", 9), ("TI", 8)],
+    )
+    def test_trial_design_domain_loads(
+        self, ref: SDTMReference, domain_code: str, min_vars: int
+    ) -> None:
+        spec = ref.get_domain_spec(domain_code)
+        assert spec is not None, f"{domain_code} not found"
+        assert len(spec.variables) >= min_vars, (
+            f"{domain_code} has {len(spec.variables)} vars, expected >= {min_vars}"
+        )
+
+    @pytest.mark.parametrize("domain_code", ["TA", "TE", "TV", "TI"])
+    def test_trial_design_domain_class(self, ref: SDTMReference, domain_code: str) -> None:
+        assert ref.get_domain_class(domain_code) == DomainClass.TRIAL_DESIGN
+
+    @pytest.mark.parametrize("domain_code", ["TA", "TE", "TV", "TI"])
+    def test_trial_design_has_key_variables(self, ref: SDTMReference, domain_code: str) -> None:
+        spec = ref.get_domain_spec(domain_code)
+        assert spec is not None
+        assert spec.key_variables is not None
+        assert len(spec.key_variables) >= 2
+
+    # ------------------------------------------------------------------
+    # SE and CO tests
+    # ------------------------------------------------------------------
+
+    def test_se_domain_class_is_special_purpose(self, ref: SDTMReference) -> None:
+        assert ref.get_domain_class("SE") == DomainClass.SPECIAL_PURPOSE
+
+    def test_se_usubjid_is_required(self, ref: SDTMReference) -> None:
+        spec = ref.get_variable_spec("SE", "USUBJID")
+        assert spec is not None
+        assert spec.core.value == "Req"
+
+    def test_se_key_variables(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("SE")
+        assert spec is not None
+        assert spec.key_variables == ["STUDYID", "USUBJID", "ETCD", "SESTDTC"]
+
+    def test_co_domain_class_is_special_purpose(self, ref: SDTMReference) -> None:
+        assert ref.get_domain_class("CO") == DomainClass.SPECIAL_PURPOSE
+
+    def test_co_coval_is_required(self, ref: SDTMReference) -> None:
+        spec = ref.get_variable_spec("CO", "COVAL")
+        assert spec is not None
+        assert spec.core.value == "Req"
+
+    def test_co_key_variables(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("CO")
+        assert spec is not None
+        assert spec.key_variables == ["STUDYID", "USUBJID", "COSEQ"]
+
+    # ------------------------------------------------------------------
+    # SUPPQUAL tests
+    # ------------------------------------------------------------------
+
+    def test_suppqual_loads_with_10_variables(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("SUPPQUAL")
+        assert spec is not None
+        assert len(spec.variables) == 10
+
+    def test_suppqual_domain_class_is_special_purpose(self, ref: SDTMReference) -> None:
+        assert ref.get_domain_class("SUPPQUAL") == DomainClass.SPECIAL_PURPOSE
+
+    def test_suppqual_required_variables(self, ref: SDTMReference) -> None:
+        req = ref.get_required_variables("SUPPQUAL")
+        for var in ["QNAM", "QLABEL", "QVAL", "QORIG"]:
+            assert var in req, f"SUPPQUAL missing required variable {var}"
+
+    def test_suppqual_expected_variables(self, ref: SDTMReference) -> None:
+        exp = ref.get_expected_variables("SUPPQUAL")
+        for var in ["IDVAR", "IDVARVAL", "QEVAL"]:
+            assert var in exp, f"SUPPQUAL missing expected variable {var}"
+
+    def test_suppqual_key_variables_includes_qnam(self, ref: SDTMReference) -> None:
+        spec = ref.get_domain_spec("SUPPQUAL")
+        assert spec is not None
+        assert "QNAM" in spec.key_variables
+        assert spec.key_variables == [
+            "STUDYID", "RDOMAIN", "USUBJID", "IDVAR", "IDVARVAL", "QNAM"
+        ]
+
+    # ------------------------------------------------------------------
+    # Total domain count
+    # ------------------------------------------------------------------
+
+    def test_list_domains_returns_at_least_26(self, ref: SDTMReference) -> None:
+        domains = ref.list_domains()
+        assert len(domains) >= 26
+        for code in ["TS", "TA", "TE", "TV", "TI", "SE", "CO", "SUPPQUAL"]:
+            assert code in domains, f"Missing domain: {code}"
