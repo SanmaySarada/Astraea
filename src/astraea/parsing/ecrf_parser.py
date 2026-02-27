@@ -146,10 +146,7 @@ def parse_ecrf(
     path = Path(pdf_path)
 
     # Step 1: Extract pages (or use pre-extracted ones)
-    if pre_extracted_pages is not None:
-        pages = pre_extracted_pages
-    else:
-        pages = extract_ecrf_pages(path)
+    pages = pre_extracted_pages if pre_extracted_pages is not None else extract_ecrf_pages(path)
 
     # Step 2: Group by form
     form_groups = group_pages_by_form(pages)

@@ -165,6 +165,35 @@ class TestParseEcrfCommand:
         assert output_file.exists()
         assert "Adverse Events" in output_file.read_text()
 
+    @patch("astraea.parsing.ecrf_parser.parse_ecrf")
+    @patch("astraea.parsing.pdf_extractor.group_pages_by_form")
+    @patch("astraea.parsing.pdf_extractor.extract_ecrf_pages")
+    def test_single_pdf_extraction(
+        self,
+        mock_extract: MagicMock,
+        mock_group: MagicMock,
+        mock_parse: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """PDF extraction should happen only once (via CLI), not again inside parse_ecrf."""
+        pdf_file = tmp_path / "ecrf.pdf"
+        pdf_file.write_bytes(b"%PDF-1.4 fake")
+        mock_pages = [{"text": "page 1"}]
+        mock_extract.return_value = mock_pages
+        mock_group.return_value = {"Form1": []}
+        mock_parse.return_value = _make_extraction_result()
+
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}):
+            result = runner.invoke(app, ["parse-ecrf", str(pdf_file)])
+
+        assert result.exit_code == 0
+        # extract_ecrf_pages called exactly once (by CLI), not twice
+        mock_extract.assert_called_once()
+        # parse_ecrf receives pre_extracted_pages so it skips its own extraction
+        mock_parse.assert_called_once()
+        call_kwargs = mock_parse.call_args
+        assert call_kwargs.kwargs.get("pre_extracted_pages") == mock_pages
+
     def test_cache_dir_loads_cached(self, tmp_path: Path) -> None:
         pdf_file = tmp_path / "ecrf.pdf"
         pdf_file.write_bytes(b"%PDF-1.4 fake")

@@ -305,10 +305,10 @@ def parse_ecrf_cmd(
         console.print(f"[bold red]Error extracting PDF:[/bold red] {e}")
         raise typer.Exit(code=1) from e
 
-    # Step 2: Parse forms
+    # Step 2: Parse forms (pass pre-extracted pages to avoid double extraction)
     console.print(f"[bold blue][2/2][/bold blue] Parsing {n_forms} forms...")
     try:
-        result = parse_ecrf(ecrf_path)
+        result = parse_ecrf(ecrf_path, pre_extracted_pages=pages)
     except Exception as e:
         console.print(f"[bold red]Error parsing eCRF:[/bold red] {e}")
         raise typer.Exit(code=1) from e
