@@ -83,8 +83,8 @@
 
 ### Human Review & Learning
 
-- [ ] **HITL-01**: System presents proposed mappings to human reviewer at each domain, pausing for approval/correction
-- [ ] **HITL-02**: System captures human corrections with structured metadata (what was wrong, what's correct, why)
+- [x] **HITL-01**: System presents proposed mappings to human reviewer at each domain, pausing for approval/correction
+- [x] **HITL-02**: System captures human corrections with structured metadata (what was wrong, what's correct, why)
 - [ ] **HITL-03**: System stores corrections in vector database (ChromaDB) for future retrieval
 - [ ] **HITL-04**: System retrieves similar past corrections when mapping new studies (few-shot RAG)
 - [ ] **HITL-05**: System optimizes prompts from accumulated corrections using DSPy
@@ -94,8 +94,8 @@
 ### CLI Interface
 
 - [ ] **CLI-01**: User can run system from terminal: point at data folder (SAS files + eCRF PDF), get SDTM output
-- [ ] **CLI-02**: User can review and approve/correct mappings interactively in terminal
-- [ ] **CLI-03**: User can resume a mapping session (pick up where they left off)
+- [x] **CLI-02**: User can review and approve/correct mappings interactively in terminal
+- [x] **CLI-03**: User can resume a mapping session (pick up where they left off)
 - [ ] **CLI-04**: System displays progress through pipeline stages clearly
 
 ## v2 Requirements
@@ -172,10 +172,10 @@
 | SPEC-02 | Phase 3 | Complete |
 | SPEC-03 | Phase 3 | Complete |
 | SPEC-04 | Phase 3 | Complete |
-| HITL-01 | Phase 4 | Pending |
-| HITL-02 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| CLI-03 | Phase 4 | Pending |
+| HITL-01 | Phase 4 | Complete |
+| HITL-02 | Phase 4 | Complete |
+| CLI-02 | Phase 4 | Complete |
+| CLI-03 | Phase 4 | Complete |
 | DOM-02 | Phase 5 | Pending |
 | DOM-03 | Phase 5 | Pending |
 | DOM-04 | Phase 5 | Pending |
