@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2.1 — Reference Data Fixes (Critical for Phase 3)
+**Current focus:** Phase 2.1 Complete -- Ready for Phase 3 (Mapping Engine)
 
 ## Current Position
 
 Phase: 2.1 of 8 (Reference Data Fixes)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-02-27 -- Completed 02.1-03-PLAN.md (USUBJID NaN fix + EDC columns)
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 02.1-04-PLAN.md (domains.json corrections + key_variables)
 
-Progress: [████████████████████░░░░░░░░░░░░░░░░░░░░] ~38%
+Progress: [█████████████████████░░░░░░░░░░░░░░░░░░░] ~40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 17
 - Average duration: ~3.1 minutes
 
 **By Phase:**
@@ -28,6 +28,7 @@ Progress: [████████████████████░░░
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
+| 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 
 ## Phase 1 Deliverables
 
@@ -58,7 +59,18 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
-**Combined test suite: 440 tests passing**
+## Phase 2.1 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| CT codelist C-code fixes | src/astraea/data/ct/codelists.json | 13 | Done |
+| Date conversion bug fixes | src/astraea/transforms/dates.py | 9 | Done |
+| USUBJID NaN fix + EDC columns | src/astraea/transforms/usubjid.py, profiling/ | 15 | Done |
+| domains.json corrections + keys | src/astraea/data/sdtm_ig/domains.json | 50 | Done |
+| DomainSpec key_variables | src/astraea/models/sdtm.py | -- | Done |
+| **Total** | | **87 new tests** | **Complete** |
+
+**Combined test suite: 490 tests passing**
 
 ## Accumulated Context
 
@@ -109,6 +121,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-02.1-03-01] ValueError raised for NaN/None/empty USUBJID components (fail-fast over silent corruption)
 - 2026-02-27: [D-02.1-03-02] pd.NA used for invalid USUBJID column rows (preserves pandas NA semantics)
 - 2026-02-27: [D-02.1-03-03] EDC column set expanded from 25 to 29 (subject, sitenumber, site, sitegroup)
+- 2026-02-27: [D-02.1-04-01] Forward-reference codelist codes allowed in domains.json for not-yet-populated codelists
+- 2026-02-27: [D-02.1-04-02] DOMAIN variable gets C66734 codelist, EPOCH gets C99079 across all domains
+- 2026-02-27: [D-02.1-04-03] Non-core domains get key_variables: null (to be populated when actively mapped)
 
 ### Pending Todos
 
@@ -118,17 +133,18 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
 - Phase 2.1 inserted after Phase 2: Reference Data Fixes (Critical for Phase 3) (URGENT)
   - Triggered by: Comprehensive Phase 2 audit found 9/11 CT codelist C-codes wrong, 19 wrong codelist assignments, 15 wrong core designations, 10 critical code bugs
-  - Phase 3 BLOCKED until 2.1 completes — mapper cannot produce correct SDTM with wrong reference data
-  - Scope: All 14 Tier 1 items from .planning/PHASE2_AUDIT.md §9
+  - Phase 3 BLOCKED until 2.1 completes -- mapper cannot produce correct SDTM with wrong reference data
+  - Scope: All 14 Tier 1 items from .planning/PHASE2_AUDIT.md section 9
+  - STATUS: **COMPLETE** -- all 4 plans executed, 490 tests passing
 
 ### Blockers/Concerns
 
-- **Phase 3 BLOCKED by Phase 2.1** — reference data errors make correct mapping impossible
+- Phase 3 now UNBLOCKED -- reference data corrected
 - Python 3.12 compatibility verified: all dependencies install cleanly on 3.12.12
 - CDISC Rules Engine integration complexity unknown -- may need Phase 7 research spike
 
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 02.1-03-PLAN.md (USUBJID NaN fix + EDC columns)
+Stopped at: Completed 02.1-04-PLAN.md (domains.json corrections + key_variables) -- Phase 2.1 COMPLETE
 Resume file: None
