@@ -60,6 +60,35 @@ Plans:
 
 ---
 
+### Phase 2.1: Reference Data Fixes (Critical for Phase 3) (INSERTED)
+
+**Goal:** Fix all Tier 1 reference data errors identified in the Phase 2 comprehensive audit — 9 wrong NCI C-codes, 19 wrong codelist assignments, 15 wrong core designations, missing codelist assignments, DA domain class fix, missing natural keys, EDC column gaps, and critical code bugs (USUBJID NaN, date validation, SAS numeric rounding) — so the Phase 3 mapper has correct reference data to produce valid SDTM output.
+**Depends on:** Phase 2 (audit findings require Phase 2 infrastructure to exist)
+**Requirements:** Audit Tier 1 items (14 fixes) — see .planning/PHASE2_AUDIT.md §9
+**Blocked by:** Nothing (Phase 2 complete)
+**Blocks:** Phase 3 (mapper cannot produce correct output with wrong reference data)
+
+**Success Criteria:**
+1. All 11 CT codelists in codelists.json have correct NCI C-codes verified against NCI EVS
+2. All codelist assignments in domains.json match SDTM-IG v3.4 specification (19 fixes)
+3. All core designations (Req/Exp/Perm) match SDTM-IG v3.4 for every variable (15 fixes)
+4. DA domain class corrected to Findings
+5. All null codelist assignments filled where SDTM-IG specifies a codelist (16+ variables)
+6. Natural key_variables defined for all 9 core domains
+7. EDC column set updated (6 missing columns + 1 typo fix)
+8. USUBJID NaN bug fixed, date range validation added, SAS numeric rounding fixed, partial date patterns added
+9. All existing tests still pass + new tests for each fix
+
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02.1-01-PLAN.md -- Fix all 9 NCI C-codes in codelists.json + Race extensibility + NY "U" term
+- [ ] 02.1-02-PLAN.md -- Fix date conversion bugs (round(), validation, UN UNK, datetime strings)
+- [ ] 02.1-03-PLAN.md -- Fix USUBJID NaN bug + EDC column set updates
+- [ ] 02.1-04-PLAN.md -- Fix domains.json (codelist assignments, core designations, DA class, null codelists, key_variables)
+
+---
+
 ### Phase 3: Core Mapping Engine (Demographics)
 
 **Goal:** The system can take a classified domain, propose complete variable-level mappings using all mapping patterns, and output a mapping specification document -- proven end-to-end on the DM domain as the reference implementation.
@@ -162,7 +191,8 @@ Plans:
 |-------|--------|-----------|
 | 1 - Foundation and Data Infrastructure | Complete | 2026-02-26 |
 | 2 - Source Parsing and Domain Classification | Complete | 2026-02-27 |
-| 3 - Core Mapping Engine (Demographics) | Not started | -- |
+| **2.1 - Reference Data Fixes (INSERTED)** | **Planned** | -- |
+| 3 - Core Mapping Engine (Demographics) | Blocked (by 2.1) | -- |
 | 4 - Human Review Gate | Not started | -- |
 | 5 - Event and Intervention Domains | Not started | -- |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
