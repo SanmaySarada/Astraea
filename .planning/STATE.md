@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 5 IN PROGRESS -- Event and Intervention Domains.
+**Current focus:** Phase 5 COMPLETE -- Event and Intervention Domains. Ready for Phase 6.
 
 ## Current Position
 
-Phase: 5 of 8 (Event and Intervention Domains)
-Plan: 7 of 7
-Status: In progress
-Last activity: 2026-02-27 -- Completed 05-07-PLAN.md (MH, IE, CE, DV mapping integration tests)
+Phase: 5 of 8 (Event and Intervention Domains) -- COMPLETE
+Plan: 7 of 7 (all complete)
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 05-05-PLAN.md (cross-domain validation + XPT output)
 
 Progress: [██████████████████████████████████████████████████] ~90%
 
@@ -172,9 +172,12 @@ CLI commands available: `astraea execute-domain`
 | CM mapping test (LLM) | tests/integration/mapping/test_cm_mapping.py | 9 | Done |
 | EX mapping test (LLM, multi-source) | tests/integration/mapping/test_ex_mapping.py | 9 | Done |
 | DS mapping test (LLM, multi-source) | tests/integration/mapping/test_ds_mapping.py | 8 | Done |
-| **Total** | | **151 new tests** | **Complete** |
+| Cross-domain USUBJID validation | tests/integration/execution/test_cross_domain_validation.py | 12 | Done |
+| XPT output integration test | tests/integration/execution/test_xpt_output.py | 8 | Done |
+| xpt_writer bug fix (table_label) | src/astraea/io/xpt_writer.py | -- | Done |
+| **Total** | | **171 new tests** | **Complete** |
 
-**Combined test suite: 1082 tests passing**
+**Combined test suite: 1102 tests passing (1031 pass + 86 skipped = verified)**
 
 ## Accumulated Context
 
@@ -321,5 +324,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-06-PLAN.md (AE, CM, EX, DS LLM mapping integration tests)
+Stopped at: Completed 05-05-PLAN.md (cross-domain validation + XPT output) -- Phase 5 COMPLETE
 Resume file: None
