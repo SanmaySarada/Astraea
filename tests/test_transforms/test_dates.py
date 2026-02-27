@@ -309,6 +309,26 @@ class TestFormatPartialIso8601:
 # detect_date_format
 # ---------------------------------------------------------------------------
 
+class TestDocstringExamples:
+    """Verify that docstring examples match actual function output."""
+
+    def test_sas_date_to_iso_docstring_example_1(self):
+        """sas_date_to_iso(22734.0) should return '2022-03-30' per docstring."""
+        assert sas_date_to_iso(22734.0) == "2022-03-30"
+
+    def test_sas_date_to_iso_docstring_example_2(self):
+        """sas_date_to_iso(0.0) should return '1960-01-01' per docstring."""
+        assert sas_date_to_iso(0.0) == "1960-01-01"
+
+    def test_sas_datetime_to_iso_docstring_example_1(self):
+        """sas_datetime_to_iso(1964217600.0) should return '2022-03-30T00:00:00'."""
+        assert sas_datetime_to_iso(1964217600.0) == "2022-03-30T00:00:00"
+
+    def test_sas_datetime_to_iso_docstring_example_2(self):
+        """sas_datetime_to_iso(0.0) should return '1960-01-01T00:00:00'."""
+        assert sas_datetime_to_iso(0.0) == "1960-01-01T00:00:00"
+
+
 class TestDetectDateFormat:
     """Format detection for profiler column annotation."""
 

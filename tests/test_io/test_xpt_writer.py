@@ -179,3 +179,50 @@ class TestWriteXptV5:
         for col, expected_label in simple_labels.items():
             actual_label = meta.column_names_to_labels.get(col.upper(), "")
             assert actual_label == expected_label
+
+
+# --- Table label validation tests ---
+
+
+class TestTableLabelValidation:
+    def test_table_label_too_long(self) -> None:
+        """Table label exceeding 40 chars should be an error."""
+        df = pd.DataFrame({"VAR1": [1]})
+        long_label = "A" * 41
+        errors = validate_for_xpt_v5(df, {"VAR1": "Label"}, "DM", table_label=long_label)
+        assert any("Table label exceeds 40 characters" in e for e in errors)
+
+    def test_table_label_at_limit(self) -> None:
+        """Table label of exactly 40 chars should not produce a table label error."""
+        df = pd.DataFrame({"VAR1": [1]})
+        label_40 = "A" * 40
+        errors = validate_for_xpt_v5(df, {"VAR1": "Label"}, "DM", table_label=label_40)
+        assert not any("Table label" in e for e in errors)
+
+    def test_table_label_none_backward_compat(self) -> None:
+        """table_label=None (default) should not produce table label errors."""
+        df = pd.DataFrame({"VAR1": [1]})
+        errors = validate_for_xpt_v5(df, {"VAR1": "Label"}, "DM")
+        assert not any("Table label" in e for e in errors)
+
+
+class TestUnlabeledColumnValidation:
+    def test_unlabeled_column_detected(self) -> None:
+        """A column with no label should produce an error."""
+        df = pd.DataFrame({"VAR1": [1], "VAR2": [2]})
+        errors = validate_for_xpt_v5(df, {"VAR1": "Label One"}, "DM")
+        assert any("VAR2" in e and "no label" in e for e in errors)
+
+    def test_all_columns_labeled_no_error(self) -> None:
+        """When all columns have labels, no unlabeled-column error."""
+        df = pd.DataFrame({"VAR1": [1], "VAR2": [2]})
+        labels = {"VAR1": "Label One", "VAR2": "Label Two"}
+        errors = validate_for_xpt_v5(df, labels, "DM")
+        assert not any("no label" in e for e in errors)
+
+    def test_case_insensitive_label_match(self) -> None:
+        """Label keys with different case should still match columns."""
+        df = pd.DataFrame({"var1": [1]})
+        labels = {"VAR1": "Label One"}
+        errors = validate_for_xpt_v5(df, labels, "DM")
+        assert not any("no label" in e for e in errors)
