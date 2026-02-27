@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3.1 COMPLETE -- Audit Fixes + Architectural Wiring. Ready for Phase 4.
+**Current focus:** Phase 4 IN PROGRESS -- Human Review Gate. Plan 1 of 3 complete.
 
 ## Current Position
 
-Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
-Plan: 5 of 5
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 03.1-03-PLAN.md (domains.json core/label/variable/key_variables fixes)
+Phase: 4 of 8 (Human Review Gate)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-02-27 -- Completed 04-01-PLAN.md (review data models + session persistence)
 
-Progress: [██████████████████████████████░░░░░░░░░░] ~57%
+Progress: [████████████████████████████████░░░░░░░░] ~60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
+- Total plans completed: 28
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -31,6 +31,7 @@ Progress: [███████████████████████
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
+| 04-human-review-gate | 1/3 | ~4 min | ~4.0 min |
 
 ## Phase 1 Deliverables
 
@@ -108,6 +109,18 @@ CLI commands available: `astraea map-domain`
 | **Total** | | **85 new tests** | **Complete** |
 
 **Combined test suite: 686 tests passing**
+
+## Phase 4 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Review data models | src/astraea/review/models.py | 17 | Done |
+| Session persistence | src/astraea/review/session.py | 13 | Done |
+| Review display + reviewer | src/astraea/review/display.py, reviewer.py | -- | Pending |
+| CLI commands (review-domain, resume) | src/astraea/cli/app.py | -- | Pending |
+| **Total** | | **30 tests** | **In Progress** |
+
+**Combined test suite: 716 tests passing**
 
 ## Accumulated Context
 
@@ -187,6 +200,9 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-03.1-03-01] New Permissible variables use empty string for cdisc_notes (VariableSpec requires str, not None)
 - 2026-02-27: [D-03.1-03-02] New variables appended at max_order+N rather than inserted mid-list
 - 2026-02-27: [D-03.1-03-03] Existing tests updated to match corrected core designations (ARMNRS Perm, CMSTDTC/CMENDTC Exp)
+- 2026-02-27: [D-0401-01] CoreDesignation uses REQ/EXP/PERM enum values (not REQUIRED/EXPECTED/PERMISSIBLE)
+- 2026-02-27: [D-0401-02] SessionStore uses sqlite3.Row factory for dict-like row access
+- 2026-02-27: [D-0401-03] Domain review decisions serialized as JSON dict in SQLite TEXT column
 
 ### Pending Todos
 
@@ -215,5 +231,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03.1-03-PLAN.md (retroactive execution of skipped plan) -- Phase 3.1 COMPLETE
+Stopped at: Completed 04-01-PLAN.md (review data models + session persistence)
 Resume file: None
