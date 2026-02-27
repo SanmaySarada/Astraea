@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 02 of 05 complete).
+**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 04 of 05 complete).
 
 ## Current Position
 
 Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
-Plan: 2 of 5
+Plan: 4 of 5
 Status: In progress
-Last activity: 2026-02-27 -- Completed 03.1-02-PLAN.md (Add missing domains)
+Last activity: 2026-02-27 -- Completed 03.1-04-PLAN.md (Model fields, engine wiring, validation fixes)
 
-Progress: [███████████████████████████░░░░░░░░░░░░░] ~53%
+Progress: [████████████████████████████░░░░░░░░░░░░] ~55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
+- Total plans completed: 26
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -30,7 +30,7 @@ Progress: [███████████████████████
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
-| 03.1-audit-fixes | 2/5 | ~6 min | ~3.0 min |
+| 03.1-audit-fixes | 4/5 | ~12 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -86,7 +86,7 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 | Integration test (DM end-to-end) | tests/integration/mapping/test_dm_mapping.py | 15 | Done |
 | **Total** | | **89 tests** | **Complete** |
 
-**Combined test suite: 579 tests passing**
+**Combined test suite: 607 tests passing**
 
 CLI commands available: `astraea map-domain`
 
@@ -158,6 +158,9 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-03.1-02-01] DomainSpec.domain max_length increased from 4 to 8 to accommodate SUPPQUAL
 - 2026-02-27: [D-03.1-02-02] SUPPQUAL added as pseudo-domain in domains.json (same structure as real domains)
 - 2026-02-27: [D-03.1-02-03] C66738 used as forward-reference codelist for TSPARMCD (not yet in codelists.json)
+- 2026-02-27: [D-03.1-04-01] order and length fields use defaults (0 and None) for full backward compatibility
+- 2026-02-27: [D-03.1-04-02] LOOKUP_RECODE non-extensible codelist warning does NOT penalize confidence -- mapping valid, validation deferred to runtime
+- 2026-02-27: [D-03.1-04-03] Fixed trailing comma in codelists.json (pre-existing JSON parse error blocking CTReference)
 
 ### Pending Todos
 
@@ -184,5 +187,5 @@ CLI commands available: `astraea map-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03.1-02-PLAN.md (Add missing domains)
+Stopped at: Completed 03.1-04-PLAN.md (Model fields, engine wiring, validation fixes)
 Resume file: None
