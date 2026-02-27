@@ -10,16 +10,16 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 3 of 8 (Core Mapping Engine)
-Plan: 1 of 5
+Plan: 2 of 5
 Status: In progress
-Last activity: 2026-02-27 -- Completed 03-01-PLAN.md (mapping specification models)
+Last activity: 2026-02-27 -- Completed 03-02-PLAN.md (mapping context assembly)
 
-Progress: [██████████████████████░░░░░░░░░░░░░░░░░░] ~42%
+Progress: [███████████████████████░░░░░░░░░░░░░░░░░] ~44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: ~3.1 minutes
 
 **By Phase:**
@@ -29,7 +29,7 @@ Progress: [██████████████████████░
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
-| 03-core-mapping-engine | 1/5 | ~3 min | ~3.0 min |
+| 03-core-mapping-engine | 2/5 | ~6 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -78,13 +78,14 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 | Component | Module | Tests | Status |
 |-----------|--------|-------|--------|
 | Mapping specification models | src/astraea/models/mapping.py | 30 | Done |
+| Mapping context assembly | src/astraea/mapping/context.py | 13 | Done |
 | DM mapping agent | -- | -- | Pending |
 | Mapping enrichment engine | -- | -- | Pending |
 | CLI mapping display | -- | -- | Pending |
 | Integration test | -- | -- | Pending |
-| **Total** | | **30 tests** | **In progress** |
+| **Total** | | **43 tests** | **In progress** |
 
-**Combined test suite: 520 tests passing**
+**Combined test suite: 533 tests passing**
 
 ## Accumulated Context
 
@@ -141,6 +142,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0301-01] StrEnum used for MappingPattern/ConfidenceLevel (Python 3.12+, ruff UP042 compliance)
 - 2026-02-27: [D-0301-02] Confidence thresholds: HIGH >= 0.85, MEDIUM >= 0.60, LOW < 0.60
 - 2026-02-27: [D-0301-03] Two-tier model: LLM proposal (no ref data) -> enriched spec (with labels, core, codelist names)
+- 2026-02-27: [D-0302-01] build_prompt uses keyword-only arguments for all domain-specific parameters
+- 2026-02-27: [D-0302-02] EDC columns filtered by is_edc_column flag at context assembly time (LLM never sees them)
+- 2026-02-27: [D-0302-03] Large codelists (>20 terms) show first 20 with total count to keep context focused
 
 ### Pending Todos
 
@@ -163,5 +167,5 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03-01-PLAN.md (mapping specification models)
+Stopped at: Completed 03-02-PLAN.md (mapping context assembly)
 Resume file: None
