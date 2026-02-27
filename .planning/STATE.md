@@ -100,6 +100,8 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0206-01] Digits accepted as valid right-boundary only (not left) in _is_segment_match
 - 2026-02-27: [D-0208-01] Failed forms get empty-field ECRFForm placeholder (not silently dropped)
 - 2026-02-27: [D-0208-02] pre_extracted_pages parameter avoids redundant PDF extraction in CLI
+- 2026-02-27: [D-0207-01] Heuristic override threshold set at 0.95 (not 0.9) to avoid false overrides
+- 2026-02-27: [D-0207-02] Override replaces LLM domain and uses heuristic score as confidence
 
 ### Pending Todos
 
