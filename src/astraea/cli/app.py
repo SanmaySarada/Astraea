@@ -2,7 +2,8 @@
 
 Provides commands for profiling SAS datasets, querying SDTM-IG domain
 specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
-classifying raw datasets to SDTM domains, and reviewing mapping specifications.
+classifying raw datasets to SDTM domains, reviewing mapping specifications,
+and executing mapping specs to produce SDTM XPT files.
 
 Usage:
     astraea profile <data-folder>
@@ -14,6 +15,7 @@ Usage:
     astraea review-domain <spec-file>
     astraea resume [session-id]
     astraea sessions
+    astraea execute-domain <spec-path> <data-dir>
 """
 
 from __future__ import annotations
@@ -409,6 +411,150 @@ def map_domain(
 
     console.print(f"\n[green]JSON saved to:[/green]  {json_path}")
     console.print(f"[green]Excel saved to:[/green] {excel_path}")
+
+
+@app.command(name="execute-domain")
+def execute_domain(
+    spec_path: Annotated[
+        Path,
+        typer.Argument(help="Path to mapping spec JSON file"),
+    ],
+    data_dir: Annotated[
+        Path,
+        typer.Argument(help="Path to raw data directory"),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Output directory for XPT files"),
+    ] = Path("output"),
+    dm_path: Annotated[
+        Path | None,
+        typer.Option(
+            "--dm-path",
+            help="Path to DM dataset (for RFSTDTC cross-domain context)",
+        ),
+    ] = None,
+) -> None:
+    """Execute a mapping spec against raw data to produce an SDTM XPT file.
+
+    Loads a mapping specification JSON (from map-domain or review-domain),
+    reads the raw SAS source files, executes the mapping, and writes the
+    resulting SDTM dataset as an XPT v5 file.
+
+    Optionally provide --dm-path to enable cross-domain features like
+    study day (--DY) derivation using RFSTDTC from the DM domain.
+    """
+    from astraea.execution.executor import CrossDomainContext, DatasetExecutor
+    from astraea.io.sas_reader import read_sas_with_metadata
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.reference import load_ct_reference, load_sdtm_reference
+
+    # Validate spec file
+    if not spec_path.exists():
+        console.print(f"[bold red]Error:[/bold red] Spec file not found: {spec_path}")
+        raise typer.Exit(code=1)
+
+    # Validate data directory
+    if not data_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {data_dir}")
+        raise typer.Exit(code=1)
+
+    # Step 1: Load spec
+    console.print("[bold blue][1/4][/bold blue] Loading mapping specification...")
+    try:
+        spec = DomainMappingSpec.model_validate_json(spec_path.read_text())
+    except Exception as e:
+        console.print(f"[bold red]Error loading spec:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    domain = spec.domain.upper()
+    console.print(
+        f"  Domain: [bold]{domain}[/bold] ({spec.domain_label}), "
+        f"{len(spec.variable_mappings)} variables"
+    )
+
+    # Step 2: Load raw data
+    console.print("[bold blue][2/4][/bold blue] Loading raw datasets...")
+    raw_dfs: dict[str, __import__("pandas").DataFrame] = {}
+    for source_name in spec.source_datasets:
+        # Try exact name, then without extension
+        source_path = data_dir / source_name
+        if not source_path.exists():
+            stem = source_name.replace(".sas7bdat", "")
+            source_path = data_dir / f"{stem}.sas7bdat"
+        if source_path.exists():
+            try:
+                df, _meta = read_sas_with_metadata(source_path)
+                raw_dfs[source_name] = df
+                console.print(f"  Loaded {source_path.name}: {len(df)} rows")
+            except Exception as e:
+                console.print(
+                    f"[yellow]Warning: Could not read {source_name}: {e}[/yellow]"
+                )
+        else:
+            console.print(
+                f"[yellow]Warning: Source dataset not found: {source_name}[/yellow]"
+            )
+
+    if not raw_dfs:
+        console.print("[bold red]Error:[/bold red] No source datasets could be loaded")
+        raise typer.Exit(code=1)
+
+    # Step 3: Build cross-domain context
+    cross_domain = None
+    if dm_path is not None:
+        if not dm_path.exists():
+            console.print(f"[yellow]Warning: DM path not found: {dm_path}[/yellow]")
+        else:
+            console.print("[bold blue][3/4][/bold blue] Loading DM for cross-domain context...")
+            try:
+                dm_df, _dm_meta = read_sas_with_metadata(dm_path)
+                rfstdtc_lookup: dict[str, str] = {}
+                if "USUBJID" in dm_df.columns and "RFSTDTC" in dm_df.columns:
+                    for _, row in dm_df.iterrows():
+                        if row.get("USUBJID") and row.get("RFSTDTC"):
+                            rfstdtc_lookup[str(row["USUBJID"])] = str(row["RFSTDTC"])
+                cross_domain = CrossDomainContext(rfstdtc_lookup=rfstdtc_lookup)
+                console.print(f"  RFSTDTC lookup: {len(rfstdtc_lookup)} subjects")
+            except Exception as e:
+                console.print(f"[yellow]Warning: Could not load DM: {e}[/yellow]")
+    else:
+        console.print("[bold blue][3/4][/bold blue] No DM path provided, skipping cross-domain")
+
+    # Step 4: Execute
+    console.print("[bold blue][4/4][/bold blue] Executing mapping...")
+    try:
+        sdtm_ref = load_sdtm_reference()
+        ct_ref = load_ct_reference()
+        executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+
+        output_dir_path = Path(output_dir)
+        output_dir_path.mkdir(parents=True, exist_ok=True)
+        xpt_path = output_dir_path / f"{domain.lower()}.xpt"
+
+        executor.execute_to_xpt(
+            spec,
+            raw_dfs,
+            xpt_path,
+            cross_domain=cross_domain,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Error during execution:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Display summary
+    console.print("\n[bold green]Execution complete:[/bold green]")
+    console.print(f"  Domain:  {domain} ({spec.domain_label})")
+    console.print(f"  Output:  {xpt_path}")
+    console.print(f"  Sources: {len(raw_dfs)} dataset(s)")
+
+    # Show char width summary
+    if executor._last_char_widths:
+        max_width = max(executor._last_char_widths.values())
+        console.print(
+            f"  Char widths: {len(executor._last_char_widths)} column(s), "
+            f"max {max_width} bytes"
+        )
 
 
 def _find_primary_sas(
