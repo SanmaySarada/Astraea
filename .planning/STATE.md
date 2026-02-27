@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 3.1 IN PROGRESS -- Audit Fixes + Architectural Wiring (Plan 01 of 05 complete).
+**Current focus:** Phase 3.1 COMPLETE -- Audit Fixes + Architectural Wiring. Ready for Phase 4.
 
 ## Current Position
 
 Phase: 3.1 of 8 (Audit Fixes + Architectural Wiring)
-Plan: 1 of 5
-Status: In progress
-Last activity: 2026-02-27 -- Completed 03.1-01-PLAN.md (Add missing CT codelists + C66742 fix)
+Plan: 5 of 5
+Status: Phase complete
+Last activity: 2026-02-27 -- Completed 03.1-05-PLAN.md (Profiler, XPT, prompts, transform registry)
 
-Progress: [████████████████████████████░░░░░░░░░░░░] ~55%
+Progress: [██████████████████████████████░░░░░░░░░░] ~57%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
+- Total plans completed: 27
 - Average duration: ~3.3 minutes
 
 **By Phase:**
@@ -30,7 +30,7 @@ Progress: [███████████████████████
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
 | 03-core-mapping-engine | 5/5 | ~25 min | ~5.0 min |
-| 03.1-audit-fixes | 4/5 | ~12 min | ~3.0 min |
+| 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 
 ## Phase 1 Deliverables
 
@@ -86,9 +86,27 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 | Integration test (DM end-to-end) | tests/integration/mapping/test_dm_mapping.py | 15 | Done |
 | **Total** | | **89 tests** | **Complete** |
 
-**Combined test suite: 607 tests passing**
+**Combined test suite: 579 tests passing**
 
 CLI commands available: `astraea map-domain`
+
+## Phase 3.1 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Missing CT codelists (16 added) | src/astraea/data/ct/codelists.json | 16 | Done |
+| Missing SDTM domains (8 added) | src/astraea/data/sdtm_ig/domains.json | 22 | Done |
+| Model field fixes (order, length, SUPPQUAL) | src/astraea/models/mapping.py, sdtm.py | 12 | Done |
+| Codelist validation fixes | src/astraea/mapping/validation.py | 8 | Done |
+| Profiler date disambiguation | src/astraea/profiling/profiler.py | 10 | Done |
+| XPT writer label validation | src/astraea/io/xpt_writer.py | 7 | Done |
+| SUPPQUAL prompt enhancement | src/astraea/mapping/prompts.py | -- | Done |
+| Engine error wrapping | src/astraea/mapping/engine.py | -- | Done |
+| Transform registry | src/astraea/mapping/transform_registry.py | 12 | Done |
+| Docstring corrections | src/astraea/transforms/dates.py | 4 | Done |
+| **Total** | | **60 new tests (plan 05)** | **Complete** |
+
+**Combined test suite: 639 tests passing**
 
 ## Accumulated Context
 
@@ -161,6 +179,10 @@ CLI commands available: `astraea map-domain`
 - 2026-02-27: [D-03.1-04-01] order and length fields use defaults (0 and None) for full backward compatibility
 - 2026-02-27: [D-03.1-04-02] LOOKUP_RECODE non-extensible codelist warning does NOT penalize confidence -- mapping valid, validation deferred to runtime
 - 2026-02-27: [D-03.1-04-03] Fixed trailing comma in codelists.json (pre-existing JSON parse error blocking CTReference)
+- 2026-02-27: [D-03.1-05-01] SLASH_DATE pattern with field-value disambiguation replaces duplicate DD/MM and MM/DD regex
+- 2026-02-27: [D-03.1-05-02] All _RAW columns checked for string dates (not just *DAT*_RAW) -- false positives harmless
+- 2026-02-27: [D-03.1-05-03] XPT unlabeled column check uses case-insensitive fallback for label key matching
+- 2026-02-27: [D-03.1-05-04] timezone.utc -> UTC alias fixed in dates.py (ruff UP017)
 
 ### Pending Todos
 
@@ -177,15 +199,17 @@ CLI commands available: `astraea map-domain`
   - Triggered by: Phase 3 audit found 5 CRITICAL + 14 HIGH + 8 MEDIUM issues + 3 architectural gaps
   - Phase 4 BLOCKED until 3.1 completes -- review gate needs correct reference data, model fields, and wired transforms
   - Scope: All items from .planning/PHASE3_AUDIT.md sections 2-6 and 9
+  - STATUS: **COMPLETE** -- all 5 plans executed, 639 tests passing
 
 ### Blockers/Concerns
 
-- Phase 3 now UNBLOCKED -- reference data corrected
+- Phase 3.1 COMPLETE -- all audit fixes and architectural wiring done
 - Python 3.12 compatibility verified: all dependencies install cleanly on 3.12.12
 - CDISC Rules Engine integration complexity unknown -- may need Phase 7 research spike
+- Pre-existing test failure: test_old_wrong_codes_do_not_exist (C66767 is a valid codelist; test assertion is wrong)
 
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03.1-01-PLAN.md (Add missing CT codelists + C66742 fix)
+Stopped at: Completed 03.1-05-PLAN.md (Profiler, XPT, prompts, transform registry) -- Phase 3.1 COMPLETE
 Resume file: None
