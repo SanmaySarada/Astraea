@@ -2,7 +2,7 @@
 
 Provides commands for profiling SAS datasets, querying SDTM-IG domain
 specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
-and classifying raw datasets to SDTM domains.
+classifying raw datasets to SDTM domains, and reviewing mapping specifications.
 
 Usage:
     astraea profile <data-folder>
@@ -11,15 +11,22 @@ Usage:
     astraea parse-ecrf <ecrf-path>
     astraea classify <data-dir>
     astraea map-domain <data-folder> <ecrf-pdf> <domain>
+    astraea review-domain <spec-file>
+    astraea resume [session-id]
+    astraea sessions
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 import typer
 from rich.console import Console
+
+if TYPE_CHECKING:
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.review.models import ReviewDecision
 
 app = typer.Typer(
     name="astraea",
@@ -713,3 +720,318 @@ def classify(
         cache_file = cache_dir / "classification.json"
         save_classification(result, cache_file)
         console.print(f"[dim]Cached to {cache_file}[/dim]")
+
+
+@app.command(name="review-domain")
+def review_domain_cmd(
+    spec_file: Annotated[
+        Path,
+        typer.Argument(help="Path to mapping spec JSON from map-domain"),
+    ],
+    session: Annotated[
+        str | None,
+        typer.Option("--session", help="Resume existing session by ID"),
+    ] = None,
+    db: Annotated[
+        Path,
+        typer.Option("--db", help="Session database location"),
+    ] = Path(".astraea/sessions.db"),
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Where to save reviewed spec"),
+    ] = Path("output"),
+) -> None:
+    """Interactively review a domain mapping specification.
+
+    Loads a mapping spec JSON (from map-domain), starts an interactive review
+    session with two-tier review (batch approve HIGH confidence, individual
+    review MEDIUM/LOW), and exports the reviewed spec as JSON.
+
+    Use --session to resume an existing session by ID.
+    """
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.review.reviewer import DomainReviewer, ReviewInterrupted
+    from astraea.review.session import SessionStore
+
+    # Validate spec file
+    if not spec_file.exists():
+        console.print(f"[bold red]Error:[/bold red] Spec file not found: {spec_file}")
+        raise typer.Exit(code=1)
+
+    # Load mapping spec
+    try:
+        spec = DomainMappingSpec.model_validate_json(spec_file.read_text())
+    except Exception as e:
+        console.print(f"[bold red]Error loading spec:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    domain = spec.domain
+
+    # Open session store
+    store = SessionStore(db)
+    try:
+        if session is not None:
+            # Resume existing session
+            try:
+                _session = store.load_session(session)
+            except ValueError:
+                console.print(
+                    f"[bold red]Error:[/bold red] Session '{session}' not found"
+                )
+                raise typer.Exit(code=1) from None
+            session_id = session
+        else:
+            # Create new session with this single domain
+            _session = store.create_session(
+                study_id=spec.study_id,
+                domains=[domain],
+                specs={domain: spec},
+            )
+            session_id = _session.session_id
+            console.print(
+                f"[green]Created review session:[/green] {session_id}"
+            )
+
+        # Run review
+        reviewer = DomainReviewer(store, console)
+        try:
+            domain_review = reviewer.review_domain(session_id, domain)
+        except ReviewInterrupted as exc:
+            console.print(
+                f"\n[yellow]Review interrupted.[/yellow] "
+                f"Session saved: [bold]{exc.session_id}[/bold]"
+            )
+            console.print(
+                f"Resume with: [bold]astraea resume {exc.session_id} "
+                f"--db {db}[/bold]"
+            )
+            return
+
+        # Export reviewed spec
+        output_dir.mkdir(parents=True, exist_ok=True)
+        reviewed_path = output_dir / f"{domain}_reviewed.json"
+
+        # Build reviewed spec: apply corrections to original
+        reviewed_spec = _apply_corrections(spec, domain_review.decisions)
+        reviewed_path.write_text(reviewed_spec.model_dump_json(indent=2))
+
+        console.print(
+            f"\n[green]Reviewed spec saved to:[/green] {reviewed_path}"
+        )
+    finally:
+        store.close()
+
+
+@app.command(name="resume")
+def resume_cmd(
+    session_id: Annotated[
+        str | None,
+        typer.Argument(help="Session ID to resume (omit for most recent)"),
+    ] = None,
+    db: Annotated[
+        Path,
+        typer.Option("--db", help="Session database location"),
+    ] = Path(".astraea/sessions.db"),
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Where to save reviewed specs"),
+    ] = Path("output"),
+) -> None:
+    """Resume an interrupted review session.
+
+    If no session ID is provided, resumes the most recent in-progress session.
+    Continues reviewing domains from where it left off.
+    """
+    from astraea.review.models import DomainReviewStatus
+    from astraea.review.reviewer import DomainReviewer, ReviewInterrupted
+    from astraea.review.session import SessionStore
+
+    if not db.exists():
+        console.print("[bold red]Error:[/bold red] No session database found.")
+        console.print(
+            "Start a review first with: "
+            "[bold]astraea review-domain <spec.json>[/bold]"
+        )
+        raise typer.Exit(code=1)
+
+    store = SessionStore(db)
+    try:
+        if session_id is None:
+            # Find most recent in-progress session
+            sessions = store.list_sessions()
+            in_progress = [
+                s for s in sessions if s["status"] == "in_progress"
+            ]
+            if not in_progress:
+                console.print(
+                    "[yellow]No in-progress sessions found.[/yellow]"
+                )
+                raise typer.Exit(code=0)
+            session_id = in_progress[0]["session_id"]
+            console.print(
+                f"Resuming most recent session: [bold]{session_id}[/bold]"
+            )
+
+        try:
+            session = store.load_session(session_id)
+        except ValueError:
+            console.print(
+                f"[bold red]Error:[/bold red] Session '{session_id}' not found"
+            )
+            raise typer.Exit(code=1) from None
+
+        # Find pending domains
+        reviewer = DomainReviewer(store, console)
+        for domain in session.domains:
+            domain_review = session.domain_reviews.get(domain)
+            if domain_review is None:
+                continue
+            if domain_review.status in (
+                DomainReviewStatus.COMPLETED,
+                DomainReviewStatus.SKIPPED,
+            ):
+                continue
+
+            # Review this domain
+            try:
+                domain_review = reviewer.review_domain(session_id, domain)
+            except ReviewInterrupted as exc:
+                console.print(
+                    f"\n[yellow]Review interrupted.[/yellow] "
+                    f"Session saved: [bold]{exc.session_id}[/bold]"
+                )
+                console.print(
+                    f"Resume with: [bold]astraea resume {exc.session_id} "
+                    f"--db {db}[/bold]"
+                )
+                return
+
+        # All domains complete -- export reviewed specs
+        session = store.load_session(session_id)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        for domain in session.domains:
+            domain_review = session.domain_reviews[domain]
+            reviewed_spec = _apply_corrections(
+                domain_review.original_spec, domain_review.decisions
+            )
+            reviewed_path = output_dir / f"{domain}_reviewed.json"
+            reviewed_path.write_text(reviewed_spec.model_dump_json(indent=2))
+            console.print(
+                f"[green]Exported:[/green] {reviewed_path}"
+            )
+
+        console.print("\n[bold green]Session complete.[/bold green]")
+    finally:
+        store.close()
+
+
+@app.command(name="sessions")
+def list_sessions_cmd(
+    db: Annotated[
+        Path,
+        typer.Option("--db", help="Session database location"),
+    ] = Path(".astraea/sessions.db"),
+    study: Annotated[
+        str | None,
+        typer.Option("--study", help="Filter by study ID"),
+    ] = None,
+) -> None:
+    """List all review sessions.
+
+    Shows session IDs, study IDs, status, creation dates, and domain counts.
+    Use --study to filter by study ID.
+    """
+    from astraea.review.display import display_session_list
+    from astraea.review.session import SessionStore
+
+    if not db.exists():
+        console.print("[dim]No review sessions found.[/dim]")
+        return
+
+    store = SessionStore(db)
+    try:
+        sessions = store.list_sessions(study_id=study)
+        if not sessions:
+            console.print("[dim]No review sessions found.[/dim]")
+            return
+        display_session_list(sessions, console)
+    finally:
+        store.close()
+
+
+def _apply_corrections(
+    spec: DomainMappingSpec,
+    decisions: dict[str, ReviewDecision],
+) -> DomainMappingSpec:
+    """Build a reviewed spec by applying corrections to the original.
+
+    For each variable mapping:
+    - If corrected with a new mapping, use the corrected mapping.
+    - If rejected, exclude from the reviewed spec.
+    - Otherwise, keep the original mapping.
+
+    Args:
+        spec: The original mapping specification.
+        decisions: Per-variable review decisions.
+
+    Returns:
+        A new DomainMappingSpec with corrections applied.
+    """
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.review.models import CorrectionType, ReviewStatus
+
+    reviewed_mappings = []
+    for mapping in spec.variable_mappings:
+        decision = decisions.get(mapping.sdtm_variable)
+        if decision is None:
+            # No decision yet, keep original
+            reviewed_mappings.append(mapping)
+        elif decision.status == ReviewStatus.CORRECTED:
+            if decision.correction_type == CorrectionType.REJECT:
+                # Rejected -- exclude from reviewed spec
+                continue
+            elif decision.corrected_mapping is not None:
+                reviewed_mappings.append(decision.corrected_mapping)
+            else:
+                reviewed_mappings.append(mapping)
+        else:
+            # Approved or skipped -- keep original
+            reviewed_mappings.append(mapping)
+
+    # Rebuild spec with reviewed mappings
+    return DomainMappingSpec(
+        domain=spec.domain,
+        domain_label=spec.domain_label,
+        domain_class=spec.domain_class,
+        structure=spec.structure,
+        study_id=spec.study_id,
+        source_datasets=spec.source_datasets,
+        cross_domain_sources=spec.cross_domain_sources,
+        variable_mappings=reviewed_mappings,
+        total_variables=len(reviewed_mappings),
+        required_mapped=sum(
+            1 for m in reviewed_mappings
+            if m.core.value == "Req"
+        ),
+        expected_mapped=sum(
+            1 for m in reviewed_mappings
+            if m.core.value == "Exp"
+        ),
+        high_confidence_count=sum(
+            1 for m in reviewed_mappings
+            if m.confidence_level.value == "HIGH"
+        ),
+        medium_confidence_count=sum(
+            1 for m in reviewed_mappings
+            if m.confidence_level.value == "MEDIUM"
+        ),
+        low_confidence_count=sum(
+            1 for m in reviewed_mappings
+            if m.confidence_level.value == "LOW"
+        ),
+        mapping_timestamp=spec.mapping_timestamp,
+        model_used=spec.model_used,
+        unmapped_source_variables=spec.unmapped_source_variables,
+        suppqual_candidates=spec.suppqual_candidates,
+    )
