@@ -207,7 +207,14 @@ Plans:
 4. All 8 domains pass human review and generate correct SDTM datasets (actual .xpt files) with --DY, --SEQ, EPOCH, correct sort order, and valid variable attributes
 5. All generated datasets include variable origin metadata for define.xml traceability
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- Infrastructure gaps: numeric_to_yn transform, row filtering, column alignment
+- [ ] 05-02-PLAN.md -- AE + DS domain integration tests (most complex + multi-source)
+- [ ] 05-03-PLAN.md -- CM + EX domain integration tests (partial dates + row filtering)
+- [ ] 05-04-PLAN.md -- MH + IE + CE + DV domain integration tests (simpler domains)
+- [ ] 05-05-PLAN.md -- Cross-domain validation + XPT output verification
 
 ---
 
