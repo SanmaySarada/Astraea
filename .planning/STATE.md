@@ -214,6 +214,9 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 - 2026-02-27: [D-04.1-02-01] C66785 variable_mappings set to LAT (standard SDTM laterality variable)
 - 2026-02-27: [D-04.1-02-02] C66789 variable_mappings set to LBSPEC (primary Specimen Condition variable)
 - 2026-02-27: [D-04.1-02-03] VariableOrigin has 6 values including PREDECESSOR for define.xml 2.0 completeness
+- 2026-02-27: [D-04.1-01-01] Test files placed in tests/test_transforms/ (not tests/unit/transforms/) to match existing project structure
+- 2026-02-27: [D-04.1-01-02] EPOCH uses pre-grouped dict for SE lookup rather than per-row DataFrame filtering for performance
+- 2026-02-27: [D-04.1-01-03] VISITNUM uses Float64 dtype to support decimal values for unplanned visits (e.g., 2.1)
 
 ### Pending Todos
 
