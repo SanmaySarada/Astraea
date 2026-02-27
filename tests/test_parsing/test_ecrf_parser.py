@@ -232,6 +232,88 @@ class TestParseECRF:
         assert result.source_pdf == "/some/ecrf.pdf"
         assert result.extraction_timestamp  # non-empty
 
+    def test_single_form_failure_does_not_crash_pipeline(self) -> None:
+        """When extract_form_fields raises for one form, others still parse."""
+        dm_form_result = ECRFForm(
+            form_name="Demographics",
+            fields=[
+                ECRFField(
+                    field_number=1,
+                    field_name="SEX",
+                    data_type="$1",
+                    sas_label="Sex",
+                    units=None,
+                    coded_values=None,
+                    field_oid="SEX",
+                ),
+            ],
+            page_numbers=[5],
+        )
+
+        # Mock extract_form_fields directly: succeed for Demographics, fail for AE
+        def _mock_extract_form_fields(
+            client: object,
+            form_name: str,
+            form_text: str,
+            page_numbers: list[int] | None = None,
+        ) -> ECRFForm:
+            if form_name == "AE":
+                raise RuntimeError("LLM timeout for AE form")
+            return dm_form_result
+
+        mock_forms = {
+            "Demographics": [(5, "Form: Demographics\n" + "x" * 60)],
+            "AE": [(10, "Form: AE\n" + "x" * 60)],
+        }
+
+        client = MagicMock()
+
+        with (
+            patch("astraea.parsing.ecrf_parser.extract_ecrf_pages", return_value=[]),
+            patch("astraea.parsing.ecrf_parser.group_pages_by_form", return_value=mock_forms),
+            patch("astraea.parsing.ecrf_parser.extract_form_fields", side_effect=_mock_extract_form_fields),
+        ):
+            result = parse_ecrf(pdf_path="/fake/path.pdf", client=client)
+
+        # Both forms should be in results
+        assert len(result.forms) == 2
+        names = [f.form_name for f in result.forms]
+        assert "Demographics" in names
+        assert "AE" in names
+
+        # Demographics should have fields; AE should be empty (failed)
+        dm_form = next(f for f in result.forms if f.form_name == "Demographics")
+        ae_form = next(f for f in result.forms if f.form_name == "AE")
+        assert len(dm_form.fields) == 1
+        assert len(ae_form.fields) == 0
+        assert ae_form.page_numbers == [10]
+
+    def test_pre_extracted_pages_skips_pdf_extraction(
+        self, mock_client: MagicMock,
+    ) -> None:
+        """When pre_extracted_pages is provided, extract_ecrf_pages is not called."""
+        pre_pages = [
+            {"text": "Form: Demographics\nField table data with enough text to pass minimum length"},
+        ]
+        mock_forms = {
+            "Demographics": [
+                (1, "Form: Demographics\nField table data with enough text to pass minimum length"),
+            ],
+        }
+
+        with (
+            patch("astraea.parsing.ecrf_parser.extract_ecrf_pages") as mock_extract,
+            patch("astraea.parsing.ecrf_parser.group_pages_by_form", return_value=mock_forms),
+        ):
+            result = parse_ecrf(
+                pdf_path="/fake/path.pdf",
+                client=mock_client,
+                pre_extracted_pages=pre_pages,
+            )
+
+        mock_extract.assert_not_called()
+        assert len(result.forms) == 1
+
 
 # ---------------------------------------------------------------------------
 # save_extraction / load_extraction round-trip tests

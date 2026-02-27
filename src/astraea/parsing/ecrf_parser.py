@@ -118,6 +118,7 @@ def extract_form_fields(
 def parse_ecrf(
     pdf_path: str | Path,
     client: AstraeaLLMClient | None = None,
+    pre_extracted_pages: list[dict[str, str]] | None = None,
 ) -> ECRFExtractionResult:
     """Parse an eCRF PDF into structured form and field metadata.
 
@@ -132,6 +133,9 @@ def parse_ecrf(
         pdf_path: Path to the eCRF PDF file.
         client: Optional pre-configured LLM client.
             If *None*, a new :class:`AstraeaLLMClient` is created.
+        pre_extracted_pages: Optional list of already-extracted pages (each a
+            dict with a ``"text"`` key). When provided, PDF extraction is
+            skipped and these pages are used directly.
 
     Returns:
         :class:`ECRFExtractionResult` with all extracted forms.
@@ -141,8 +145,11 @@ def parse_ecrf(
 
     path = Path(pdf_path)
 
-    # Step 1: Extract pages
-    pages = extract_ecrf_pages(path)
+    # Step 1: Extract pages (or use pre-extracted ones)
+    if pre_extracted_pages is not None:
+        pages = pre_extracted_pages
+    else:
+        pages = extract_ecrf_pages(path)
 
     # Step 2: Group by form
     form_groups = group_pages_by_form(pages)
@@ -166,13 +173,27 @@ def parse_ecrf(
         page_numbers = [pn for pn, _ in page_list]
         combined_text = "\n\n---\n\n".join(text for _, text in page_list)
 
-        form = extract_form_fields(
-            client=client,
-            form_name=form_name,
-            form_text=combined_text,
-            page_numbers=page_numbers,
-        )
-        forms.append(form)
+        try:
+            form = extract_form_fields(
+                client=client,
+                form_name=form_name,
+                form_text=combined_text,
+                page_numbers=page_numbers,
+            )
+            forms.append(form)
+        except Exception as e:
+            logger.warning(
+                "Failed to extract form '{name}' (pages {pages}): {error}. Skipping.",
+                name=form_name,
+                pages=page_numbers,
+                error=str(e),
+            )
+            # Create empty form placeholder so we know it was attempted
+            forms.append(ECRFForm(
+                form_name=form_name,
+                fields=[],
+                page_numbers=page_numbers,
+            ))
 
     result = ECRFExtractionResult(
         forms=forms,
