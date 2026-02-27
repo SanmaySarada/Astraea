@@ -278,7 +278,7 @@ class TestDomainsJsonCorrections:
         assert spec is not None
         assert spec.core.value == "Perm"
 
-    @pytest.mark.parametrize("varname", ["CMDECOD", "CMSTDTC", "CMENDTC", "CMINDC"])
+    @pytest.mark.parametrize("varname", ["CMDECOD", "CMINDC"])
     def test_cm_optional_vars_are_perm(self, ref: SDTMReference, varname: str) -> None:
         spec = ref.get_variable_spec("CM", varname)
         assert spec is not None, f"{varname} not found in CM"
@@ -304,7 +304,7 @@ class TestDomainsJsonCorrections:
     def test_dm_has_armnrs(self, ref: SDTMReference) -> None:
         spec = ref.get_variable_spec("DM", "ARMNRS")
         assert spec is not None, "ARMNRS missing from DM"
-        assert spec.core.value == "Exp"
+        assert spec.core.value == "Perm"
         assert spec.data_type == "Char"
 
     def test_dm_key_variables(self, ref: SDTMReference) -> None:

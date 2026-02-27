@@ -216,7 +216,7 @@
         "name": "ARMNRS",
         "label": "Reason Arm and/or Actual Arm is Null",
         "data_type": "Char",
-        "core": "Exp",
+        "core": "Perm",
         "cdisc_notes": "A coded reason that arm variables (ARM, ARMCD, ACTARM, ACTARMCD) are null.",
         "codelist_code": null,
         "order": 24
@@ -247,6 +247,24 @@
         "cdisc_notes": "Study day of collection, measured as integer days.",
         "codelist_code": null,
         "order": 27
+      },
+      {
+        "name": "INVID",
+        "label": "Investigator Identifier",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 28
+      },
+      {
+        "name": "INVNAM",
+        "label": "Investigator Name",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 29
       }
     ],
     "key_variables": [
@@ -493,6 +511,33 @@
         "cdisc_notes": "Study day of end of the adverse event relative to the sponsor-defined RFSTDTC.",
         "codelist_code": null,
         "order": 26
+      },
+      {
+        "name": "AETOXGR",
+        "label": "Standard Toxicity Grade",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 27
+      },
+      {
+        "name": "AEREFID",
+        "label": "Reference ID",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 28
+      },
+      {
+        "name": "AEGRPID",
+        "label": "Group ID",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 29
       }
     ],
     "key_variables": [
@@ -620,7 +665,7 @@
         "name": "CMSTDTC",
         "label": "Start Date/Time of Medication",
         "data_type": "Char",
-        "core": "Perm",
+        "core": "Exp",
         "cdisc_notes": "Start date/time of the medication in ISO 8601 format.",
         "codelist_code": null,
         "order": 13
@@ -629,7 +674,7 @@
         "name": "CMENDTC",
         "label": "End Date/Time of Medication",
         "data_type": "Char",
-        "core": "Perm",
+        "core": "Exp",
         "cdisc_notes": "End date/time of the medication in ISO 8601 format.",
         "codelist_code": null,
         "order": 14
@@ -660,6 +705,24 @@
         "cdisc_notes": "Denotes why a medication was taken or administered.",
         "codelist_code": null,
         "order": 17
+      },
+      {
+        "name": "CMCLAS",
+        "label": "Medication Class",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 18
+      },
+      {
+        "name": "CMCLASCD",
+        "label": "Medication Class Code",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 19
       }
     ],
     "key_variables": [
@@ -722,7 +785,7 @@
       },
       {
         "name": "EXDOSE",
-        "label": "Dose",
+        "label": "Dose per Administration",
         "data_type": "Num",
         "core": "Exp",
         "cdisc_notes": "Amount of treatment administered.",
@@ -800,6 +863,15 @@
         "cdisc_notes": "Study day of end of treatment relative to RFSTDTC.",
         "codelist_code": null,
         "order": 14
+      },
+      {
+        "name": "EXLOT",
+        "label": "Lot Number",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 15
       }
     ],
     "key_variables": [
@@ -1012,6 +1084,24 @@
         "cdisc_notes": "Study day of specimen collection relative to RFSTDTC.",
         "codelist_code": null,
         "order": 22
+      },
+      {
+        "name": "LBBLFL",
+        "label": "Baseline Flag",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to identify a baseline record.",
+        "codelist_code": "C66742",
+        "order": 23
+      },
+      {
+        "name": "LBMETHOD",
+        "label": "Method of Test or Examination",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 24
       }
     ],
     "key_variables": [
@@ -1172,6 +1262,24 @@
         "cdisc_notes": "Study day of vital signs measurement relative to RFSTDTC.",
         "codelist_code": null,
         "order": 16
+      },
+      {
+        "name": "VSBLFL",
+        "label": "Baseline Flag",
+        "data_type": "Char",
+        "core": "Exp",
+        "cdisc_notes": "Used to identify a baseline record.",
+        "codelist_code": "C66742",
+        "order": 17
+      },
+      {
+        "name": "VSLOC",
+        "label": "Location of Vital Signs Assessment",
+        "data_type": "Char",
+        "core": "Perm",
+        "cdisc_notes": "",
+        "codelist_code": null,
+        "order": 18
       }
     ],
     "key_variables": [
@@ -1690,7 +1798,11 @@
         "order": 12
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "IETESTCD"
+    ]
   },
   "CE": {
     "domain": "CE",
@@ -1825,7 +1937,12 @@
         "order": 14
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "CETERM",
+      "CESTDTC"
+    ]
   },
   "DV": {
     "domain": "DV",
@@ -1933,7 +2050,12 @@
         "order": 11
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "DVTERM",
+      "DVSTDTC"
+    ]
   },
   "PE": {
     "domain": "PE",
@@ -2059,7 +2181,13 @@
         "order": 13
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "PETESTCD",
+      "VISITNUM",
+      "PEDTC"
+    ]
   },
   "QS": {
     "domain": "QS",
@@ -2194,7 +2322,14 @@
         "order": 14
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "QSTESTCD",
+      "VISITNUM",
+      "QSDTC",
+      "QSCAT"
+    ]
   },
   "SC": {
     "domain": "SC",
@@ -2293,7 +2428,11 @@
         "order": 10
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "SCTESTCD"
+    ]
   },
   "FA": {
     "domain": "FA",
@@ -2401,7 +2540,12 @@
         "order": 11
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "FATESTCD",
+      "FADTC"
+    ]
   },
   "SV": {
     "domain": "SV",
@@ -2491,7 +2635,11 @@
         "order": 9
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "VISITNUM"
+    ]
   },
   "DA": {
     "domain": "DA",
@@ -2608,7 +2756,12 @@
         "order": 12
       }
     ],
-    "key_variables": null
+    "key_variables": [
+      "STUDYID",
+      "USUBJID",
+      "DATESTCD",
+      "DADTC"
+    ]
   },
   "TS": {
     "domain": "TS",
