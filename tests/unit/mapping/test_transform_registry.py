@@ -12,9 +12,9 @@ from astraea.mapping.transform_registry import (
 
 
 class TestListTransforms:
-    def test_returns_6_transforms(self):
+    def test_returns_15_transforms(self):
         result = list_transforms()
-        assert len(result) == 6
+        assert len(result) == 15
 
     def test_returns_sorted_list(self):
         result = list_transforms()
@@ -29,6 +29,15 @@ class TestListTransforms:
             "format_partial_iso8601",
             "generate_usubjid",
             "generate_usubjid_column",
+            "calculate_study_day",
+            "generate_seq",
+            "assign_epoch",
+            "assign_visit",
+            "get_date_imputation_flag",
+            "get_time_imputation_flag",
+            "validate_ascii",
+            "fix_common_non_ascii",
+            "optimize_char_lengths",
         }
         assert set(result) == expected
 

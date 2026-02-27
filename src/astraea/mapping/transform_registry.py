@@ -10,24 +10,52 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from astraea.transforms.ascii_validation import fix_common_non_ascii, validate_ascii
+from astraea.transforms.char_length import optimize_char_lengths
 from astraea.transforms.dates import (
     format_partial_iso8601,
     parse_string_date_to_iso,
     sas_date_to_iso,
     sas_datetime_to_iso,
 )
+from astraea.transforms.epoch import assign_epoch
+from astraea.transforms.imputation import (
+    get_date_imputation_flag,
+    get_time_imputation_flag,
+)
+from astraea.transforms.sequence import generate_seq
+from astraea.transforms.study_day import calculate_study_day
 from astraea.transforms.usubjid import (
     generate_usubjid,
     generate_usubjid_column,
 )
+from astraea.transforms.visit import assign_visit
 
 AVAILABLE_TRANSFORMS: dict[str, Callable] = {
+    # date transforms
     "sas_date_to_iso": sas_date_to_iso,
     "sas_datetime_to_iso": sas_datetime_to_iso,
     "parse_string_date_to_iso": parse_string_date_to_iso,
     "format_partial_iso8601": format_partial_iso8601,
+    # usubjid transforms
     "generate_usubjid": generate_usubjid,
     "generate_usubjid_column": generate_usubjid_column,
+    # study day
+    "calculate_study_day": calculate_study_day,
+    # sequence
+    "generate_seq": generate_seq,
+    # epoch
+    "assign_epoch": assign_epoch,
+    # visit
+    "assign_visit": assign_visit,
+    # imputation flags
+    "get_date_imputation_flag": get_date_imputation_flag,
+    "get_time_imputation_flag": get_time_imputation_flag,
+    # ascii validation
+    "validate_ascii": validate_ascii,
+    "fix_common_non_ascii": fix_common_non_ascii,
+    # char length optimization
+    "optimize_char_lengths": optimize_char_lengths,
 }
 
 

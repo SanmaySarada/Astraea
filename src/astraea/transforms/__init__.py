@@ -4,8 +4,12 @@ Re-exports key transform functions for convenient imports:
     from astraea.transforms import sas_datetime_to_iso, generate_usubjid
     from astraea.transforms import calculate_study_day, generate_seq
     from astraea.transforms import assign_epoch, assign_visit
+    from astraea.transforms import validate_ascii, fix_common_non_ascii
+    from astraea.transforms import optimize_char_lengths
 """
 
+from astraea.transforms.ascii_validation import fix_common_non_ascii, validate_ascii
+from astraea.transforms.char_length import optimize_char_lengths
 from astraea.transforms.dates import (
     detect_date_format,
     format_partial_iso8601,
@@ -29,6 +33,11 @@ from astraea.transforms.usubjid import (
 from astraea.transforms.visit import assign_visit
 
 __all__ = [
+    # ascii validation
+    "validate_ascii",
+    "fix_common_non_ascii",
+    # char length optimization
+    "optimize_char_lengths",
     # dates
     "sas_date_to_iso",
     "sas_datetime_to_iso",
