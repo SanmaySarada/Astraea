@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 4.1 of 8 (FDA Compliance Infrastructure)
-Plan: 2 of 5
+Plan: 4 of 5
 Status: In progress
-Last activity: 2026-02-27 -- Completed 04.1-02-PLAN.md (Model extensions and missing CT codelists)
+Last activity: 2026-02-27 -- Completed 04.1-04-PLAN.md (XPT compliance utilities)
 
-Progress: [████████████████████████████████████░░░░] ~69%
+Progress: [██████████████████████████████████████░░] ~76%
 
 ## Performance Metrics
 
@@ -124,6 +124,20 @@ CLI commands available: `astraea map-domain`
 **Combined test suite: 764 tests passing**
 
 CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sessions`
+
+## Phase 4.1 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Study day, sequence, epoch, visit transforms | src/astraea/transforms/ | 52 | Done |
+| Date imputation flags | src/astraea/transforms/imputation.py | 11 | Done |
+| Model extensions (VariableOrigin, sort_order) | src/astraea/models/ | -- | Done |
+| Missing CT codelists (4 added) | src/astraea/data/ct/codelists.json | 16 | Done |
+| ASCII validation + char length optimization | src/astraea/transforms/ | 27 | Done |
+| Transform registry (15 transforms) | src/astraea/mapping/transform_registry.py | 12 | Done |
+| **Total (so far)** | | **119 new tests** | **In progress** |
+
+**Combined test suite: 883 tests passing**
 
 ## Accumulated Context
 
@@ -255,5 +269,5 @@ CLI commands available: `astraea review-domain`, `astraea resume`, `astraea sess
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 04.1-02-PLAN.md (Model extensions and missing CT codelists)
+Stopped at: Completed 04.1-04-PLAN.md (XPT compliance utilities)
 Resume file: None
