@@ -210,13 +210,13 @@ Plans:
 **Plans:** 7 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Infrastructure gaps: numeric_to_yn transform, row filtering, column alignment
-- [ ] 05-02-PLAN.md -- AE + DS domain execution tests (synthetic data, most complex + multi-source)
-- [ ] 05-03-PLAN.md -- CM + EX domain execution tests (synthetic data, partial dates + row filtering)
-- [ ] 05-04-PLAN.md -- MH + IE + CE + DV domain execution tests (synthetic data, simpler domains)
-- [ ] 05-05-PLAN.md -- Cross-domain validation, EPOCH derivation, origin metadata, XPT output
-- [ ] 05-06-PLAN.md -- LLM mapping spec generation for AE, CM, EX, DS (real Fakedata, requires API key)
-- [ ] 05-07-PLAN.md -- LLM mapping spec generation for MH, IE, CE, DV (real Fakedata, requires API key)
+- [x] 05-01-PLAN.md -- Infrastructure gaps: numeric_to_yn transform, row filtering, column alignment
+- [x] 05-02-PLAN.md -- AE + DS domain execution tests (synthetic data, most complex + multi-source)
+- [x] 05-03-PLAN.md -- CM + EX domain execution tests (synthetic data, partial dates + row filtering)
+- [x] 05-04-PLAN.md -- MH + IE + CE + DV domain execution tests (synthetic data, simpler domains)
+- [x] 05-05-PLAN.md -- Cross-domain validation, EPOCH derivation, origin metadata, XPT output
+- [x] 05-06-PLAN.md -- LLM mapping spec generation for AE, CM, EX, DS (real Fakedata, requires API key)
+- [x] 05-07-PLAN.md -- LLM mapping spec generation for MH, IE, CE, DV (real Fakedata, requires API key)
 
 ---
 
@@ -287,7 +287,7 @@ Plans:
 | 3.1 - Audit Fixes + Architectural Wiring (INSERTED) | Complete | 2026-02-27 |
 | 4 - Human Review Gate | Complete | 2026-02-27 |
 | 4.1 - FDA Compliance Infrastructure (INSERTED) | Complete | 2026-02-27 |
-| 5 - Event and Intervention Domains | Not started | -- |
+| 5 - Event and Intervention Domains | Complete | 2026-02-27 |
 | 6 - Findings Domains and Complex Transformations | Not started | -- |
 | 7 - Validation and Submission Readiness | Not started | -- |
 | 8 - Learning System | Not started | -- |
