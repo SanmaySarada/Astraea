@@ -214,7 +214,7 @@ def _write_unmapped_sheet(ws: object, spec: DomainMappingSpec) -> None:
         ws.cell(row=row, column=1, value=spec.source_datasets[0] if spec.source_datasets else "")  # type: ignore[union-attr]
         ws.cell(row=row, column=2, value=var_name)  # type: ignore[union-attr]
         ws.cell(row=row, column=3, value="")  # type: ignore[union-attr]
-        ws.cell(row=row, column=4, value="SUPPDM Candidate")  # type: ignore[union-attr]
+        ws.cell(row=row, column=4, value=f"SUPP{spec.domain} Candidate")  # type: ignore[union-attr]
         row += 1
 
 

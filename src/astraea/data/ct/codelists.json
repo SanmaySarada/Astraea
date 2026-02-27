@@ -145,12 +145,6 @@
           "synonyms": ["Yes"],
           "definition": "The affirmative response to a question.",
           "nci_preferred_term": "Yes"
-        },
-        "U": {
-          "submission_value": "U",
-          "synonyms": ["Unknown"],
-          "definition": "Not known, not observed, not recorded, or refused.",
-          "nci_preferred_term": "Unknown"
         }
       }
     },

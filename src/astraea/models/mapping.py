@@ -195,6 +195,15 @@ class VariableMapping(BaseModel):
         ..., description="Explanation of the confidence assessment"
     )
     notes: str = Field(default="", description="Additional notes about this mapping")
+    order: int = Field(
+        default=0,
+        ge=0,
+        description="Display order within domain from SDTM-IG spec",
+    )
+    length: int | None = Field(
+        default=None,
+        description="Character variable length for XPT generation",
+    )
 
 
 class DomainMappingSpec(BaseModel):
@@ -261,6 +270,10 @@ class DomainMappingSpec(BaseModel):
     suppqual_candidates: list[str] = Field(
         default_factory=list,
         description="Source variables recommended for SUPPQUAL domain",
+    )
+    missing_required_variables: list[str] = Field(
+        default_factory=list,
+        description="Required SDTM variables not mapped by LLM proposal",
     )
 
 

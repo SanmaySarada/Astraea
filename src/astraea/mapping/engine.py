@@ -169,6 +169,7 @@ class MappingEngine:
             enriched_mappings=enriched_mappings,
             proposal=proposal,
             model_used=model,
+            missing_required_variables=missing_required,
         )
 
         # Step 8: Log summary
@@ -193,6 +194,7 @@ def _build_spec(
     enriched_mappings: list[VariableMapping],
     proposal: DomainMappingProposal,
     model_used: str,
+    missing_required_variables: list[str] | None = None,
 ) -> DomainMappingSpec:
     """Construct a DomainMappingSpec from validated mappings.
 
@@ -263,4 +265,5 @@ def _build_spec(
         model_used=model_used,
         unmapped_source_variables=proposal.unmapped_source_variables,
         suppqual_candidates=proposal.suppqual_candidates,
+        missing_required_variables=missing_required_variables or [],
     )

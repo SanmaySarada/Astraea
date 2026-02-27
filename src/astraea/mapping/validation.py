@@ -125,6 +125,27 @@ def _validate_single_proposal(
                 )
                 confidence = min(confidence, 0.4)
 
+            # For LOOKUP_RECODE with non-extensible codelists, warn that runtime
+            # values must be validated against CT (cannot check at spec time)
+            if (
+                vp.mapping_pattern == "lookup_recode"
+                and not cl.extensible
+                and not vp.assigned_value
+            ):
+                issues.append(
+                    f"{vp.sdtm_variable}: non-extensible codelist "
+                    f"{vp.codelist_code} ({cl.name}) used with "
+                    f"lookup_recode -- runtime values MUST be validated "
+                    f"against CT during execution"
+                )
+                logger.warning(
+                    "Non-extensible codelist {cl} on {var} with lookup_recode "
+                    "pattern -- cannot validate at spec time, must validate "
+                    "at execution time",
+                    cl=vp.codelist_code,
+                    var=vp.sdtm_variable,
+                )
+
             # Confidence boost for successful CT validation on lookup_recode
             if vp.mapping_pattern == "lookup_recode" and cl is not None:
                 confidence = min(confidence + 0.05, 1.0)
@@ -151,6 +172,7 @@ def _validate_single_proposal(
         confidence_level=confidence_level,
         confidence_rationale=vp.rationale,
         notes="",
+        order=var_spec.order if var_spec is not None else 0,
     )
 
     return mapping, issues
