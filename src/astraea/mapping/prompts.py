@@ -53,13 +53,39 @@ dataset. You are proposing a SPECIFICATION, not executing transformations.
 - Set confidence 0.9+ for obvious direct/rename matches, 0.7-0.9 for \
 reasonable inference, below 0.7 for uncertain mappings.
 - Identify unmapped source variables and classify them as suppqual_candidates \
-if they contain non-standard clinical data.
+if they contain non-standard clinical data (see SUPPQUAL rules below).
 - Use the ASSIGN pattern for STUDYID and DOMAIN (they are constants).
 - Prefer _STD suffix columns over display columns when CT codelists apply. \
 The _STD columns typically contain the coded submission values.
 - For derivation_rule, use a pseudo-code DSL describing the transformation \
 logic (e.g., ASSIGN("DM"), DIRECT(dm.AGE), CONCAT(STUDYID, "-", SITEID, \
 "-", SUBJID)).
+
+## SUPPQUAL Candidate Rules
+
+When identifying suppqual_candidates, follow these rules:
+
+1. **QNAM constraints:** Each SUPPQUAL variable name (QNAM) must be:
+   - Maximum 8 characters
+   - Alphanumeric characters only (valid SAS variable name)
+   - Must NOT duplicate any variable name in the parent domain
+   - Use meaningful abbreviations (e.g., AEACNOTH for "AE Action Taken Other")
+
+2. **QORIG (Origin) values:** Each SUPPQUAL record must specify origin. \
+Valid QORIG values are: "CRF", "DERIVED", "ASSIGNED", "PROTOCOL", "COLLECTED".
+
+3. **EDC system variables are NOT SUPPQUAL candidates.** Exclude these \
+categories from suppqual_candidates:
+   - EDC administrative columns (projectid, instanceId, DataPageId, \
+RecordId, StudyEventRepeatKey, etc.)
+   - Audit trail columns (Created, Updated, CreatedBy, etc.)
+   - System metadata (FormOID, ItemGroupOID, etc.)
+   These are infrastructure artifacts, not clinical data.
+
+4. **Only non-standard CLINICAL data belongs in SUPPQUAL.** A variable \
+is a suppqual_candidate if it: (a) contains clinically meaningful data, \
+(b) does not map to any standard variable in the parent domain, and \
+(c) is not an EDC system variable.
 """
 
 MAPPING_USER_INSTRUCTIONS = """\
@@ -82,8 +108,12 @@ For each mapping, specify:
 - rationale: explanation of why this mapping was chosen
 
 List any source variables that do not map to a standard {domain} variable \
-in unmapped_source_variables.
+in unmapped_source_variables. Do NOT include EDC system/administrative \
+columns in this list.
 
-Identify non-standard clinical variables that may belong in \
-SUPP{domain} as suppqual_candidates.
+Identify non-standard CLINICAL variables that may belong in \
+SUPP{domain} as suppqual_candidates. For each candidate, ensure the \
+proposed QNAM is <=8 chars, alphanumeric, and does not duplicate any \
+standard {domain} variable name. Do NOT include EDC system variables \
+(projectid, instanceId, DataPageId, RecordId, etc.) as SUPPQUAL candidates.
 """

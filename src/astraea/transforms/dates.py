@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import math
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from loguru import logger
 
@@ -50,7 +50,7 @@ def _validate_date_components(
 
 # SAS epoch: 1960-01-01
 SAS_EPOCH = date(1960, 1, 1)
-SAS_EPOCH_DATETIME = datetime(1960, 1, 1, tzinfo=timezone.utc)
+SAS_EPOCH_DATETIME = datetime(1960, 1, 1, tzinfo=UTC)
 
 # Month abbreviation -> number mapping (case-insensitive)
 _MONTH_ABBREV: dict[str, int] = {
@@ -112,7 +112,7 @@ def sas_date_to_iso(sas_numeric: float | None) -> str:
         ISO 8601 date string "YYYY-MM-DD", or "" for missing values.
 
     Examples:
-        >>> sas_date_to_iso(22739.0)
+        >>> sas_date_to_iso(22734.0)
         '2022-03-30'
         >>> sas_date_to_iso(0.0)
         '1960-01-01'
@@ -143,7 +143,7 @@ def sas_datetime_to_iso(sas_numeric: float | None) -> str:
 
     Examples:
         >>> sas_datetime_to_iso(1964217600.0)
-        '2022-03-15T00:00:00'
+        '2022-03-30T00:00:00'
         >>> sas_datetime_to_iso(0.0)
         '1960-01-01T00:00:00'
         >>> sas_datetime_to_iso(None)

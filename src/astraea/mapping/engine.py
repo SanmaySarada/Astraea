@@ -134,14 +134,19 @@ class MappingEngine:
             model=model,
             temp=temperature,
         )
-        proposal = self._llm.parse(
-            model=model,
-            messages=[{"role": "user", "content": full_prompt}],
-            system=MAPPING_SYSTEM_PROMPT,
-            output_format=DomainMappingProposal,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        try:
+            proposal = self._llm.parse(
+                model=model,
+                messages=[{"role": "user", "content": full_prompt}],
+                system=MAPPING_SYSTEM_PROMPT,
+                output_format=DomainMappingProposal,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        except Exception as e:
+            msg = f"LLM mapping call failed for domain '{domain}': {e}"
+            logger.error(msg)
+            raise RuntimeError(msg) from e
 
         # Step 5: Validate and enrich
         enriched_mappings, validation_issues = validate_and_enrich(
