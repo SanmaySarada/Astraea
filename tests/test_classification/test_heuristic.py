@@ -147,12 +147,69 @@ class TestScoreByFilename:
         assert eg_score.score == 1.0
 
     def test_all_standard_domains_have_patterns(self) -> None:
-        """Verify all 15 standard domains have filename patterns."""
+        """Verify all 23 domains have filename patterns."""
         expected_domains = {
             "AE", "CM", "DM", "DS", "DV", "EG", "EX", "IE",
             "LB", "MH", "PE", "VS", "CE", "DA", "SV",
+            "QS", "SC", "FA", "TA", "TE", "TV", "TI", "TS",
         }
         assert set(FILENAME_PATTERNS.keys()) == expected_domains
+
+    @pytest.mark.parametrize(
+        "filename, expected_domain",
+        [
+            ("qs.sas7bdat", "QS"),
+            ("ecoa.sas7bdat", "QS"),
+            ("epro.sas7bdat", "QS"),
+            ("sc.sas7bdat", "SC"),
+            ("fa.sas7bdat", "FA"),
+            ("ta.sas7bdat", "TA"),
+            ("te.sas7bdat", "TE"),
+            ("tv.sas7bdat", "TV"),
+            ("ti.sas7bdat", "TI"),
+            ("ts.sas7bdat", "TS"),
+        ],
+    )
+    def test_new_domain_exact_matches(
+        self, filename: str, expected_domain: str
+    ) -> None:
+        """New domain patterns should produce exact matches (score 1.0)."""
+        scores = score_by_filename(filename)
+        match = next(s for s in scores if s.domain == expected_domain)
+        assert match.score == 1.0
+
+    @pytest.mark.parametrize(
+        "filename, expected_domain",
+        [
+            ("ds2.sas7bdat", "DS"),
+            ("eg3.sas7bdat", "EG"),
+            ("ae2.sas7bdat", "AE"),
+            ("cm1.sas7bdat", "CM"),
+        ],
+    )
+    def test_numbered_variant_matching(
+        self, filename: str, expected_domain: str
+    ) -> None:
+        """Numbered variants like ds2, eg3 should match their base domain."""
+        scores = score_by_filename(filename)
+        match = next(s for s in scores if s.domain == expected_domain)
+        assert match.score == 0.7
+        assert "filename contains" in match.signals[0]
+
+    @pytest.mark.parametrize(
+        "filename, forbidden_domain",
+        [
+            ("data.sas7bdat", "DA"),
+            ("testing.sas7bdat", "TE"),
+        ],
+    )
+    def test_no_false_positives(
+        self, filename: str, forbidden_domain: str
+    ) -> None:
+        """Should NOT produce false positive matches for similar names."""
+        scores = score_by_filename(filename)
+        domains = {s.domain for s in scores}
+        assert forbidden_domain not in domains
 
 
 # ---------------------------------------------------------------------------
