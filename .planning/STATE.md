@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2.1 Complete -- Ready for Phase 3 (Mapping Engine)
+**Current focus:** Phase 3 in progress -- Core Mapping Engine (Demographics)
 
 ## Current Position
 
-Phase: 2.1 of 8 (Reference Data Fixes)
-Plan: 4 of 4
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 02.1-04-PLAN.md (domains.json corrections + key_variables)
+Phase: 3 of 8 (Core Mapping Engine)
+Plan: 1 of 5
+Status: In progress
+Last activity: 2026-02-27 -- Completed 03-01-PLAN.md (mapping specification models)
 
-Progress: [█████████████████████░░░░░░░░░░░░░░░░░░░] ~40%
+Progress: [██████████████████████░░░░░░░░░░░░░░░░░░] ~42%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: ~3.1 minutes
 
 **By Phase:**
@@ -29,6 +29,7 @@ Progress: [█████████████████████░░
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
 | 02-source-parsing | 8/8 | ~26 min | ~3.3 min |
 | 02.1-ref-data-fixes | 4/4 | ~13 min | ~3.3 min |
+| 03-core-mapping-engine | 1/5 | ~3 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -71,6 +72,19 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 | **Total** | | **87 new tests** | **Complete** |
 
 **Combined test suite: 490 tests passing**
+
+## Phase 3 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Mapping specification models | src/astraea/models/mapping.py | 30 | Done |
+| DM mapping agent | -- | -- | Pending |
+| Mapping enrichment engine | -- | -- | Pending |
+| CLI mapping display | -- | -- | Pending |
+| Integration test | -- | -- | Pending |
+| **Total** | | **30 tests** | **In progress** |
+
+**Combined test suite: 520 tests passing**
 
 ## Accumulated Context
 
@@ -124,6 +138,9 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-02.1-04-01] Forward-reference codelist codes allowed in domains.json for not-yet-populated codelists
 - 2026-02-27: [D-02.1-04-02] DOMAIN variable gets C66734 codelist, EPOCH gets C99079 across all domains
 - 2026-02-27: [D-02.1-04-03] Non-core domains get key_variables: null (to be populated when actively mapped)
+- 2026-02-27: [D-0301-01] StrEnum used for MappingPattern/ConfidenceLevel (Python 3.12+, ruff UP042 compliance)
+- 2026-02-27: [D-0301-02] Confidence thresholds: HIGH >= 0.85, MEDIUM >= 0.60, LOW < 0.60
+- 2026-02-27: [D-0301-03] Two-tier model: LLM proposal (no ref data) -> enriched spec (with labels, core, codelist names)
 
 ### Pending Todos
 
@@ -146,5 +163,5 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 02.1-04-PLAN.md (domains.json corrections + key_variables) -- Phase 2.1 COMPLETE
+Stopped at: Completed 03-01-PLAN.md (mapping specification models)
 Resume file: None
