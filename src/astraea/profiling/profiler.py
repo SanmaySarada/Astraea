@@ -44,6 +44,10 @@ EDC_SYSTEM_COLUMNS: frozenset[str] = frozenset(
         "maxupdated",
         "savets",
         "studyenvsitenumber",
+        "subject",
+        "sitenumber",
+        "site",
+        "sitegroup",
     }
 )
 

@@ -31,8 +31,9 @@ class TestGenerateUsubjid:
     def test_longer_ids(self):
         assert generate_usubjid("PHA022121-C301", "04401", "001") == "PHA022121-C301-04401-001"
 
-    def test_empty_components(self):
-        assert generate_usubjid("", "", "") == "--"
+    def test_empty_components_raises(self):
+        with pytest.raises(ValueError, match="empty or NaN"):
+            generate_usubjid("", "", "")
 
     def test_numeric_like_values(self):
         """Ensure string conversion works for any input."""

@@ -38,11 +38,16 @@ def generate_usubjid(
         >>> generate_usubjid(" 301 ", " 04401 ", " 01 ")
         '301-04401-01'
     """
-    return delimiter.join([
-        str(studyid).strip(),
-        str(siteid).strip(),
-        str(subjid).strip(),
-    ])
+    components = [str(studyid).strip(), str(siteid).strip(), str(subjid).strip()]
+    names = ["studyid", "siteid", "subjid"]
+    inputs = [studyid, siteid, subjid]
+    for name, val, raw in zip(names, components, inputs):
+        if not val or val.lower() in ("nan", "none"):
+            raise ValueError(
+                f"USUBJID component '{name}' is empty or NaN "
+                f"(got '{val}' from input {raw!r})"
+            )
+    return delimiter.join(components)
 
 
 def extract_usubjid_components(
@@ -145,7 +150,32 @@ def generate_usubjid_column(
     siteid_series = df[siteid_col].astype(str).str.strip()
     subjid_series = df[subjid_col].astype(str).str.strip()
 
-    return studyid_series + delimiter + siteid_series + delimiter + subjid_series
+    # Detect NaN-contaminated components (astype(str) converts NaN to "nan")
+    _invalid = {"nan", "none", ""}
+    for col_label, series in [
+        (studyid_col if studyid_value is None else "studyid_value", studyid_series),
+        (siteid_col, siteid_series),
+        (subjid_col, subjid_series),
+    ]:
+        nan_mask = series.str.lower().isin(_invalid)
+        if nan_mask.any():
+            n_bad = int(nan_mask.sum())
+            logger.warning(
+                "Found {} NaN/empty values in {} -- these will produce invalid USUBJIDs",
+                n_bad, col_label,
+            )
+
+    result = studyid_series + delimiter + siteid_series + delimiter + subjid_series
+
+    # Mark rows with NaN-contaminated components as pd.NA
+    nan_mask = (
+        studyid_series.str.lower().isin(_invalid)
+        | siteid_series.str.lower().isin(_invalid)
+        | subjid_series.str.lower().isin(_invalid)
+    )
+    result[nan_mask] = pd.NA
+
+    return result
 
 
 def validate_usubjid_consistency(
