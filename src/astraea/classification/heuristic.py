@@ -30,6 +30,14 @@ FILENAME_PATTERNS: dict[str, list[str]] = {
     "CE": ["ce"],
     "DA": ["da"],
     "SV": ["sv"],
+    "QS": ["qs", "questionnaire", "ecoa", "epro", "qol"],
+    "SC": ["sc", "subclass", "subjectchar"],
+    "FA": ["fa", "finding"],
+    "TA": ["ta"],
+    "TE": ["te"],
+    "TV": ["tv"],
+    "TI": ["ti"],
+    "TS": ["ts"],
 }
 
 # Prefixes used to detect multi-file domains that should be merged.
@@ -66,7 +74,7 @@ def _is_segment_match(name: str, pattern: str) -> bool:
 
     # Check right boundary: end of string or delimiter
     end = idx + len(pattern)
-    return not (end < len(name) and name[end] not in ("_", "-"))
+    return not (end < len(name) and name[end] not in ("_", "-") and not name[end].isdigit())
 
 
 def score_by_filename(dataset_name: str) -> list[HeuristicScore]:
