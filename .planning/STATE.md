@@ -12,7 +12,7 @@ See: .planning/PROJECT.md
 Phase: 5 of 8 (Event and Intervention Domains)
 Plan: 4 of 7
 Status: In progress
-Last activity: 2026-02-27 -- Completed 05-04-PLAN.md (MH, IE, CE, DV domain integration tests)
+Last activity: 2026-02-27 -- Completed 05-03-PLAN.md (CM and EX domain integration tests)
 
 Progress: [█████████████████████████████████████████████░░░░░] ~85%
 
@@ -33,7 +33,7 @@ Progress: [███████████████████████
 | 03.1-audit-fixes | 5/5 | ~18 min | ~3.6 min |
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
-| 05-event-intervention | 4/7 | ~13 min | ~3.3 min |
+| 05-event-intervention | 4/7 | ~16 min | ~4.0 min |
 
 ## Phase 1 Deliverables
 
@@ -159,9 +159,11 @@ CLI commands available: `astraea execute-domain`
 | IE integration test | tests/integration/execution/test_ie_execution.py | 7 | Done |
 | CE integration test | tests/integration/execution/test_ce_execution.py | 7 | Done |
 | DV integration test | tests/integration/execution/test_dv_execution.py | 8 | Done |
-| **Total** | | **61 new tests** | **In progress** |
+| CM integration test | tests/integration/execution/test_cm_execution.py | 10 | Done |
+| EX integration test (filter + merge) | tests/integration/execution/test_ex_execution.py | 9 | Done |
+| **Total** | | **80 new tests** | **In progress** |
 
-**Combined test suite: 969 tests passing**
+**Combined test suite: 1011 tests passing**
 
 ## Accumulated Context
 
@@ -261,6 +263,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-05-01-01] numeric_to_yn returns None for unexpected values (conservative, don't guess)
 - 2026-02-27: [D-05-01-02] filter_rows uses case-insensitive string matching with .str.strip().str.upper()
 - 2026-02-27: [D-05-01-03] align_multi_source_columns always returns copies, never modifies originals
+- 2026-02-27: [D-05-03-01] CM test uses synthetic partial dates: 'un UNK 2020' -> '2020', 'un Jun 2019' -> '2019-06'
+- 2026-02-27: [D-05-03-02] EX test applies filter_rows before executor (pre-execution filtering pattern)
+- 2026-02-27: [D-05-03-03] Fixed pre-existing mock bug: preferred_term -> nci_preferred_term in test_pattern_handlers
 
 ### Pending Todos
 
@@ -299,5 +304,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-04-PLAN.md (MH, IE, CE, DV domain integration tests)
+Stopped at: Completed 05-03-PLAN.md (CM and EX domain integration tests)
 Resume file: None

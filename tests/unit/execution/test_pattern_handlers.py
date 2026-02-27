@@ -166,8 +166,8 @@ class TestHandleLookupRecode:
         mock_ct = MagicMock(spec=["lookup_codelist"])
         mock_codelist = MagicMock()
         mock_codelist.terms = {
-            "M": MagicMock(preferred_term="Male"),
-            "F": MagicMock(preferred_term="Female"),
+            "M": MagicMock(nci_preferred_term="Male"),
+            "F": MagicMock(nci_preferred_term="Female"),
         }
         mock_ct.lookup_codelist.return_value = mock_codelist
 
