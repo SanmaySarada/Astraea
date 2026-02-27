@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 2 gap closure -- fixing UAT findings (6/11 plans done)
+**Current focus:** Phase 2 gap closure -- fixing UAT findings (7/11 plans done)
 
 ## Current Position
 
 Phase: 2 of 8 (Source Parsing and Domain Classification) -- Gap closure
-Plan: 6 of 11 (Heuristic Domain Pattern Expansion) -- COMPLETE
-Status: In progress, gap closure plans 07-11 remaining
-Last activity: 2026-02-27 -- Completed 02-06-PLAN.md (Heuristic Domain Pattern Expansion)
+Plan: 8 of 11 (eCRF Parse Resilience and CLI Single Extraction) -- COMPLETE
+Status: In progress, gap closure plans 07, 09-11 remaining
+Last activity: 2026-02-27 -- Completed 02-08-PLAN.md (eCRF Parse Resilience and CLI Single Extraction)
 
-Progress: [██████████████████████░░░░░░░░░░░░░░░░░░] ~42%
+Progress: [██████████████████████░░░░░░░░░░░░░░░░░░] ~43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~3.2 minutes
+- Total plans completed: 12
+- Average duration: ~3.1 minutes
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | ~18 min | ~3.5 min |
-| 02-source-parsing | 6/11 | ~20 min | ~3.3 min |
+| 02-source-parsing | 7/11 | ~23 min | ~3.3 min |
 
 ## Phase 1 Deliverables
 
@@ -58,7 +58,7 @@ CLI commands available: `astraea profile`, `astraea reference`, `astraea codelis
 
 CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
-**Combined test suite: 360 tests passing**
+**Combined test suite: 379 tests passing**
 
 ## Accumulated Context
 
@@ -98,6 +98,8 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 - 2026-02-27: [D-0205-02] CLI commands require ANTHROPIC_API_KEY with clear error messages when missing
 - 2026-02-27: [D-0205-03] Classification display includes merge groups panel for multi-source domains
 - 2026-02-27: [D-0206-01] Digits accepted as valid right-boundary only (not left) in _is_segment_match
+- 2026-02-27: [D-0208-01] Failed forms get empty-field ECRFForm placeholder (not silently dropped)
+- 2026-02-27: [D-0208-02] pre_extracted_pages parameter avoids redundant PDF extraction in CLI
 
 ### Pending Todos
 
@@ -110,6 +112,6 @@ CLI commands available: `astraea parse-ecrf`, `astraea classify`
 
 ## Session Continuity
 
-Last session: 2026-02-27 03:35 UTC
-Stopped at: Completed 02-06-PLAN.md -- Heuristic Domain Pattern Expansion
+Last session: 2026-02-27 03:37 UTC
+Stopped at: Completed 02-08-PLAN.md -- eCRF Parse Resilience and CLI Single Extraction
 Resume file: None
