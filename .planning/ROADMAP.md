@@ -519,6 +519,31 @@ Plans:
 
 ---
 
+### Phase 15.1: Wiring Gaps and Tech Debt Closure (INSERTED)
+
+**Goal:** Fix the 3 wiring gaps blocking a clean PASSED verdict on the v1.1 milestone audit (SUPPQUAL rule registration, variable ordering rule registration, review→validate filename mismatch) and address all remaining non-deferred tech debt items — making the codebase fully integrated with zero dead wiring.
+**Depends on:** Phase 15 (all features complete, audit identified gaps)
+**Requirements:** v1.1-MILESTONE-AUDIT.md ISSUE-1, ISSUE-2, ISSUE-3 + tech debt items
+**Blocked by:** Nothing (Phase 15 complete)
+
+**Success Criteria:**
+1. `get_suppqual_rules()` registered in `ValidationEngine.register_defaults()` — SUPPQUAL datasets validated for referential integrity (ISSUE-1)
+2. `get_ordering_rules()` registered in `ValidationEngine.register_defaults()` — variable column order validated against SDTM-IG spec (ISSUE-1)
+3. Review→Validate filename convention fixed — downstream commands (`validate`, `generate-define`, `generate-csdrg`, `auto-fix`) find `*_reviewed.json` specs (ISSUE-2)
+4. `handle_split` stub warning resolved — SPLIT handler expanded beyond 3 keywords or stub removed if unused
+5. LangGraph orchestration gap documented as intentional v2 deferral (not a wiring gap)
+6. Template library either CLI-accessible or explicitly marked as v2-only
+7. All 2052+ existing tests pass + new tests for each fix
+8. v1.1 milestone audit re-run produces PASSED verdict (not TECH_DEBT)
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 15.1-01-PLAN.md -- Register SUPPQUAL + ordering rules in ValidationEngine + fix reviewed spec glob patterns
+- [ ] 15.1-02-PLAN.md -- Tech debt cleanup (handle_split docs, v2 module marking) + full regression
+
+---
+
 ## Progress
 
 | Phase | Status | Completed |
@@ -542,6 +567,7 @@ Plans:
 | 13 - Define.xml and Findings Completeness | Complete | 2026-02-28 |
 | 14 - Reference Data and Transforms | Complete | 2026-02-28 |
 | 15 - Submission Readiness | Complete | 2026-02-28 |
+| 15.1 - Wiring Gaps and Tech Debt Closure (INSERTED) | Not Started | |
 
 ---
 
