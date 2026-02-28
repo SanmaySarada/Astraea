@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4, 5 complete).
+**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4, 5, 6 complete).
 
 ## Current Position
 
 Phase: 7 of 8 (Validation and Submission Readiness)
-Plan: 5 of N (Define.xml 2.0 Generator)
+Plan: 6 of N (cSDRG, Package Assembly, Submission Reporting)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 07-05-PLAN.md (define.xml 2.0 generator)
+Last activity: 2026-02-28 -- Completed 07-06-PLAN.md (cSDRG, package, reporting)
 
-Progress: [██████████████████████████████████████████████████████] ~98%
+Progress: [██████████████████████████████████████████████████████] ~99%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 37
+- Total plans completed: 38
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 | 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
-| 07-validation-submission | 5/? | ~20 min | ~4.0 min |
+| 07-validation-submission | 6/? | ~27 min | ~4.5 min |
 
 ## Phase 1 Deliverables
 
@@ -228,9 +228,14 @@ CLI commands available: `astraea execute-domain`
 | FDA TRC pre-checks | src/astraea/validation/rules/fda_trc.py | -- | Done |
 | Engine cross-domain + test fixes | src/astraea/validation/engine.py | -- | Done |
 | Define.xml 2.0 generator | src/astraea/submission/define_xml.py | 11 | Done |
-| **Total** | | **176 new tests** | **Plans 1, 2, 3, 4, 5 complete** |
+| cSDRG template generator | src/astraea/submission/csdrg.py | 12 | Done |
+| Known false-positive whitelist | src/astraea/validation/known_false_positives.json | -- | Done |
+| RuleResult false-positive fields | src/astraea/validation/rules/base.py | -- | Done |
+| ValidationReport enhancements | src/astraea/validation/report.py | -- | Done |
+| Submission package validator | src/astraea/submission/package.py | 11 | Done |
+| **Total** | | **199 new tests** | **Plans 1, 2, 3, 4, 5, 6 complete** |
 
-**Combined test suite: 1458 tests (1339 pass + 119 skipped)**
+**Combined test suite: 1481 tests (1362 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -360,6 +365,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-28: [D-07-05-01] lxml used for XML generation with proper namespace handling (not xml.etree.ElementTree)
 - 2026-02-28: [D-07-05-02] CommentDef generated for SUPPQUAL candidates and variables with 'non-standard' in notes field
 - 2026-02-28: [D-07-05-03] ValueListDef only generated for Findings domains with TRANSPOSE pattern and actual data available
+- 2026-02-28: [D-07-06-01] Jinja2 inline string template for cSDRG (not file-based) to keep template co-located with generator logic
+- 2026-02-28: [D-07-06-02] known_false_positive field added directly to RuleResult (not post-processing wrapper) for clean downstream access
+- 2026-02-28: [D-07-06-03] SPLIT_GUIDANCE uses base domain code (strip underscore suffixes) for lookup to handle split domain files
 
 ### Pending Todos
 
@@ -398,5 +406,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-05-PLAN.md (Define.xml 2.0 Generator)
+Stopped at: Completed 07-06-PLAN.md (cSDRG, Package Assembly, Submission Reporting)
 Resume file: None
