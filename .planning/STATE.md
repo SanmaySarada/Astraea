@@ -491,6 +491,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-12-03-01] TRCPreCheck import is lazy (inside if block) matching engine's existing lazy import pattern
 - 2026-02-28: [D-12-03-02] Both output_dir AND study_id required for TRC -- neither alone triggers checks
 - 2026-02-28: [D-12-03-03] TS integration test updated with 16 additional_params to match expanded FDA_REQUIRED_PARAMS
+- 2026-02-28: [D-13-03-01] No unit conversion in v1 -- ORRESU copied directly to STRESU (unit standardization deferred)
+- 2026-02-28: [D-13-03-02] pd.isna() for null assertions since pandas coerces None to NaN in mixed-type DataFrame columns
+- 2026-02-28: [D-13-03-03] np.select + pd.array(dtype=object) for proper None preservation in NRIND derivation
 
 ### Pending Todos
 
