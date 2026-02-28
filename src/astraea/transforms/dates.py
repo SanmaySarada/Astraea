@@ -81,9 +81,9 @@ _PATTERN_UN_MON_YYYY = re.compile(
     re.IGNORECASE,
 )
 
-# Datetime string pattern: "DD MON YYYY HH:MM"
+# Datetime string pattern: "DD MON YYYY HH:MM(:SS)?"
 _PATTERN_DD_MON_YYYY_HHMM = re.compile(
-    r"^\s*(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s*$",
+    r"^\s*(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*$",
     re.IGNORECASE,
 )
 
@@ -102,6 +102,12 @@ _PATTERN_DDMONYYYY = re.compile(
     r"^\s*(\d{1,2})(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)(\d{4})\s*$",
     re.IGNORECASE,
 )
+# ISO datetime pattern: "YYYY-MM-DDTHH:MM(:SS)?" with optional timezone
+_PATTERN_ISO_DATETIME = re.compile(
+    r"^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?"
+    r"(?:Z|[+-]\d{2}:\d{2})?\s*$"
+)
+
 _PATTERN_SLASH_DMY_OR_MDY = re.compile(r"^\s*(\d{1,2})/(\d{1,2})/(\d{4})\s*$")
 
 
@@ -223,7 +229,18 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
             return ""
         return f"{year:04d}-{month:02d}"
 
-    # "DD MON YYYY HH:MM" -- datetime string (must be before DD Mon YYYY)
+    # ISO datetime passthrough: "YYYY-MM-DDTHH:MM(:SS)?" with optional timezone
+    m = _PATTERN_ISO_DATETIME.match(s)
+    if m:
+        year = int(m.group(1))
+        month_num = int(m.group(2))
+        day = int(m.group(3))
+        if not _validate_date_components(year=year, month=month_num, day=day):
+            logger.warning("Invalid date in ISO datetime string: '{}'", s)
+            return ""
+        return s.strip()
+
+    # "DD MON YYYY HH:MM(:SS)?" -- datetime string (must be before DD Mon YYYY)
     m = _PATTERN_DD_MON_YYYY_HHMM.match(s)
     if m:
         day = int(m.group(1))
@@ -231,12 +248,19 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
         year = int(m.group(3))
         hour = int(m.group(4))
         minute = int(m.group(5))
+        second_str = m.group(6)
         if not _validate_date_components(year=year, month=month, day=day):
             logger.warning("Invalid date in datetime string: '{}'", s)
             return ""
         if hour < 0 or hour > 23 or minute < 0 or minute > 59:
             logger.warning("Invalid time in datetime string: '{}'", s)
             return ""
+        if second_str is not None:
+            second = int(second_str)
+            if second < 0 or second > 59:
+                logger.warning("Invalid seconds in datetime string: '{}'", s)
+                return ""
+            return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}"
         return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}"
 
     # "DD Mon YYYY" -- primary format in Fakedata _RAW columns
