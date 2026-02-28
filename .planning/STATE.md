@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (LLM mapping tests complete, UAT remaining).
+**Current focus:** Phase 6 COMPLETE -- Findings Domains (all 6 plans executed).
 
 ## Current Position
 
 Phase: 6 of 8 (Findings Domains)
-Plan: 5 of 6 (Findings LLM mapping tests)
-Status: In progress
-Last activity: 2026-02-28 -- Completed 06-05-PLAN.md (Findings LLM mapping tests)
+Plan: 6 of 6 (Special Purpose & Trial Design Domains)
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 06-06-PLAN.md (SV, trial design, RELREC)
 
 Progress: [██████████████████████████████████████████████████████] ~97%
 
@@ -34,7 +34,7 @@ Progress: [███████████████████████
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
-| 06-findings-domains | 5/6 | ~19 min | ~3.8 min |
+| 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
 
 ## Phase 1 Deliverables
 
@@ -199,9 +199,14 @@ CLI commands available: `astraea execute-domain`
 | EG LLM mapping test | tests/integration/mapping/test_eg_mapping.py | 8 | Done |
 | VS LLM mapping test (synthetic) | tests/integration/mapping/test_vs_mapping.py | 8 | Done |
 | PE LLM mapping test | tests/integration/mapping/test_pe_mapping.py | 6 | Done |
-| **Total so far** | | **142 new tests** | **5/6 plans** |
+| SV domain builder | src/astraea/execution/subject_visits.py | 10 | Done |
+| Trial design builders (TA/TE/TV/TI) | src/astraea/execution/trial_design.py | 12 | Done |
+| RELREC model + stub | src/astraea/models/relrec.py, execution/relrec.py | 12 | Done |
+| TrialDesignConfig model | src/astraea/models/trial_design.py | -- | Done |
+| TS integration test with DM | tests/integration/execution/test_ts_integration.py | 8 | Done |
+| **Total** | | **184 new tests** | **6/6 plans COMPLETE** |
 
-**Combined test suite: 1293 tests (1174 pass + 119 skipped)**
+**Combined test suite: 1301 tests (1182 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -357,5 +362,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 06-05-PLAN.md (Findings LLM mapping tests)
+Stopped at: Completed 06-06-PLAN.md (SV, trial design, RELREC) -- Phase 6 COMPLETE
 Resume file: None
