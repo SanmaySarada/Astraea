@@ -1357,6 +1357,283 @@ def learn_optimize_cmd(
         example_store.close()
 
 
+@app.command(name="generate-trial-design")
+def generate_trial_design(
+    config_path: Annotated[
+        Path,
+        typer.Argument(help="Path to trial design JSON config"),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Output directory for XPT files"),
+    ] = Path("output"),
+    data_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--data-dir", help="Raw data directory for SV domain visit extraction"
+        ),
+    ] = None,
+    dm_path: Annotated[
+        Path | None,
+        typer.Option("--dm-path", help="Path to DM XPT for TS date derivation"),
+    ] = None,
+) -> None:
+    """Generate trial design domains (TS, TA, TE, TV, TI, SV) from a JSON config.
+
+    Reads a JSON configuration file with ts_config and trial_design sections,
+    builds all trial design domains, and writes them as XPT files. TS is
+    mandatory for FDA submission -- missing TS causes automatic technical
+    rejection.
+
+    Optionally reads --data-dir for SV domain generation and --dm-path for
+    TS date derivation (SSTDTC/SENDTC from DM RFSTDTC/RFENDTC).
+    """
+    import json
+
+    import pandas as pd
+
+    from astraea.execution.subject_visits import build_sv_domain, extract_visit_dates
+    from astraea.execution.trial_design import (
+        build_ta_domain,
+        build_te_domain,
+        build_ti_domain,
+        build_tv_domain,
+    )
+    from astraea.execution.trial_summary import (
+        build_ts_domain,
+        validate_ts_completeness,
+    )
+    from astraea.io.xpt_writer import write_xpt_v5
+    from astraea.models.trial_design import TrialDesignConfig, TSConfig
+
+    # Validate config path
+    if not config_path.exists():
+        console.print(
+            f"[bold red]Error:[/bold red] Config file not found: {config_path}"
+        )
+        raise typer.Exit(code=1)
+
+    # Read and parse JSON config
+    try:
+        raw_config = json.loads(config_path.read_text())
+    except json.JSONDecodeError as e:
+        console.print(f"[bold red]Error parsing JSON:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    try:
+        ts_config = TSConfig.model_validate(raw_config["ts_config"])
+    except (KeyError, Exception) as e:
+        console.print(f"[bold red]Error in ts_config:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    try:
+        trial_design_config = TrialDesignConfig.model_validate(
+            raw_config["trial_design"]
+        )
+    except (KeyError, Exception) as e:
+        console.print(f"[bold red]Error in trial_design:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    study_id = ts_config.study_id
+
+    # Load DM DataFrame if --dm-path provided
+    dm_df: pd.DataFrame | None = None
+    if dm_path is not None:
+        if not dm_path.exists():
+            console.print(
+                f"[bold red]Error:[/bold red] DM file not found: {dm_path}"
+            )
+            raise typer.Exit(code=1)
+
+        import pyreadstat
+
+        if dm_path.suffix.lower() == ".xpt":
+            dm_df, _ = pyreadstat.read_xport(str(dm_path))
+        elif dm_path.suffix.lower() == ".sas7bdat":
+            from astraea.io.sas_reader import read_sas_with_metadata
+
+            dm_df, _ = read_sas_with_metadata(dm_path)
+        else:
+            console.print(
+                f"[bold red]Error:[/bold red] "
+                f"Unsupported DM file format: {dm_path.suffix}"
+            )
+            raise typer.Exit(code=1)
+
+        console.print(f"  Loaded DM: {len(dm_df)} rows from {dm_path.name}")
+
+    # Build domains
+    console.print(
+        f"[bold blue][1/3][/bold blue] Building trial design domains "
+        f"for {study_id}..."
+    )
+
+    # TS domain
+    ts_df = build_ts_domain(ts_config, dm_df=dm_df)
+    ts_warnings = validate_ts_completeness(ts_df)
+    if ts_warnings:
+        for warning in ts_warnings:
+            console.print(f"  [yellow]Warning:[/yellow] {warning}")
+
+    # TA, TE, TV, TI domains
+    ta_df = build_ta_domain(trial_design_config, study_id)
+    te_df = build_te_domain(trial_design_config, study_id)
+    tv_df = build_tv_domain(trial_design_config, study_id)
+    ti_df = build_ti_domain(trial_design_config, study_id)
+
+    # Collect all generated domains
+    domains: dict[str, pd.DataFrame] = {
+        "ts": ts_df,
+        "ta": ta_df,
+        "te": te_df,
+        "tv": tv_df,
+        "ti": ti_df,
+    }
+
+    # Optionally build SV domain from raw data
+    if data_dir is not None:
+        if not data_dir.is_dir():
+            console.print(
+                f"[bold red]Error:[/bold red] "
+                f"Data directory not found: {data_dir}"
+            )
+            raise typer.Exit(code=1)
+
+        console.print(
+            "[bold blue][2/3][/bold blue] Building SV domain from raw data..."
+        )
+
+        from astraea.io.sas_reader import read_sas_with_metadata
+
+        sas_files = sorted(data_dir.glob("*.sas7bdat"))
+        raw_dfs: dict[str, pd.DataFrame] = {}
+        for sas_file in sas_files:
+            try:
+                df, _ = read_sas_with_metadata(sas_file)
+                raw_dfs[sas_file.stem] = df
+            except Exception as e:
+                console.print(
+                    f"  [yellow]Warning: Could not read "
+                    f"{sas_file.name}: {e}[/yellow]"
+                )
+
+        if raw_dfs:
+            visit_data = extract_visit_dates(raw_dfs)
+            sv_df = build_sv_domain(visit_data, study_id)
+            domains["sv"] = sv_df
+        else:
+            console.print(
+                "  [yellow]No readable SAS files found for SV domain[/yellow]"
+            )
+    else:
+        console.print(
+            "[bold blue][2/3][/bold blue] Skipping SV domain (no --data-dir)"
+        )
+
+    # Write XPT files
+    console.print("[bold blue][3/3][/bold blue] Writing XPT files...")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Domain-specific column labels for XPT
+    domain_labels: dict[str, dict[str, str]] = {
+        "ts": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "TSSEQ": "Sequence Number",
+            "TSPARMCD": "Trial Summary Parameter Short Name",
+            "TSPARM": "Trial Summary Parameter",
+            "TSVAL": "Parameter Value",
+        },
+        "ta": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "ARMCD": "Planned Arm Code",
+            "ARM": "Description of Planned Arm",
+            "TAETORD": "Planned Order of Element in Arm",
+            "ETCD": "Element Code",
+            "ELEMENT": "Description of Element",
+            "TABESSION": "Planned Arm Branch Session",
+            "EPOCH": "Epoch",
+        },
+        "te": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "ETCD": "Element Code",
+            "ELEMENT": "Description of Element",
+            "TESTRL": "Rule for Start of Element",
+            "TEENRL": "Rule for End of Element",
+            "TEDUR": "Planned Duration of Element",
+        },
+        "tv": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "VISITNUM": "Visit Number",
+            "VISIT": "Visit Name",
+            "VISITDY": "Planned Study Day of Visit",
+            "ARMCD": "Planned Arm Code",
+            "TVSTRL": "Visit Start Rule",
+            "TVENRL": "Visit End Rule",
+        },
+        "ti": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "IETESTCD": "Incl/Excl Criterion Short Name",
+            "IETEST": "Incl/Excl Criterion",
+            "IECAT": "Incl/Excl Category",
+            "TIRL": "Criterion Evaluation Rule",
+        },
+        "sv": {
+            "STUDYID": "Study Identifier",
+            "DOMAIN": "Domain Abbreviation",
+            "USUBJID": "Unique Subject Identifier",
+            "SVSEQ": "Sequence Number",
+            "VISITNUM": "Visit Number",
+            "VISIT": "Visit Name",
+            "SVSTDTC": "Start Date/Time of Visit",
+            "SVENDTC": "End Date/Time of Visit",
+            "SVUPDES": "Desc of Unplanned Visit",
+        },
+    }
+
+    from rich.table import Table
+
+    summary_table = Table(title="Trial Design Domains Generated")
+    summary_table.add_column("Domain", style="bold")
+    summary_table.add_column("Rows", justify="right")
+    summary_table.add_column("Output File")
+
+    for domain_code, df in domains.items():
+        xpt_path = output_dir / f"{domain_code}.xpt"
+        labels = domain_labels.get(domain_code, {})
+        table_name = domain_code.upper()
+
+        # Only write non-empty DataFrames
+        if df.empty:
+            summary_table.add_row(
+                table_name, "0", "[dim]skipped (empty)[/dim]"
+            )
+            continue
+
+        try:
+            write_xpt_v5(
+                df,
+                xpt_path,
+                table_name=table_name,
+                column_labels=labels,
+            )
+            summary_table.add_row(table_name, str(len(df)), str(xpt_path))
+        except Exception as e:
+            console.print(
+                f"  [bold red]Error writing {table_name}:[/bold red] {e}"
+            )
+            summary_table.add_row(
+                table_name, str(len(df)), f"[red]FAILED: {e}[/red]"
+            )
+
+    console.print()
+    console.print(summary_table)
+
+
 def _find_primary_sas(
     data_folder: Path, domain: str, source_file_override: str | None
 ) -> Path | None:
