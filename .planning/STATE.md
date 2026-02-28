@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 5 COMPLETE -- Event and Intervention Domains. Ready for Phase 6.
+**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (TRANSPOSE + SUPPQUAL foundation complete).
 
 ## Current Position
 
-Phase: 5 of 8 (Event and Intervention Domains) -- COMPLETE
-Plan: 7 of 7 (all complete)
-Status: Phase complete
-Last activity: 2026-02-27 -- Completed 05-05-PLAN.md (cross-domain validation + XPT output)
+Phase: 6 of 8 (Findings Domains)
+Plan: 1 of 6 (TRANSPOSE + SUPPQUAL foundation)
+Status: In progress
+Last activity: 2026-02-27 -- Completed 06-01-PLAN.md (TRANSPOSE handler + SUPPQUAL generator)
 
-Progress: [██████████████████████████████████████████████████] ~90%
+Progress: [███████████████████████████████████████████████████] ~92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 34
+- Total plans completed: 35
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -34,6 +34,7 @@ Progress: [███████████████████████
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
+| 06-findings-domains | 1/6 | ~5 min | ~5.0 min |
 
 ## Phase 1 Deliverables
 
@@ -179,6 +180,17 @@ CLI commands available: `astraea execute-domain`
 
 **Combined test suite: 1102 tests passing (1031 pass + 86 skipped = verified)**
 
+## Phase 6 Deliverables (In Progress)
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| TransposeSpec + execute_transpose | src/astraea/execution/transpose.py | 17 | Done |
+| SuppVariable model | src/astraea/models/suppqual.py | -- | Done |
+| SUPPQUAL generator + integrity | src/astraea/execution/suppqual.py | 26 | Done |
+| **Total so far** | | **43 new tests** | **1/6 plans** |
+
+**Combined test suite: 1160 tests (1074 pass + 86 skipped)**
+
 ## Accumulated Context
 
 ### Decisions
@@ -286,6 +298,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-05-07-01] haemh_screen.sas7bdat (0 rows) excluded from MH multi-source -- no data to contribute
 - 2026-02-27: [D-05-07-02] DV StudyMetadata uses Site_Number/Subject_ID (non-standard) instead of SiteNumber/Subject
 - 2026-02-27: [D-05-07-03] IE Findings-class assertion validates domain_class field directly (no transpose needed)
+- 2026-02-27: [D-06-01-01] TRANSPOSE handled at DataFrame level by execute_transpose(), not per-variable in PATTERN_HANDLERS
+- 2026-02-27: [D-06-01-02] SUPPQUAL generation is deterministic post-processing, never LLM-generated (per PITFALLS.md C4)
+- 2026-02-27: [D-06-01-03] SuppVariable.qnam auto-uppercased and validated as alphanumeric-only per XPT constraints
 
 ### Pending Todos
 
@@ -324,5 +339,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-05-PLAN.md (cross-domain validation + XPT output) -- Phase 5 COMPLETE
+Stopped at: Completed 06-01-PLAN.md (TRANSPOSE handler + SUPPQUAL generator)
 Resume file: None
