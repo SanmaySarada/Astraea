@@ -1,4 +1,8 @@
-"""Cross-study domain template library.
+"""Cross-study domain template library (v2 feature).
+
+This module is fully implemented and tested but intentionally not exposed
+via CLI in v1. It will be wired into the CLI in v2 when cross-study
+workflow support is added. See .planning/v1.1-MILESTONE-AUDIT.md ISSUE-3.
 
 Abstracts approved domain mapping specifications into reusable templates
 that capture the mapping shape (pattern distribution, variable patterns,

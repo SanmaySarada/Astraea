@@ -767,8 +767,10 @@ def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -
             )
             return pd.Series(None, index=df.index, dtype="object")
 
-        # Unrecognized rule -- fall through to source column fallback
-        logger.warning(
+        # Unrecognized rule -- fall through to source column fallback.
+        # This is expected for simple splits that don't need a derivation rule;
+        # copying the source column is the correct default behaviour.
+        logger.info(
             "SPLIT: unrecognized derivation rule '{}' for {}; falling back to source column",
             rule,
             mapping.sdtm_variable,
