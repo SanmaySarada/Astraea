@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7.1 IN PROGRESS -- Auto-Fix Validation Issues (2/3 plans complete).
+**Current focus:** Phase 7.1 COMPLETE -- Auto-Fix Validation Issues (3/3 plans complete). Ready for Phase 8.
 
 ## Current Position
 
 Phase: 7.1 of 8 (Auto-Fix Validation Issues)
-Plan: 2 of 3 (Validate-Fix-Revalidate Loop Engine)
-Status: In progress
-Last activity: 2026-02-28 -- Completed 07.1-02-PLAN.md (FixLoopEngine, validate-fix-revalidate cycle)
+Plan: 3 of 3 (CLI Integration and Display Helpers)
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 07.1-03-PLAN.md (CLI auto-fix command, display helpers)
 
-Progress: [██████████████████████████████████████████████████████████░] 97%
+Progress: [██████████████████████████████████████████████████████████] 100%
 
 ## Performance Metrics
 
@@ -241,7 +241,7 @@ CLI commands available: `astraea execute-domain`
 
 **Combined test suite: 1491 tests (1238 unit/validation pass + ~253 skipped/LLM)**
 
-CLI commands available: `astraea validate`, `astraea generate-define`, `astraea generate-csdrg`
+CLI commands available: `astraea validate`, `astraea validate --auto-fix`, `astraea auto-fix`, `astraea generate-define`, `astraea generate-csdrg`
 
 ## Accumulated Context
 
@@ -381,6 +381,9 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 - 2026-02-28: [D-07.1-02-01] FixLoopEngine updates domains dict in-place (replacing DataFrames and specs) so each iteration builds on previous fixes
 - 2026-02-28: [D-07.1-02-02] _write_fixed_datasets uses pyreadstat.write_xport directly (not xpt_writer) to avoid strict validation blocking partially-fixed datasets
 - 2026-02-28: [D-07.1-02-03] apply_fixes returns 3-tuple (df, spec, actions) -- loop engine handles spec updates alongside DataFrame updates
+- 2026-02-28: [D-07.1-03-01] display.py imports FixLoopResult and IssueClassification at module level (not lazy) -- consistent with existing top-level validation imports
+- 2026-02-28: [D-07.1-03-02] auto-fix command uses same XPT/spec loading pattern as validate command for consistency
+- 2026-02-28: [D-07.1-03-03] display_fix_loop_result shows first 10 fix actions only, directs user to autofix_audit.json for full trail
 
 ### Pending Todos
 
@@ -424,5 +427,5 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07.1-02-PLAN.md (Validate-Fix-Revalidate Loop Engine)
+Stopped at: Completed 07.1-03-PLAN.md (CLI Integration and Display Helpers) -- Phase 7.1 COMPLETE
 Resume file: None
