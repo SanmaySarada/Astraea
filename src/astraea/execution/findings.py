@@ -343,12 +343,8 @@ def derive_nrind(df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
 
     if conditions:
         result = np.select(conditions, choices, default=None)
+        # Store as object array to preserve None values
         df[nrind_col] = pd.array(result, dtype=object)
-        # Ensure None stays as None (np.select returns 0/None as string "0"/"None")
-        valid_values = ["LOW", "HIGH", "NORMAL"]
-        df[nrind_col] = df[nrind_col].where(
-            df[nrind_col].isin(valid_values), other=None
-        )
     else:
         # No range columns at all -- NRIND is all null
         df[nrind_col] = None
