@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7 COMPLETE -- Validation and Submission Readiness (all 7 plans complete).
+**Current focus:** Phase 7.1 IN PROGRESS -- Auto-Fix Validation Issues (1/3 plans complete).
 
 ## Current Position
 
-Phase: 7 of 8 (Validation and Submission Readiness)
-Plan: 7 of 7 (CLI Integration and End-to-End Tests)
-Status: Phase complete
-Last activity: 2026-02-28 -- Completed 07-07-PLAN.md (CLI integration, end-to-end tests)
+Phase: 7.1 of 8 (Auto-Fix Validation Issues)
+Plan: 1 of 3 (AutoFixer Core with Issue Classification)
+Status: In progress
+Last activity: 2026-02-28 -- Completed 07.1-01-PLAN.md (AutoFixer core, issue classification, fix functions)
 
-Progress: [████████████████████████████████████████████████████████] 100%
+Progress: [█████████████████████████████████████████████████████████░░] 95%
 
 ## Performance Metrics
 
@@ -405,6 +405,11 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
   - Phase 6: Added mandatory TS domain population (missing TS = FDA rejection), SUPPQUAL referential integrity requirements, unit consistency validation, normal range indicators, Findings-specific codelists
   - Phase 7: Expanded define.xml requirements (ItemGroupDef, ItemDef, CodeList, MethodDef, CommentDef, ValueListDef, WhereClauseDef), added FDA TRC pre-check, FDA Business Rules (FDAB057/055/039/009/030), cSDRG generation, 5GB size validation, file naming conventions
 
+- Phase 7.1 inserted after Phase 7: Auto-Fix Validation Issues
+  - Triggered by: Phase 7 validation reports issues but doesn't auto-fix deterministic ones — user must manually fix CT case, missing DOMAIN columns, truncated labels, etc.
+  - Phase 8 BLOCKED until 7.1 completes -- learning system benefits from cleaner validation baseline
+  - Scope: Auto-fixer for deterministic issues, validate→fix→re-validate loop, audit trail, CLI integration
+
 ### Blockers/Concerns
 
 - Phase 3.1 COMPLETE -- all audit fixes and architectural wiring done
@@ -415,5 +420,5 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-07-PLAN.md (CLI Integration and End-to-End Tests) -- Phase 7 COMPLETE
+Stopped at: Completed 07.1-01-PLAN.md (AutoFixer Core with Issue Classification)
 Resume file: None
