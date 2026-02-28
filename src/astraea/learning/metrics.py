@@ -13,7 +13,6 @@ from astraea.learning.models import StudyMetrics
 from astraea.review.models import (
     CorrectionType,
     DomainReview,
-    DomainReviewStatus,
     ReviewStatus,
 )
 
