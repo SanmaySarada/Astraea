@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 15 -- Submission Readiness (next phase after Reference Data and Transforms)
+**Current focus:** ALL PHASES COMPLETE -- v1.1 milestone ready for audit
 
 ## Current Position
 

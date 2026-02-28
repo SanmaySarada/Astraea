@@ -510,12 +510,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 15-01-PLAN.md -- Execution pipeline: SPLIT pattern, key-based merge, specimen/method/fasting
-- [ ] 15-02-PLAN.md -- cSDRG content (Sections 2, 6, 8) + eCTD directory structure assembly
-- [ ] 15-03-PLAN.md -- DM ARM variable enforcement + pre-mapped SDTM data detection
-- [ ] 15-04-PLAN.md -- LC (Laboratory Conventional) domain generation from LB
-- [ ] 15-05-PLAN.md -- Expanded FDA Business Rules (6 to 20+ FDAB rules)
-- [ ] 15-06-PLAN.md -- CLI wiring, LOW items, integration tests, full regression
+- [x] 15-01-PLAN.md -- Execution pipeline: SPLIT pattern, key-based merge, specimen/method/fasting
+- [x] 15-02-PLAN.md -- cSDRG content (Sections 2, 6, 8) + eCTD directory structure assembly
+- [x] 15-03-PLAN.md -- DM ARM variable enforcement + pre-mapped SDTM data detection
+- [x] 15-04-PLAN.md -- LC (Laboratory Conventional) domain generation from LB
+- [x] 15-05-PLAN.md -- Expanded FDA Business Rules (6 to 20+ FDAB rules)
+- [x] 15-06-PLAN.md -- CLI wiring, LOW items, integration tests, full regression
 
 ---
 
@@ -541,7 +541,7 @@ Plans:
 | 12 - Validation and Severity Fixes | Complete | 2026-02-28 |
 | 13 - Define.xml and Findings Completeness | Complete | 2026-02-28 |
 | 14 - Reference Data and Transforms | Complete | 2026-02-28 |
-| 15 - Submission Readiness | Not Started | -- |
+| 15 - Submission Readiness | Complete | 2026-02-28 |
 
 ---
 
