@@ -18,6 +18,7 @@ from collections.abc import Callable
 import pandas as pd
 from loguru import logger
 
+from astraea.execution.transpose import handle_transpose
 from astraea.mapping.transform_registry import get_transform
 from astraea.models.mapping import MappingPattern, VariableMapping
 from astraea.reference.controlled_terms import CTReference
@@ -231,20 +232,6 @@ def handle_split(
     """
     logger.warning(
         "SPLIT pattern not yet implemented for {}; returning None series",
-        mapping.sdtm_variable,
-    )
-    return pd.Series(None, index=df.index, dtype="object")
-
-
-def handle_transpose(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
-    """Stub for TRANSPOSE pattern -- complex domain-specific implementation deferred to Phase 5/6.
-
-    Returns a Series of None with a warning.
-    """
-    logger.warning(
-        "TRANSPOSE pattern not yet implemented for {}; returning None series",
         mapping.sdtm_variable,
     )
     return pd.Series(None, index=df.index, dtype="object")
