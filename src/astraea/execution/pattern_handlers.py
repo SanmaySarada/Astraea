@@ -13,6 +13,7 @@ without changing the handler signature.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 
 import pandas as pd
@@ -22,6 +23,117 @@ from astraea.execution.transpose import handle_transpose
 from astraea.mapping.transform_registry import get_transform
 from astraea.models.mapping import MappingPattern, VariableMapping
 from astraea.reference.controlled_terms import CTReference
+
+# ---------------------------------------------------------------------------
+# Derivation rule parser and column resolution helpers
+# ---------------------------------------------------------------------------
+
+_RULE_RE = re.compile(r"^(\w+)\s*\((.*)\)$", re.DOTALL)
+
+# EDC alias map: eCRF/IRT field names -> common SAS column names
+_EDC_ALIASES: dict[str, str] = {
+    "SSUBJID": "Subject",
+    "SSITENUM": "SiteNumber",
+    "SSITE": "Site",
+    "SSITEGROUP": "SiteGroup",
+}
+
+# Race checkbox column-name -> CDISC CT race value (C74457)
+_RACE_COL_MAP: dict[str, str] = {
+    "RACEAME": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "RACEASI": "ASIAN",
+    "RACEBLA": "BLACK OR AFRICAN AMERICAN",
+    "RACENAT": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+    "RACEWHI": "WHITE",
+    "RACEOTH": "OTHER",
+    "RACENR": "NOT REPORTED",
+}
+
+
+def parse_derivation_rule(rule: str) -> tuple[str, list[str]]:
+    """Parse ``KEYWORD(arg1, arg2, ...)`` into ``(KEYWORD, [arg1, arg2, ...])``.
+
+    - Keyword is upper-cased.
+    - Arguments are split on commas, stripped of surrounding quotes/whitespace.
+    - Dataset prefixes (e.g. ``dm.COL``) are stripped: ``dm.AGE`` becomes ``AGE``.
+    - If the string has no parentheses the bare keyword is returned with an
+      empty argument list.
+    """
+    rule = rule.strip()
+    m = _RULE_RE.match(rule)
+    if m:
+        keyword = m.group(1).upper()
+        raw_args = m.group(2)
+        args: list[str] = []
+        for arg in raw_args.split(","):
+            arg = arg.strip().strip("'\"")
+            if not arg:
+                continue
+            # Strip dataset prefix (dm.COL -> COL) but NOT numeric literals (3.14)
+            if "." in arg and not arg.replace(".", "").replace("-", "").isdigit():
+                arg = arg.split(".")[-1]
+            args.append(arg)
+        return keyword, args
+    # Bare keyword (no parentheses)
+    return rule.strip().upper(), []
+
+
+def _resolve_column(
+    df: pd.DataFrame, name: str, kwargs: dict[str, object]
+) -> str | None:
+    """Resolve a column name against a DataFrame, with alias fallbacks.
+
+    Resolution order:
+    1. Strip dataset prefix (dm.COL -> COL)
+    2. Exact match in ``df.columns``
+    3. Custom aliases from ``kwargs["column_aliases"]``
+    4. Hardcoded EDC aliases (``_EDC_ALIASES``)
+    5. Case-insensitive fallback
+    """
+    # Strip dataset prefix
+    if "." in name and not name.replace(".", "").replace("-", "").isdigit():
+        name = name.split(".")[-1]
+
+    # 1. Exact match
+    if name in df.columns:
+        return name
+
+    # 2. Custom aliases
+    aliases: dict[str, str] = kwargs.get("column_aliases", {})  # type: ignore[assignment]
+    if name in aliases and aliases[name] in df.columns:
+        return aliases[name]
+
+    # 3. EDC aliases
+    if name in _EDC_ALIASES and _EDC_ALIASES[name] in df.columns:
+        return _EDC_ALIASES[name]
+
+    # 4. Case-insensitive fallback
+    lower_map = {c.lower(): c for c in df.columns}
+    if name.lower() in lower_map:
+        return lower_map[name.lower()]
+
+    return None
+
+
+def _extract_race_from_col(col_name: str, df: pd.DataFrame) -> str | None:
+    """Extract the race category name for a checkbox column.
+
+    Checks the column label first (from ``df.attrs``), then falls back to
+    well-known column name prefixes.
+    """
+    # Try column label
+    labels: dict[str, str] = df.attrs.get("column_labels", {})
+    label = labels.get(col_name)
+    if label:
+        return label.upper()
+
+    # Fallback: column name pattern
+    upper = col_name.upper()
+    for prefix, race in _RACE_COL_MAP.items():
+        if upper.startswith(prefix):
+            return race
+
+    return None
 
 
 def handle_assign(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
