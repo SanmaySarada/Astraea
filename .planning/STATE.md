@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (SUPPQUAL + XPT output tests complete).
+**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (LLM mapping tests complete, UAT remaining).
 
 ## Current Position
 
 Phase: 6 of 8 (Findings Domains)
-Plan: 4 of 6 (SUPPQUAL generation + Findings XPT output tests)
+Plan: 5 of 6 (Findings LLM mapping tests)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 06-04-PLAN.md (SUPPQUAL generation + Findings XPT output tests)
+Last activity: 2026-02-28 -- Completed 06-05-PLAN.md (Findings LLM mapping tests)
 
-Progress: [█████████████████████████████████████████████████████] ~95%
+Progress: [██████████████████████████████████████████████████████] ~97%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 35
+- Total plans completed: 36
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -34,7 +34,7 @@ Progress: [███████████████████████
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
-| 06-findings-domains | 4/6 | ~15 min | ~3.8 min |
+| 06-findings-domains | 5/6 | ~19 min | ~3.8 min |
 
 ## Phase 1 Deliverables
 
@@ -195,9 +195,13 @@ CLI commands available: `astraea execute-domain`
 | PE domain execution test | tests/integration/execution/test_pe_execution.py | 5 | Done |
 | SUPPQUAL generation tests | tests/integration/execution/test_suppqual_generation.py | 9 | Done |
 | Findings XPT output tests | tests/integration/execution/test_findings_xpt_output.py | 10 | Done |
-| **Total so far** | | **109 new tests** | **4/6 plans** |
+| LB LLM mapping test | tests/integration/mapping/test_lb_mapping.py | 11 | Done |
+| EG LLM mapping test | tests/integration/mapping/test_eg_mapping.py | 8 | Done |
+| VS LLM mapping test (synthetic) | tests/integration/mapping/test_vs_mapping.py | 8 | Done |
+| PE LLM mapping test | tests/integration/mapping/test_pe_mapping.py | 6 | Done |
+| **Total so far** | | **142 new tests** | **5/6 plans** |
 
-**Combined test suite: 1226 tests (1140 pass + 86 skipped)**
+**Combined test suite: 1293 tests (1174 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -353,5 +357,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 06-04-PLAN.md (SUPPQUAL generation + Findings XPT output tests)
+Stopped at: Completed 06-05-PLAN.md (Findings LLM mapping tests)
 Resume file: None
