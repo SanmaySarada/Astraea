@@ -238,11 +238,11 @@ Plans:
 
 Plans:
 - [ ] 06-01-PLAN.md -- TRANSPOSE handler + SUPPQUAL generator (foundational components)
-- [ ] 06-02-PLAN.md -- LB + EG domain execution (FindingsExecutor, multi-source merge, synthetic tests)
+- [ ] 06-02-PLAN.md -- LB + EG + VS domain execution (FindingsExecutor, multi-source merge, CT codelist verification, date imputation flags)
 - [ ] 06-03-PLAN.md -- TS domain builder + PE domain execution (config-driven TS, minimal PE)
-- [ ] 06-04-PLAN.md -- SUPPQUAL integration + Findings XPT output tests (SUPPLB, SUPPEG, roundtrips)
-- [ ] 06-05-PLAN.md -- LLM mapping specs for LB, EG, PE (real Fakedata, requires API key)
-- [ ] 06-06-PLAN.md -- SV domain builder + TS integration with DM data
+- [ ] 06-04-PLAN.md -- SUPPQUAL integration + Findings XPT output tests (SUPPLB, SUPPEG, VS, date imputation flag roundtrips)
+- [ ] 06-05-PLAN.md -- LLM mapping specs for LB, EG, PE, VS with CT codelist verification (requires API key)
+- [ ] 06-06-PLAN.md -- SV domain builder, trial design domains (TA/TE/TV/TI), RELREC stub, TS integration
 
 ---
 
