@@ -72,14 +72,14 @@
 
 ### Validation
 
-- [ ] **VAL-01**: System runs Terminology validation (values match CDISC CT, non-extensible codelists enforced)
-- [ ] **VAL-02**: System runs Presence validation (required variables/records exist per SDTM-IG)
-- [ ] **VAL-03**: System runs Consistency validation (cross-domain checks — e.g., RFSTDTC matches earliest EX date)
-- [ ] **VAL-04**: System runs Limit validation (variable lengths within SDTM-IG spec)
-- [ ] **VAL-05**: System runs Format validation (ISO 8601 dates, variable name length ≤ 8 chars)
-- [ ] **VAL-06**: System validates during mapping (predict-and-prevent), not just post-hoc
-- [ ] **VAL-07**: System generates pre-submission validation report with severity levels (Error/Warning/Notice) and fix suggestions
-- [ ] **VAL-08**: System generates define.xml (v2.0+) with dataset metadata, variable metadata, codelists, value-level metadata, computational methods
+- [x] **VAL-01**: System runs Terminology validation (values match CDISC CT, non-extensible codelists enforced)
+- [x] **VAL-02**: System runs Presence validation (required variables/records exist per SDTM-IG)
+- [x] **VAL-03**: System runs Consistency validation (cross-domain checks — e.g., RFSTDTC matches earliest EX date)
+- [x] **VAL-04**: System runs Limit validation (variable lengths within SDTM-IG spec)
+- [x] **VAL-05**: System runs Format validation (ISO 8601 dates, variable name length ≤ 8 chars)
+- [x] **VAL-06**: System validates during mapping (predict-and-prevent), not just post-hoc
+- [x] **VAL-07**: System generates pre-submission validation report with severity levels (Error/Warning/Notice) and fix suggestions
+- [x] **VAL-08**: System generates define.xml (v2.0+) with dataset metadata, variable metadata, codelists, value-level metadata, computational methods
 
 ### Human Review & Learning
 
@@ -191,14 +191,14 @@
 | DOM-14 | Phase 6 | Complete |
 | DOM-15 | Phase 6 | Complete |
 | DOM-16 | Phase 6 | Complete |
-| VAL-01 | Phase 7 | Pending |
-| VAL-02 | Phase 7 | Pending |
-| VAL-03 | Phase 7 | Pending |
-| VAL-04 | Phase 7 | Pending |
-| VAL-05 | Phase 7 | Pending |
-| VAL-06 | Phase 7 | Pending |
-| VAL-07 | Phase 7 | Pending |
-| VAL-08 | Phase 7 | Pending |
+| VAL-01 | Phase 7 | Complete |
+| VAL-02 | Phase 7 | Complete |
+| VAL-03 | Phase 7 | Complete |
+| VAL-04 | Phase 7 | Complete |
+| VAL-05 | Phase 7 | Complete |
+| VAL-06 | Phase 7 | Complete |
+| VAL-07 | Phase 7 | Complete |
+| VAL-08 | Phase 7 | Complete |
 | HITL-03 | Phase 8 | Pending |
 | HITL-04 | Phase 8 | Pending |
 | HITL-05 | Phase 8 | Pending |
@@ -214,4 +214,4 @@
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-02-27 after Phase 3 completion*
+*Last updated: 2026-02-28 after Phase 7 completion*
