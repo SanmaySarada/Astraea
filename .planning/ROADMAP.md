@@ -479,10 +479,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 14-01-PLAN.md -- Reference data fixes: C66738 codelist, C66789/C66742 corrections, PE/QS VISITNUM, collision-safe reverse lookup
-- [ ] 14-02-PLAN.md -- Date/time fixes: timezone offset validation, ISO datetime passthrough, HH:MM:SS, date imputation functions
-- [ ] 14-03-PLAN.md -- Transform utilities: 200-byte validation, epoch overlap detection, SEX/RACE/ETHNIC recoding, TV visit mapping
-- [ ] 14-04-PLAN.md -- Validation performance: vectorize FDAB009/FDAB030/ASTR-C005 (replace iterrows with groupby/merge)
+- [x] 14-01-PLAN.md -- Reference data fixes: C66738 codelist, C66789/C66742 corrections, PE/QS VISITNUM, collision-safe reverse lookup
+- [x] 14-02-PLAN.md -- Date/time fixes: timezone offset validation, ISO datetime passthrough, HH:MM:SS, date imputation functions
+- [x] 14-03-PLAN.md -- Transform utilities: 200-byte validation, epoch overlap detection, SEX/RACE/ETHNIC recoding, TV visit mapping
+- [x] 14-04-PLAN.md -- Validation performance: vectorize FDAB009/FDAB030/ASTR-C005 (replace iterrows with groupby/merge)
 
 ---
 
@@ -532,7 +532,7 @@ Plans:
 | 11 - Execution Contract | Complete | 2026-02-28 |
 | 12 - Validation and Severity Fixes | Complete | 2026-02-28 |
 | 13 - Define.xml and Findings Completeness | Complete | 2026-02-28 |
-| 14 - Reference Data and Transforms | Not Started | -- |
+| 14 - Reference Data and Transforms | Complete | 2026-02-28 |
 | 15 - Submission Readiness | Not Started | -- |
 
 ---

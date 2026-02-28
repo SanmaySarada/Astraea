@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 14 -- Reference Data and Transforms (next phase after Define.xml and Findings Completeness)
+**Current focus:** Phase 15 -- Submission Readiness (next phase after Reference Data and Transforms)
 
 ## Current Position
 
-Phase: 14 of 15 (Reference Data and Transforms)
-Plan: 4 of 4
-Status: Phase 14 COMPLETE
-Last activity: 2026-02-28 -- Completed 14-04-PLAN.md (Validation Rule Vectorization)
+Phase: 15 of 15 (next: Submission Readiness)
+Plan: 0 of TBD
+Status: Phase 14 COMPLETE -- Phase 15 NOT STARTED
+Last activity: 2026-02-28 -- Completed Phase 14 (Reference Data and Transforms) -- all 4 plans executed, 125 new tests
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 53%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 60%
 
 ## Performance Metrics
 
@@ -331,6 +331,26 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 
 **Combined test suite: ~1729 tests (804 unit pass + 119 skipped + integration)**
 
+## Phase 14 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| C66738 codelist (28 TSPARMCD terms) | src/astraea/data/ct/codelists.json | 5 | Done |
+| C66789 LBSPCND fix + C66742 expansion | src/astraea/data/ct/codelists.json | 8 | Done |
+| PE/QS VISITNUM variables | src/astraea/data/sdtm_ig/domains.json | 4 | Done |
+| Collision-safe reverse CT lookup | src/astraea/reference/controlled_terms.py | 11 | Done |
+| ISO datetime passthrough + HH:MM:SS | src/astraea/transforms/dates.py | 25 | Done |
+| Timezone offset validation | src/astraea/validation/rules/format.py | -- | Done |
+| Partial date imputation functions | src/astraea/transforms/imputation.py | 24 | Done |
+| 200-byte char max validation | src/astraea/transforms/char_length.py | 8 | Done |
+| EPOCH overlap detection | src/astraea/transforms/epoch.py | 6 | Done |
+| SEX/RACE/ETHNIC recoding wrappers | src/astraea/transforms/recoding.py | 14 | Done |
+| TV visit mapping + vectorized assign | src/astraea/transforms/visit.py | 8 | Done |
+| Vectorized FDAB009/FDAB030/ASTR-C005 | src/astraea/validation/rules/ | 12 | Done |
+| **Total** | | **~125 new tests** | **4/4 plans COMPLETE** |
+
+**Combined test suite: ~1854 tests**
+
 ## Accumulated Context
 
 ### Decisions
@@ -575,5 +595,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 14-04-PLAN.md (Validation Rule Vectorization) -- Phase 14 COMPLETE
+Stopped at: Completed Phase 14 (Reference Data and Transforms) -- all 4 plans executed, 125 new tests
 Resume file: None
