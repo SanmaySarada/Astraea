@@ -444,7 +444,13 @@ Plans:
 7. Define.xml attribute completeness: KeySequence, def:Label, integer DataType for --SEQ, def:Origin Source, ODM Originator/AsOfDateTime (MED-06 through MED-10)
 8. All existing tests pass + new tests for each fix
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 13-01-PLAN.md -- Define.xml structural fixes: ValueListDef on result vars, NCI C-code Alias, value-level ItemDefs
+- [ ] 13-02-PLAN.md -- Define.xml attribute completeness: KeySequence, def:Label, integer --SEQ, Origin Source, Originator
+- [ ] 13-03-PLAN.md -- Findings derivations: STRESC/STRESN/STRESU standardized results + NRIND normal range indicator
+- [ ] 13-04-PLAN.md -- Date imputation flag (DTF) wiring + full regression verification
 
 ---
 
