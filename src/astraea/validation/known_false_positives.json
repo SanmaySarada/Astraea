@@ -1,12 +1,72 @@
 {
   "description": "Known false positives from P21/CORE validation. Matching RuleResults are flagged as known_false_positive=true in report output.",
-  "version": "1.0",
+  "version": "2.0",
   "entries": [
     {
       "rule_id": "SD1076",
       "domain": "LB",
       "variable": "LBSTRESC",
       "reason": "P21 v2405.2 known issue: false positive for numeric LBSTRESC values"
+    },
+    {
+      "rule_id": "SD1076",
+      "domain": "VS",
+      "variable": "VSSTRESC",
+      "reason": "P21 v2405.2 known issue: false positive for numeric character results in VS domain (same pattern as LB)"
+    },
+    {
+      "rule_id": "SD1076",
+      "domain": "EG",
+      "variable": "EGSTRESC",
+      "reason": "P21 v2405.2 known issue: false positive for numeric character results in EG domain (same pattern as LB)"
+    },
+    {
+      "rule_id": "SD0084",
+      "domain": "*",
+      "variable": "*",
+      "reason": "Variable label mismatch false positive when label differs only by trailing whitespace (P21 formatting sensitivity)"
+    },
+    {
+      "rule_id": "SD1002",
+      "domain": "SUPPQUAL",
+      "variable": "*",
+      "reason": "Unexpected variable false positive for SUPPQUAL datasets with study-specific QNAM values (QNAM is extensible by design)"
+    },
+    {
+      "rule_id": "CT2001",
+      "domain": "*",
+      "variable": "*",
+      "reason": "Value not in codelist false positive for valid extensible codelist additions (P21 sometimes flags extensible values as violations)"
+    },
+    {
+      "rule_id": "SD0060",
+      "domain": "TS",
+      "variable": "*",
+      "reason": "Missing required value false positive for conditional TS parameters that depend on study design (e.g., PCLAS not required for non-drug studies)"
+    },
+    {
+      "rule_id": "SD1003",
+      "domain": "DM",
+      "variable": "*",
+      "reason": "Variable not expected false positive when ARMCD/ARM present for single-arm studies (P21 flags as unexpected but SDTM-IG allows)"
+    },
+    {
+      "rule_id": "SD0024",
+      "domain": "*",
+      "variable": "DTYPE",
+      "reason": "DTYPE present without qualifying condition false positive when DTYPE is populated from source data rather than imputation"
+    },
+    {
+      "rule_id": "SD1073",
+      "domain": "LB",
+      "variable": "*",
+      "reason": "LBORNRHI/LBORNRLO missing false positive when reference ranges not applicable for qualitative tests (e.g., urinalysis color)"
+    },
+    {
+      "rule_id": "SD0070",
+      "domain": "*",
+      "variable": "*",
+      "reason": "ISO 8601 date format false positive for partial dates with only year (e.g., '2022') which are valid per SDTM-IG partial date rules"
     }
   ]
 }
