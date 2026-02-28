@@ -100,7 +100,7 @@ class AstraeaLLMClient:
         tool_name = f"extract_{output_format.__name__}"
         tool_schema = output_format.model_json_schema()
 
-        kwargs: dict = {
+        kwargs: dict[str, object] = {
             "model": model,
             "max_tokens": max_tokens,
             "temperature": temperature,
@@ -117,7 +117,7 @@ class AstraeaLLMClient:
         if system is not None:
             kwargs["system"] = system
 
-        response = self._client.messages.create(**kwargs)
+        response = self._client.messages.create(**kwargs)  # type: ignore[call-overload]
         elapsed = time.monotonic() - start
 
         logger.info(

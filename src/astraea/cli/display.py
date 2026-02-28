@@ -7,6 +7,8 @@ and validation issues using Rich tables and panels.
 
 from __future__ import annotations
 
+from typing import Any
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -690,7 +692,7 @@ def display_needs_human(
         return
 
     # Group by domain
-    by_domain: dict[str, list] = {}
+    by_domain: dict[str, list[IssueClassification]] = {}
     for ic in issues:
         domain = ic.result.domain or "GENERAL"
         by_domain.setdefault(domain, []).append(ic)
@@ -737,7 +739,7 @@ def display_needs_human(
 
 
 def display_learning_stats(
-    report: dict,
+    report: dict[str, Any],
     example_count: int,
     correction_count: int,
     console: Console,

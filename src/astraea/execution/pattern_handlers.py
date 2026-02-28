@@ -186,7 +186,7 @@ def handle_derivation(df: pd.DataFrame, mapping: VariableMapping, **kwargs: obje
         and mapping.source_variable in df.columns
     )
     if has_transform:
-        return df[mapping.source_variable].map(transform_fn)  # type: ignore[index]
+        return df[mapping.source_variable].map(transform_fn)
 
     logger.warning(
         "Unrecognized derivation rule '{}' for {}; returning None series",

@@ -38,6 +38,7 @@ import typer
 from rich.console import Console
 
 if TYPE_CHECKING:
+    from astraea.learning.retriever import LearningRetriever
     from astraea.models.mapping import DomainMappingSpec
     from astraea.review.models import ReviewDecision
 
@@ -489,7 +490,9 @@ def execute_domain(
 
     # Step 2: Load raw data
     console.print("[bold blue][2/4][/bold blue] Loading raw datasets...")
-    raw_dfs: dict[str, __import__("pandas").DataFrame] = {}
+    import pandas as pd
+
+    raw_dfs: dict[str, pd.DataFrame] = {}
     for source_name in spec.source_datasets:
         # Try exact name, then without extension
         source_path = data_dir / source_name
@@ -555,7 +558,7 @@ def execute_domain(
                 "EG": findings_executor.execute_eg,
             }[domain]
 
-            main_df, supp_df = execute_method(
+            main_df, supp_df = execute_method(  # type: ignore[operator]
                 spec,
                 raw_dfs,
                 cross_domain=cross_domain,
@@ -1176,7 +1179,7 @@ def learn_ingest_cmd(
         all_domains: list[str] = []
 
         for session_info in completed_sessions:
-            session = session_store.load_session(session_info["session_id"])
+            session = session_store.load_session(str(session_info["session_id"]))
             result = ingest_session(session, example_store, vector_store)
             total_examples += result["total_examples"]
             total_corrections += result["total_corrections"]
@@ -1613,7 +1616,7 @@ def _check_api_key() -> bool:
 def _try_load_learning_retriever(
     learning_db: Path | None,
     rich_console: Console,
-) -> object | None:
+) -> LearningRetriever | None:
     """Attempt to load a LearningRetriever from a learning database directory.
 
     Auto-detects the learning DB from ``.astraea/learning/`` if no explicit
@@ -2029,9 +2032,10 @@ def resume_cmd(
             if not in_progress:
                 console.print("[yellow]No in-progress sessions found.[/yellow]")
                 raise typer.Exit(code=0)
-            session_id = in_progress[0]["session_id"]
+            session_id = str(in_progress[0]["session_id"])
             console.print(f"Resuming most recent session: [bold]{session_id}[/bold]")
 
+        assert session_id is not None
         try:
             session = store.load_session(session_id)
         except ValueError:

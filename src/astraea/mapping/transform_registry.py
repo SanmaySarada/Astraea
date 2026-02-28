@@ -32,7 +32,7 @@ from astraea.transforms.usubjid import (
 )
 from astraea.transforms.visit import assign_visit
 
-AVAILABLE_TRANSFORMS: dict[str, Callable] = {
+AVAILABLE_TRANSFORMS: dict[str, Callable[..., object]] = {
     # date transforms
     "sas_date_to_iso": sas_date_to_iso,
     "sas_datetime_to_iso": sas_datetime_to_iso,
@@ -62,7 +62,7 @@ AVAILABLE_TRANSFORMS: dict[str, Callable] = {
 }
 
 
-def get_transform(name: str) -> Callable | None:
+def get_transform(name: str) -> Callable[..., object] | None:
     """Look up a transform function by name.
 
     Args:

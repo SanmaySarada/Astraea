@@ -7,6 +7,8 @@ cli/display.py for review-specific use cases.
 
 from __future__ import annotations
 
+from typing import Any
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -219,7 +221,7 @@ def display_review_summary(domain_review: DomainReview, console: Console) -> Non
     console.print(Panel("\n".join(lines), title=f"Review Summary: {domain_review.domain}"))
 
 
-def display_session_list(sessions: list[dict], console: Console) -> None:
+def display_session_list(sessions: list[dict[str, Any]], console: Console) -> None:
     """Display a table of review sessions.
 
     Shows session ID, study, status (color-coded), created/updated

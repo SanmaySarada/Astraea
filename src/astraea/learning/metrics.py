@@ -8,6 +8,7 @@ for measuring whether the learning system is actually improving.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 
 from astraea.learning.models import StudyMetrics
 from astraea.review.models import (
@@ -73,7 +74,7 @@ def compute_domain_accuracy(
 
 def compute_improvement_report(
     metrics_list: list[StudyMetrics],
-) -> dict:
+) -> dict[str, Any]:
     """Compute an improvement report across studies and domains.
 
     Groups metrics by domain, sorts by completion time, and computes
@@ -107,7 +108,7 @@ def compute_improvement_report(
         domain_metrics.sort(key=lambda x: x.completed_at)
 
     # Build per-domain summary
-    domain_summary: dict[str, dict] = {}
+    domain_summary: dict[str, dict[str, Any]] = {}
     for domain, entries in by_domain.items():
         trend = [e.accuracy_rate for e in entries]
         domain_summary[domain] = {
@@ -130,7 +131,7 @@ def compute_improvement_report(
     }
 
 
-def format_improvement_summary(report: dict) -> str:
+def format_improvement_summary(report: dict[str, Any]) -> str:
     """Format an improvement report as a human-readable string.
 
     Shows per-domain accuracy trends and overall improvement for

@@ -251,7 +251,7 @@ class DomainMappingSpec(BaseModel):
         default_factory=list,
         description="Required SDTM variables not mapped by LLM proposal",
     )
-    predict_prevent_issues: list[dict] = Field(
+    predict_prevent_issues: list[dict[str, str | None]] = Field(
         default_factory=list,
         description="Predict-and-prevent validation issues found at spec time. "
         "Each dict has: rule_id, severity, domain, variable (optional), "

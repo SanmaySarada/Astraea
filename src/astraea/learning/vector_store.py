@@ -7,6 +7,7 @@ enabling few-shot learning from past approved mappings and human corrections.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import chromadb
 
@@ -63,7 +64,7 @@ class LearningVectorStore:
             source_label=example.source_label,
         )
         # ChromaDB metadata values must be str, int, float, or bool
-        metadata = {
+        metadata: dict[str, str | int | float | bool] = {
             "study_id": example.study_id,
             "domain": example.domain,
             "sdtm_variable": example.sdtm_variable,
@@ -118,7 +119,7 @@ class LearningVectorStore:
         domain: str,
         query_text: str,
         n_results: int = 5,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Query approved mappings by semantic similarity with domain filter.
 
         Args:
@@ -157,7 +158,7 @@ class LearningVectorStore:
         domain: str,
         query_text: str,
         n_results: int = 3,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Query corrections by semantic similarity with domain filter.
 
         Excludes invalidated corrections from results.

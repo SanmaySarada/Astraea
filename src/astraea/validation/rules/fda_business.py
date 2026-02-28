@@ -62,9 +62,9 @@ class FDAB057Rule(ValidationRule):
         results: list[RuleResult] = []
         # Check against C66790 codelist if available
         valid_terms: set[str] = set()
-        codelist = ct_ref.get_codelist("C66790")
+        codelist = ct_ref.lookup_codelist("C66790")
         if codelist:
-            valid_terms = {t.submission_value for t in codelist.terms}
+            valid_terms = set(codelist.terms.keys())
 
         if valid_terms:
             ethnic_values = df["ETHNIC"].dropna().unique()
@@ -130,9 +130,9 @@ class FDAB055Rule(ValidationRule):
 
         results: list[RuleResult] = []
         valid_terms: set[str] = set()
-        codelist = ct_ref.get_codelist("C74457")
+        codelist = ct_ref.lookup_codelist("C74457")
         if codelist:
-            valid_terms = {t.submission_value for t in codelist.terms}
+            valid_terms = set(codelist.terms.keys())
 
         if valid_terms:
             race_values = df["RACE"].dropna().unique()

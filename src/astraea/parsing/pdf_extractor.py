@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Any
 
 import pymupdf4llm
 from loguru import logger
@@ -17,7 +18,7 @@ from loguru import logger
 _FORM_HEADER_RE = re.compile(r"Form:\s*(.+?)(?:\n|$)")
 
 
-def extract_ecrf_pages(pdf_path: str | Path) -> list[dict]:
+def extract_ecrf_pages(pdf_path: str | Path) -> list[dict[str, Any]]:
     """Extract eCRF PDF to page-level Markdown chunks.
 
     Uses pymupdf4llm with ``page_chunks=True`` and strict table detection
@@ -45,11 +46,12 @@ def extract_ecrf_pages(pdf_path: str | Path) -> list[dict]:
     )
 
     logger.info("Extracted {n} pages from {pdf}", n=len(pages), pdf=path.name)
-    return pages
+    result: list[dict[str, Any]] = pages
+    return result
 
 
 def group_pages_by_form(
-    pages: list[dict],
+    pages: list[dict[str, Any]],
 ) -> dict[str, list[tuple[int, str]]]:
     """Group extracted pages by eCRF form name.
 
@@ -96,7 +98,7 @@ def group_pages_by_form(
     return forms
 
 
-def get_form_names(pages: list[dict]) -> list[str]:
+def get_form_names(pages: list[dict[str, Any]]) -> list[str]:
     """Return ordered unique form names found in the pages.
 
     Preserves the order of first appearance. Excludes the ``"HEADER"``

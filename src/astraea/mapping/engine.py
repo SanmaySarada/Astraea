@@ -32,6 +32,7 @@ from astraea.reference.sdtm_ig import SDTMReference
 
 if TYPE_CHECKING:
     from astraea.learning.retriever import LearningRetriever
+    from astraea.models.sdtm import DomainSpec
 
 _DEFAULT_MODEL = "claude-sonnet-4-20250514"
 _DEFAULT_TEMPERATURE = 0.1
@@ -246,7 +247,7 @@ class MappingEngine:
 
 def _build_spec(
     *,
-    domain_spec: DomainMappingSpec | object,
+    domain_spec: DomainSpec,
     study_id: str,
     source_profiles: list[DatasetProfile],
     enriched_mappings: list[VariableMapping],
@@ -270,11 +271,6 @@ def _build_spec(
     Returns:
         Complete DomainMappingSpec.
     """
-    # Import here to avoid circular - domain_spec is a DomainSpec from sdtm module
-    from astraea.models.sdtm import DomainSpec as _DomainSpec
-
-    spec = domain_spec if isinstance(domain_spec, _DomainSpec) else domain_spec  # type: ignore[assignment]
-
     # Count by confidence level
     high_count = sum(1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.HIGH)
     medium_count = sum(1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.MEDIUM)
@@ -295,10 +291,10 @@ def _build_spec(
     timestamp = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return DomainMappingSpec(
-        domain=spec.domain,  # type: ignore[union-attr]
-        domain_label=spec.description,  # type: ignore[union-attr]
-        domain_class=spec.domain_class.value,  # type: ignore[union-attr]
-        structure=spec.structure,  # type: ignore[union-attr]
+        domain=domain_spec.domain,
+        domain_label=domain_spec.description,
+        domain_class=domain_spec.domain_class.value,
+        structure=domain_spec.structure,
         study_id=study_id,
         source_datasets=[p.filename for p in source_profiles],
         cross_domain_sources=cross_domain_sources,

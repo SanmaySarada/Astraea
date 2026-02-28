@@ -10,6 +10,8 @@ duplicates thanks to deterministic IDs based on study + domain + variable.
 
 from __future__ import annotations
 
+from typing import Any
+
 from loguru import logger
 
 from astraea.learning.example_store import ExampleStore
@@ -128,7 +130,7 @@ def ingest_session(
     session: ReviewSession,
     example_store: ExampleStore,
     vector_store: LearningVectorStore,
-) -> dict:
+) -> dict[str, Any]:
     """Ingest all completed domain reviews from a session.
 
     Iterates over all domain reviews in the session, ingests those

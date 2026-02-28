@@ -8,6 +8,8 @@ validation outcomes.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from loguru import logger
 
 from astraea.models.mapping import (
@@ -80,7 +82,7 @@ def _validate_single_proposal(
         issues.append(f"Variable {vp.sdtm_variable} not in SDTM-IG for domain {domain_spec.domain}")
         # Use defaults for unknown variables
         sdtm_label = vp.sdtm_variable
-        sdtm_data_type = "Char"
+        sdtm_data_type: Literal["Char", "Num"] = "Char"
         core = CoreDesignation.PERM
         confidence = min(confidence, 0.3)
         logger.warning(

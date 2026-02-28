@@ -7,7 +7,7 @@ into the mapping engine's LLM context.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from loguru import logger
 
@@ -138,8 +138,8 @@ class LearningRetriever:
 
     def format_examples_section(
         self,
-        approved: list[dict],
-        corrections: list[dict],
+        approved: list[dict[str, Any]],
+        corrections: list[dict[str, Any]],
         max_total: int = 5,
     ) -> str:
         """Format retrieved examples into a readable markdown prompt section.
@@ -187,7 +187,7 @@ class LearningRetriever:
         return "\n".join(lines)
 
 
-def _format_correction(corr: dict) -> list[str]:
+def _format_correction(corr: dict[str, Any]) -> list[str]:
     """Format a single correction result for the prompt.
 
     Args:
@@ -241,7 +241,7 @@ def _format_correction(corr: dict) -> list[str]:
     return lines
 
 
-def _format_approved(appr: dict) -> list[str]:
+def _format_approved(appr: dict[str, Any]) -> list[str]:
     """Format a single approved mapping result for the prompt.
 
     Args:

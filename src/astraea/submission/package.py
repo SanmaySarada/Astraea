@@ -7,6 +7,7 @@ validating file naming conventions, and assembling a package manifest.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from astraea.models.mapping import DomainMappingSpec
 from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity
@@ -208,7 +209,7 @@ def validate_file_naming(
 def assemble_package_manifest(
     output_dir: Path,
     specs: list[DomainMappingSpec],
-) -> dict:
+) -> dict[str, Any]:
     """Assemble an informational manifest of the submission package.
 
     Args:

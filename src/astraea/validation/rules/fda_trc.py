@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity
+from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity, ValidationRule
 
 
 class TRCPreCheck:
@@ -208,7 +208,7 @@ class TRCPreCheck:
         return results
 
 
-def get_fda_trc_rules() -> list:
+def get_fda_trc_rules() -> list[ValidationRule]:
     """Return an empty list -- TRC uses TRCPreCheck, not ValidationRule.
 
     TRCPreCheck is invoked directly for submission-level checks,

@@ -317,12 +317,12 @@ class ExampleStore:
     def get_example_count(self) -> int:
         """Return total number of mapping examples."""
         row = self._conn.execute("SELECT COUNT(*) as cnt FROM mapping_examples").fetchone()
-        return row["cnt"]
+        return int(row["cnt"])
 
     def get_correction_count(self) -> int:
         """Return total number of corrections (including invalidated)."""
         row = self._conn.execute("SELECT COUNT(*) as cnt FROM corrections").fetchone()
-        return row["cnt"]
+        return int(row["cnt"])
 
     def close(self) -> None:
         """Close the database connection."""

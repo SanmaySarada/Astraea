@@ -15,6 +15,7 @@ from openpyxl import Workbook
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 
 from astraea.models.mapping import DomainMappingSpec
 
@@ -55,9 +56,9 @@ def export_to_excel(spec: DomainMappingSpec, output_path: Path) -> Path:
     wb = Workbook()
 
     # --- Sheet 1: Mapping Spec ---
-    ws_mapping = wb.active
-    ws_mapping.title = "Mapping Spec"  # type: ignore[union-attr]
-    _write_mapping_sheet(ws_mapping, spec)  # type: ignore[arg-type]
+    ws_mapping: Worksheet = wb.active
+    ws_mapping.title = "Mapping Spec"
+    _write_mapping_sheet(ws_mapping, spec)
 
     # --- Sheet 2: Unmapped Variables ---
     ws_unmapped = wb.create_sheet("Unmapped Variables")
@@ -119,49 +120,49 @@ _COL_WIDTHS = {
 }
 
 
-def _write_mapping_sheet(ws: object, spec: DomainMappingSpec) -> None:
+def _write_mapping_sheet(ws: Worksheet, spec: DomainMappingSpec) -> None:
     """Populate the Mapping Spec sheet."""
     # Write headers
     for col_idx, header in enumerate(_MAPPING_HEADERS, start=1):
-        cell = ws.cell(row=1, column=col_idx, value=header)  # type: ignore[union-attr]
+        cell = ws.cell(row=1, column=col_idx, value=header)
         cell.font = _HEADER_FONT
 
     # Set column widths
     for col_idx, header in enumerate(_MAPPING_HEADERS, start=1):
         col_letter = get_column_letter(col_idx)
-        ws.column_dimensions[col_letter].width = _COL_WIDTHS.get(header, 15)  # type: ignore[union-attr]
+        ws.column_dimensions[col_letter].width = _COL_WIDTHS.get(header, 15)
 
     # Write data rows
     for row_idx, mapping in enumerate(spec.variable_mappings, start=1):
         data_row = row_idx + 1  # +1 for header
-        ws.cell(row=data_row, column=1, value=row_idx)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=2, value=mapping.sdtm_variable)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=3, value=mapping.sdtm_label)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=4, value=mapping.sdtm_data_type)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=5, value=mapping.core.value)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=6, value=mapping.source_dataset or "")  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=7, value=mapping.source_variable or "")  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=8, value=mapping.source_label or "")  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=9, value=mapping.mapping_pattern.value)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=10, value=mapping.mapping_logic)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=11, value=mapping.derivation_rule or "")  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=12, value=mapping.codelist_code or "")  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=13, value=mapping.confidence)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=14, value=mapping.confidence_level.value)  # type: ignore[union-attr]
-        ws.cell(row=data_row, column=15, value=mapping.notes)  # type: ignore[union-attr]
+        ws.cell(row=data_row, column=1, value=row_idx)
+        ws.cell(row=data_row, column=2, value=mapping.sdtm_variable)
+        ws.cell(row=data_row, column=3, value=mapping.sdtm_label)
+        ws.cell(row=data_row, column=4, value=mapping.sdtm_data_type)
+        ws.cell(row=data_row, column=5, value=mapping.core.value)
+        ws.cell(row=data_row, column=6, value=mapping.source_dataset or "")
+        ws.cell(row=data_row, column=7, value=mapping.source_variable or "")
+        ws.cell(row=data_row, column=8, value=mapping.source_label or "")
+        ws.cell(row=data_row, column=9, value=mapping.mapping_pattern.value)
+        ws.cell(row=data_row, column=10, value=mapping.mapping_logic)
+        ws.cell(row=data_row, column=11, value=mapping.derivation_rule or "")
+        ws.cell(row=data_row, column=12, value=mapping.codelist_code or "")
+        ws.cell(row=data_row, column=13, value=mapping.confidence)
+        ws.cell(row=data_row, column=14, value=mapping.confidence_level.value)
+        ws.cell(row=data_row, column=15, value=mapping.notes)
 
     # Auto-filter on header row
     if spec.variable_mappings:
         last_col = get_column_letter(len(_MAPPING_HEADERS))
         last_row = len(spec.variable_mappings) + 1
-        ws.auto_filter.ref = f"A1:{last_col}{last_row}"  # type: ignore[union-attr]
+        ws.auto_filter.ref = f"A1:{last_col}{last_row}"
 
     # Conditional formatting on "Confidence Level" column (column 14 = N)
     conf_col = get_column_letter(14)
     if spec.variable_mappings:
         range_str = f"{conf_col}2:{conf_col}{len(spec.variable_mappings) + 1}"
 
-        ws.conditional_formatting.add(  # type: ignore[union-attr]
+        ws.conditional_formatting.add(
             range_str,
             CellIsRule(
                 operator="equal",
@@ -169,7 +170,7 @@ def _write_mapping_sheet(ws: object, spec: DomainMappingSpec) -> None:
                 fill=_GREEN_FILL,
             ),
         )
-        ws.conditional_formatting.add(  # type: ignore[union-attr]
+        ws.conditional_formatting.add(
             range_str,
             CellIsRule(
                 operator="equal",
@@ -177,7 +178,7 @@ def _write_mapping_sheet(ws: object, spec: DomainMappingSpec) -> None:
                 fill=_YELLOW_FILL,
             ),
         )
-        ws.conditional_formatting.add(  # type: ignore[union-attr]
+        ws.conditional_formatting.add(
             range_str,
             CellIsRule(
                 operator="equal",
@@ -187,44 +188,52 @@ def _write_mapping_sheet(ws: object, spec: DomainMappingSpec) -> None:
         )
 
 
-def _write_unmapped_sheet(ws: object, spec: DomainMappingSpec) -> None:
+def _write_unmapped_sheet(ws: Worksheet, spec: DomainMappingSpec) -> None:
     """Populate the Unmapped Variables sheet."""
     headers = ["Source Dataset", "Source Variable", "Source Label", "Disposition"]
     for col_idx, header in enumerate(headers, start=1):
-        cell = ws.cell(row=1, column=col_idx, value=header)  # type: ignore[union-attr]
+        cell = ws.cell(row=1, column=col_idx, value=header)
         cell.font = _HEADER_FONT
 
     # Set column widths
     widths = [18, 18, 35, 18]
     for col_idx, width in enumerate(widths, start=1):
-        ws.column_dimensions[get_column_letter(col_idx)].width = width  # type: ignore[union-attr]
+        ws.column_dimensions[get_column_letter(col_idx)].width = width
 
     row = 2
 
     # Unmapped source variables
     for var_name in spec.unmapped_source_variables:
-        ws.cell(row=row, column=1, value=spec.source_datasets[0] if spec.source_datasets else "")  # type: ignore[union-attr]
-        ws.cell(row=row, column=2, value=var_name)  # type: ignore[union-attr]
-        ws.cell(row=row, column=3, value="")  # type: ignore[union-attr]
-        ws.cell(row=row, column=4, value="Unmapped")  # type: ignore[union-attr]
+        ws.cell(
+            row=row,
+            column=1,
+            value=spec.source_datasets[0] if spec.source_datasets else "",
+        )
+        ws.cell(row=row, column=2, value=var_name)
+        ws.cell(row=row, column=3, value="")
+        ws.cell(row=row, column=4, value="Unmapped")
         row += 1
 
     # SUPPQUAL candidates
     for var_name in spec.suppqual_candidates:
-        ws.cell(row=row, column=1, value=spec.source_datasets[0] if spec.source_datasets else "")  # type: ignore[union-attr]
-        ws.cell(row=row, column=2, value=var_name)  # type: ignore[union-attr]
-        ws.cell(row=row, column=3, value="")  # type: ignore[union-attr]
-        ws.cell(row=row, column=4, value=f"SUPP{spec.domain} Candidate")  # type: ignore[union-attr]
+        ws.cell(
+            row=row,
+            column=1,
+            value=spec.source_datasets[0] if spec.source_datasets else "",
+        )
+        ws.cell(row=row, column=2, value=var_name)
+        ws.cell(row=row, column=3, value="")
+        ws.cell(row=row, column=4, value=f"SUPP{spec.domain} Candidate")
         row += 1
 
 
-def _write_summary_sheet(ws: object, spec: DomainMappingSpec) -> None:
+def _write_summary_sheet(ws: Worksheet, spec: DomainMappingSpec) -> None:
     """Populate the Summary sheet."""
     label_font = Font(bold=True)
     wrap_align = Alignment(wrap_text=True)
 
-    ws.column_dimensions["A"].width = 25  # type: ignore[union-attr]
-    ws.column_dimensions["B"].width = 50  # type: ignore[union-attr]
+    ws.column_dimensions["A"].width = 25
+    ws.column_dimensions["B"].width = 50
 
     rows: list[tuple[str, str | int | float]] = [
         ("Domain", spec.domain),
@@ -252,7 +261,7 @@ def _write_summary_sheet(ws: object, spec: DomainMappingSpec) -> None:
     ]
 
     for row_idx, (label, value) in enumerate(rows, start=1):
-        label_cell = ws.cell(row=row_idx, column=1, value=label)  # type: ignore[union-attr]
+        label_cell = ws.cell(row=row_idx, column=1, value=label)
         label_cell.font = label_font
-        value_cell = ws.cell(row=row_idx, column=2, value=value)  # type: ignore[union-attr]
+        value_cell = ws.cell(row=row_idx, column=2, value=value)
         value_cell.alignment = wrap_align

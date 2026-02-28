@@ -318,7 +318,7 @@ class SessionStore:
             domain_reviews=domain_reviews,
         )
 
-    def list_sessions(self, study_id: str | None = None) -> list[dict]:
+    def list_sessions(self, study_id: str | None = None) -> list[dict[str, str | int | None]]:
         """Return list of session summaries.
 
         Args:

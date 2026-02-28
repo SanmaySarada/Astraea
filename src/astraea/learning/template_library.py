@@ -16,6 +16,7 @@ import uuid
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -210,7 +211,7 @@ class TemplateLibrary:
         domain_class = specs[0].domain_class if specs else "Unknown"
 
         # Gather all variable mappings grouped by SDTM variable
-        var_mappings: dict[str, list] = {}
+        var_mappings: dict[str, list[Any]] = {}
         for spec in specs:
             for vm in spec.variable_mappings:
                 var_mappings.setdefault(vm.sdtm_variable, []).append(vm)

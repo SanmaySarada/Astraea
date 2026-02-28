@@ -9,6 +9,7 @@ serve as both context for the LLM and a sanity check against hallucination
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 from loguru import logger
 from pydantic import BaseModel, Field
@@ -228,7 +229,9 @@ def classify_dataset(
     )
 
 
-def _determine_mapping_pattern(domain: str, source_count: int, ref: SDTMReference | None) -> str:
+def _determine_mapping_pattern(
+    domain: str, source_count: int, ref: SDTMReference | None
+) -> Literal["direct", "merge", "transpose", "mixed"]:
     """Determine the mapping pattern for a domain plan.
 
     Returns:

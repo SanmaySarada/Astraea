@@ -67,43 +67,38 @@ def mock_ct_ref() -> MagicMock:
     """Mock CTReference with C66790 and C74457 codelists."""
     ct_ref = MagicMock()
 
-    # C66790: Ethnic Group
+    # C66790: Ethnic Group -- terms is a dict keyed by submission_value
     ethnic_codelist = MagicMock()
-    ethnic_term_1 = MagicMock()
-    ethnic_term_1.submission_value = "HISPANIC OR LATINO"
-    ethnic_term_2 = MagicMock()
-    ethnic_term_2.submission_value = "NOT HISPANIC OR LATINO"
-    ethnic_term_3 = MagicMock()
-    ethnic_term_3.submission_value = "NOT REPORTED"
-    ethnic_term_4 = MagicMock()
-    ethnic_term_4.submission_value = "UNKNOWN"
-    ethnic_codelist.terms = [ethnic_term_1, ethnic_term_2, ethnic_term_3, ethnic_term_4]
+    ethnic_codelist.terms = {
+        "HISPANIC OR LATINO": MagicMock(),
+        "NOT HISPANIC OR LATINO": MagicMock(),
+        "NOT REPORTED": MagicMock(),
+        "UNKNOWN": MagicMock(),
+    }
 
-    # C74457: Race
+    # C74457: Race -- terms is a dict keyed by submission_value
     race_codelist = MagicMock()
-    race_terms = []
-    for val in [
-        "AMERICAN INDIAN OR ALASKA NATIVE",
-        "ASIAN",
-        "BLACK OR AFRICAN AMERICAN",
-        "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
-        "WHITE",
-        "MULTIPLE",
-        "OTHER",
-    ]:
-        t = MagicMock()
-        t.submission_value = val
-        race_terms.append(t)
-    race_codelist.terms = race_terms
+    race_codelist.terms = {
+        val: MagicMock()
+        for val in [
+            "AMERICAN INDIAN OR ALASKA NATIVE",
+            "ASIAN",
+            "BLACK OR AFRICAN AMERICAN",
+            "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+            "WHITE",
+            "MULTIPLE",
+            "OTHER",
+        ]
+    }
 
-    def get_codelist(code):
+    def lookup_codelist(code):
         if code == "C66790":
             return ethnic_codelist
         if code == "C74457":
             return race_codelist
         return None
 
-    ct_ref.get_codelist = get_codelist
+    ct_ref.lookup_codelist = lookup_codelist
     return ct_ref
 
 

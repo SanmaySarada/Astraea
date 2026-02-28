@@ -84,7 +84,7 @@ class SDTMMapperModule:
 
 if HAS_DSPY:
 
-    class _DSPyMapperModule(dspy.Module):
+    class _DSPyMapperModule(dspy.Module):  # type: ignore[misc]
         """Internal DSPy Module subclass for compilation."""
 
         def __init__(self) -> None:
@@ -110,7 +110,7 @@ def build_trainset(
     example_store: ExampleStore,
     domain: str | None = None,
     min_examples: int = 10,
-) -> list | None:
+) -> list[object] | None:
     """Build a DSPy trainset from stored mapping examples.
 
     Queries the ExampleStore for approved examples (optionally filtered

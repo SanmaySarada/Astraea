@@ -11,7 +11,7 @@ import pandas as pd
 from loguru import logger
 
 from astraea.models.mapping import DomainMappingSpec
-from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity
+from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity, ValidationRule
 
 
 class CrossDomainValidator:
@@ -343,7 +343,7 @@ class CrossDomainValidator:
         return results
 
 
-def get_consistency_rules() -> list:
+def get_consistency_rules() -> list[ValidationRule]:
     """Return an empty list -- consistency rules use CrossDomainValidator, not ValidationRule.
 
     The CrossDomainValidator is invoked directly by ValidationEngine.validate_cross_domain(),

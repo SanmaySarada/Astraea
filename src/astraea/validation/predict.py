@@ -41,7 +41,7 @@ def predict_and_prevent(
     return results
 
 
-def results_to_issue_dicts(results: list[RuleResult]) -> list[dict]:
+def results_to_issue_dicts(results: list[RuleResult]) -> list[dict[str, str | None]]:
     """Convert RuleResult objects to plain dicts for DomainMappingSpec storage.
 
     Maps RuleResult fields to a simplified dict format suitable for

@@ -123,7 +123,7 @@ class DatasetExecutor:
 
         # Step b: Apply mappings by pattern priority order
         result_df = pd.DataFrame(index=merged_df.index)
-        mapped_vars = set()
+        mapped_vars: set[str] = set()
 
         handler_kwargs = {
             "ct_reference": self.ct_ref,
@@ -295,7 +295,7 @@ class DatasetExecutor:
         source_df: pd.DataFrame,
         result_df: pd.DataFrame,
         mapped_vars: set[str],
-        handler_kwargs: dict[str, object],
+        handler_kwargs: dict[str, Any],
     ) -> None:
         """Apply a single mapping, handling errors gracefully."""
         handler = PATTERN_HANDLERS.get(mapping.mapping_pattern)
