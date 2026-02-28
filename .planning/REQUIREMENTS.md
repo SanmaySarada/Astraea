@@ -7,13 +7,13 @@
 
 ### Data Infrastructure
 
-- [ ] **DATA-01**: System reads SAS (.sas7bdat) files and extracts variable metadata (names, types, labels, formats, lengths)
-- [ ] **DATA-02**: System profiles raw datasets automatically (row counts, value distributions, missing data patterns, date formats detected)
-- [ ] **DATA-03**: System bundles CDISC SDTM-IG metadata as structured reference (domain definitions, variable specs, core designations, class assignments)
-- [ ] **DATA-04**: System bundles NCI CDISC Controlled Terminology codelists (extensible vs non-extensible, codelist-to-variable mappings)
-- [ ] **DATA-05**: System converts dates/times to ISO 8601 format deterministically, including partial date handling per SDTM-IG rules
-- [ ] **DATA-06**: System generates USUBJID correctly (STUDYID + SITEID + SUBJID) and validates consistency across all domains
-- [ ] **DATA-07**: System produces valid SAS Transport v5 (.xpt) files that pass structural validation
+- [x] **DATA-01**: System reads SAS (.sas7bdat) files and extracts variable metadata (names, types, labels, formats, lengths)
+- [x] **DATA-02**: System profiles raw datasets automatically (row counts, value distributions, missing data patterns, date formats detected)
+- [x] **DATA-03**: System bundles CDISC SDTM-IG metadata as structured reference (domain definitions, variable specs, core designations, class assignments)
+- [x] **DATA-04**: System bundles NCI CDISC Controlled Terminology codelists (extensible vs non-extensible, codelist-to-variable mappings)
+- [x] **DATA-05**: System converts dates/times to ISO 8601 format deterministically, including partial date handling per SDTM-IG rules
+- [x] **DATA-06**: System generates USUBJID correctly (STUDYID + SITEID + SUBJID) and validates consistency across all domains
+- [x] **DATA-07**: System produces valid SAS Transport v5 (.xpt) files that pass structural validation
 
 ### eCRF Parsing
 
@@ -93,10 +93,10 @@
 
 ### CLI Interface
 
-- [ ] **CLI-01**: User can run system from terminal: point at data folder (SAS files + eCRF PDF), get SDTM output
+- [x] **CLI-01**: User can run system from terminal: point at data folder (SAS files + eCRF PDF), get SDTM output
 - [x] **CLI-02**: User can review and approve/correct mappings interactively in terminal
 - [x] **CLI-03**: User can resume a mapping session (pick up where they left off)
-- [ ] **CLI-04**: System displays progress through pipeline stages clearly
+- [x] **CLI-04**: System displays progress through pipeline stages clearly
 
 ## v2 Requirements
 
