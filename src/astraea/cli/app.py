@@ -4,8 +4,8 @@ Provides commands for profiling SAS datasets, querying SDTM-IG domain
 specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
 classifying raw datasets to SDTM domains, reviewing mapping specifications,
 executing mapping specs to produce SDTM XPT files, running SDTM validation,
-auto-fixing deterministic validation issues, and generating submission
-artifacts (define.xml, cSDRG).
+auto-fixing deterministic validation issues, generating submission
+artifacts (define.xml, cSDRG), and managing the learning system.
 
 Usage:
     astraea profile <data-folder>
@@ -22,6 +22,9 @@ Usage:
     astraea auto-fix <output-dir>
     astraea generate-define <output-dir>
     astraea generate-csdrg <output-dir>
+    astraea learn-ingest --session-db PATH --learning-db PATH
+    astraea learn-stats [--learning-db PATH]
+    astraea learn-optimize --learning-db PATH --output PATH
 """
 
 from __future__ import annotations
@@ -1082,6 +1085,204 @@ def auto_fix_cmd(
         raise typer.Exit(code=1)
     else:
         console.print("\n[bold green]SUBMISSION READY[/bold green]")
+
+
+@app.command(name="learn-ingest")
+def learn_ingest_cmd(
+    session_db: Annotated[
+        Path,
+        typer.Option("--session-db", help="Path to review sessions database"),
+    ] = Path(".astraea/sessions.db"),
+    learning_db: Annotated[
+        Path,
+        typer.Option("--learning-db", help="Path to learning examples database"),
+    ] = Path(".astraea/learning/examples.db"),
+    chroma_dir: Annotated[
+        Path,
+        typer.Option("--chroma-dir", help="Path to ChromaDB directory"),
+    ] = Path(".astraea/learning/chroma_db"),
+) -> None:
+    """Ingest completed review sessions into the learning system.
+
+    Loads all completed review sessions from the session database and
+    ingests approved mappings and corrections into both the SQLite example
+    store and ChromaDB vector store for future few-shot retrieval.
+    """
+    from astraea.learning.example_store import ExampleStore
+    from astraea.learning.ingestion import ingest_session
+    from astraea.learning.vector_store import LearningVectorStore
+    from astraea.review.session import SessionStore
+
+    if not session_db.exists():
+        console.print("[yellow]No review session database found.[/yellow]")
+        console.print(
+            "Start a review first with: "
+            "[bold]astraea review-domain <spec.json>[/bold]"
+        )
+        return
+
+    session_store = SessionStore(session_db)
+    try:
+        sessions = session_store.list_sessions()
+        completed_sessions = [
+            s for s in sessions if s["status"] == "completed"
+        ]
+
+        if not completed_sessions:
+            console.print("[yellow]No completed sessions found.[/yellow]")
+            console.print(
+                "Complete a review session first with: "
+                "[bold]astraea review-domain <spec.json>[/bold]"
+            )
+            return
+
+        example_store = ExampleStore(learning_db)
+        vector_store = LearningVectorStore(chroma_dir)
+
+        total_examples = 0
+        total_corrections = 0
+        all_domains: list[str] = []
+
+        for session_info in completed_sessions:
+            session = session_store.load_session(session_info["session_id"])
+            result = ingest_session(session, example_store, vector_store)
+            total_examples += result["total_examples"]
+            total_corrections += result["total_corrections"]
+            all_domains.extend(result["domains_ingested"])
+
+        from astraea.cli.display import display_ingestion_result
+
+        display_ingestion_result(total_examples, total_corrections, all_domains, console)
+
+        example_store.close()
+    finally:
+        session_store.close()
+
+
+@app.command(name="learn-stats")
+def learn_stats_cmd(
+    learning_db: Annotated[
+        Path,
+        typer.Option("--learning-db", help="Path to learning examples database"),
+    ] = Path(".astraea/learning/examples.db"),
+) -> None:
+    """Show learning system statistics and accuracy trends.
+
+    Displays example counts, correction counts, per-domain accuracy rates,
+    and improvement trends from the learning database.
+    """
+    from astraea.learning.example_store import ExampleStore
+    from astraea.learning.metrics import compute_improvement_report
+
+    if not learning_db.exists():
+        console.print("[yellow]No learning database found.[/yellow]")
+        console.print(
+            "Ingest review sessions first with: "
+            "[bold]astraea learn-ingest[/bold]"
+        )
+        return
+
+    example_store = ExampleStore(learning_db)
+    try:
+        example_count = example_store.get_example_count()
+        correction_count = example_store.get_correction_count()
+        metrics = example_store.get_study_metrics()
+
+        report = compute_improvement_report(metrics)
+
+        from astraea.cli.display import display_learning_stats
+
+        display_learning_stats(report, example_count, correction_count, console)
+    finally:
+        example_store.close()
+
+
+@app.command(name="learn-optimize")
+def learn_optimize_cmd(
+    learning_db: Annotated[
+        Path,
+        typer.Option("--learning-db", help="Path to learning examples database"),
+    ] = Path(".astraea/learning/examples.db"),
+    output: Annotated[
+        Path,
+        typer.Option("--output", "-o", help="Path to save compiled program"),
+    ] = Path(".astraea/learning/compiled_mapper.json"),
+    domain: Annotated[
+        str | None,
+        typer.Option("--domain", help="Filter examples by SDTM domain"),
+    ] = None,
+    model: Annotated[
+        str,
+        typer.Option("--model", help="LiteLLM model string"),
+    ] = "anthropic/claude-sonnet-4-20250514",
+) -> None:
+    """Trigger DSPy prompt optimization from stored examples.
+
+    Uses BootstrapFewShot to optimize few-shot example selection for
+    the SDTM mapping task. Requires at least 10 approved mapping examples
+    in the learning database.
+
+    Requires ANTHROPIC_API_KEY to be set.
+    """
+    from astraea.learning.dspy_optimizer import HAS_DSPY, compile_optimizer
+    from astraea.learning.example_store import ExampleStore
+
+    if not HAS_DSPY:
+        console.print(
+            "[bold red]Error:[/bold red] dspy is required for optimization. "
+            "Install with: [bold]pip install dspy[/bold]"
+        )
+        raise typer.Exit(code=1)
+
+    if not learning_db.exists():
+        console.print("[yellow]No learning database found.[/yellow]")
+        console.print(
+            "Ingest review sessions first with: "
+            "[bold]astraea learn-ingest[/bold]"
+        )
+        return
+
+    if not _check_api_key():
+        raise typer.Exit(code=1)
+
+    example_store = ExampleStore(learning_db)
+    try:
+        example_count = example_store.get_example_count()
+        if example_count < 10:
+            console.print(
+                f"[yellow]Need at least 10 examples for optimization. "
+                f"Currently have {example_count}.[/yellow]"
+            )
+            console.print(
+                "Ingest more review sessions with: "
+                "[bold]astraea learn-ingest[/bold]"
+            )
+            return
+
+        console.print(
+            f"[bold blue]Compiling optimizer with {example_count} examples...[/bold blue]"
+        )
+        if domain:
+            console.print(f"  Filtering by domain: {domain}")
+
+        result_path = compile_optimizer(
+            example_store,
+            output,
+            domain=domain,
+            model=model,
+        )
+
+        if result_path is None:
+            console.print(
+                "[yellow]Insufficient examples for the requested domain/filter.[/yellow]"
+            )
+            return
+
+        console.print(
+            f"\n[bold green]Compiled program saved to:[/bold green] {result_path}"
+        )
+    finally:
+        example_store.close()
 
 
 def _find_primary_sas(

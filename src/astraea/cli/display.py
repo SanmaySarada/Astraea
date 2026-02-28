@@ -769,6 +769,96 @@ def display_needs_human(
     )
 
 
+def display_learning_stats(
+    report: dict,
+    example_count: int,
+    correction_count: int,
+    console: Console,
+) -> None:
+    """Display learning system statistics with Rich formatting.
+
+    Shows overall counts, per-domain accuracy table with trends,
+    and improvement summary.
+
+    Args:
+        report: Output of compute_improvement_report().
+        example_count: Total number of mapping examples.
+        correction_count: Total number of corrections.
+        console: Rich Console for output.
+    """
+    # Summary panel
+    overall_accuracy = report.get("overall_accuracy", 0.0)
+    info_lines = [
+        f"[bold]Total Examples:[/bold] {example_count}",
+        f"[bold]Total Corrections:[/bold] {correction_count}",
+        f"[bold]Overall Accuracy:[/bold] {overall_accuracy:.1%}",
+    ]
+    console.print(Panel("\n".join(info_lines), title="Learning System Stats"))
+
+    # Per-domain table
+    by_domain = report.get("by_domain", {})
+    if by_domain:
+        table = Table(title="Per-Domain Accuracy", show_lines=True)
+        table.add_column("Domain", style="bold cyan", no_wrap=True)
+        table.add_column("Studies", justify="right")
+        table.add_column("First", justify="right")
+        table.add_column("Latest", justify="right")
+        table.add_column("Change", justify="right")
+        table.add_column("Trend", no_wrap=True)
+
+        for domain in sorted(by_domain):
+            info = by_domain[domain]
+            improvement = info.get("improvement", 0.0)
+
+            if improvement > 0:
+                change_text = Text(f"+{improvement:.1%}", style="green")
+                trend_text = Text("improving", style="green")
+            elif improvement < 0:
+                change_text = Text(f"{improvement:.1%}", style="red")
+                trend_text = Text("declining", style="red")
+            else:
+                change_text = Text("0.0%", style="dim")
+                trend_text = Text("stable", style="dim")
+
+            table.add_row(
+                domain,
+                str(info.get("studies", 0)),
+                f"{info.get('first', 0.0):.1%}",
+                f"{info.get('latest', 0.0):.1%}",
+                change_text,
+                trend_text,
+            )
+
+        console.print(table)
+    else:
+        console.print("[dim]No domain accuracy data available yet.[/dim]")
+
+
+def display_ingestion_result(
+    total_examples: int,
+    total_corrections: int,
+    domains: list[str],
+    console: Console,
+) -> None:
+    """Display ingestion results with Rich formatting.
+
+    Shows a simple panel summarizing what was ingested.
+
+    Args:
+        total_examples: Number of mapping examples ingested.
+        total_corrections: Number of corrections ingested.
+        domains: List of domain codes that were ingested.
+        console: Rich Console for output.
+    """
+    unique_domains = sorted(set(domains))
+    info_lines = [
+        f"[bold]Examples Ingested:[/bold] {total_examples}",
+        f"[bold]Corrections Ingested:[/bold] {total_corrections}",
+        f"[bold]Domains:[/bold] {', '.join(unique_domains) if unique_domains else 'None'}",
+    ]
+    console.print(Panel("\n".join(info_lines), title="Ingestion Complete"))
+
+
 def _format_core(core: CoreDesignation) -> Text:
     """Format a core designation with color coding."""
     if core == CoreDesignation.REQ:
