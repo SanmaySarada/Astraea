@@ -10,9 +10,9 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 14 of 15 (Reference Data and Transforms)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-02-28 -- Completed 14-03-PLAN.md (Transform Utilities)
+Plan: 4 of 4
+Status: Phase 14 COMPLETE
+Last activity: 2026-02-28 -- Completed 14-04-PLAN.md (Validation Rule Vectorization)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 53%
 
@@ -527,6 +527,8 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-14-03-02] Epoch overlap uses strict less-than: adjacent elements (SEENDTC == SESTDTC of next) are NOT overlaps
 - 2026-02-28: [D-14-03-03] Recoding functions return None for unrecognized values (never raise) -- conservative for clinical data
 
+- 2026-02-28: [D-14-04-01] ASTR-C003 also vectorized alongside ASTR-C005 since both used iterrows in consistency.py
+
 ### Pending Todos
 
 (None)
@@ -570,5 +572,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 14-03-PLAN.md (Transform Utilities)
+Stopped at: Completed 14-04-PLAN.md (Validation Rule Vectorization) -- Phase 14 COMPLETE
 Resume file: None
