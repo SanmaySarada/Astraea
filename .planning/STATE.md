@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7.1 COMPLETE -- Auto-Fix Validation Issues (3/3 plans complete). Ready for Phase 8.
+**Current focus:** Phase 8 IN PROGRESS -- Learning System (1/4 plans complete).
 
 ## Current Position
 
-Phase: 7.1 of 8 (Auto-Fix Validation Issues)
-Plan: 3 of 3 (CLI Integration and Display Helpers)
-Status: Phase complete
-Last activity: 2026-02-28 -- Completed 07.1-03-PLAN.md (CLI auto-fix command, display helpers)
+Phase: 8 of 8 (Learning System)
+Plan: 1 of 4 (Data Models and Storage)
+Status: In progress
+Last activity: 2026-02-28 -- Completed 08-01-PLAN.md (Learning system data models and storage)
 
-Progress: [██████████████████████████████████████████████████████████] 100%
+Progress: [██████████████████████████████████████████████████████████░░] 97%
 
 ## Performance Metrics
 
@@ -256,6 +256,17 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 
 CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 
+## Phase 8 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Learning data models | src/astraea/learning/models.py | 11 | Done |
+| SQLite example store | src/astraea/learning/example_store.py | 10 | Done |
+| ChromaDB vector store | src/astraea/learning/vector_store.py | 6 | Done |
+| **Total** | | **27 new tests** | **1/4 plans complete** |
+
+**Combined test suite: ~1565 tests**
+
 ## Accumulated Context
 
 ### Decisions
@@ -397,6 +408,9 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 - 2026-02-28: [D-07.1-03-01] display.py imports FixLoopResult and IssueClassification at module level (not lazy) -- consistent with existing top-level validation imports
 - 2026-02-28: [D-07.1-03-02] auto-fix command uses same XPT/spec loading pattern as validate command for consistency
 - 2026-02-28: [D-07.1-03-03] display_fix_loop_result shows first 10 fix actions only, directs user to autofix_audit.json for full trail
+- 2026-02-28: [D-08-01-01] ChromaDB metadata stores booleans as lowercase strings ('true'/'false') per ChromaDB type constraints
+- 2026-02-28: [D-08-01-02] Two separate ChromaDB collections (approved_mappings, corrections) for differential weighting during retrieval
+- 2026-02-28: [D-08-01-03] ExampleStore uses INSERT OR REPLACE for idempotent upserts (same pattern as SessionStore)
 
 ### Pending Todos
 
@@ -441,5 +455,5 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 7.1 COMPLETE -- all 3 plans executed, verified, ready for Phase 8
+Stopped at: Completed 08-01-PLAN.md (Learning system data models and storage)
 Resume file: None
