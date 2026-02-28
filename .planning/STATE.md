@@ -12,7 +12,7 @@ See: .planning/PROJECT.md
 Phase: 15 of 15 (Submission Readiness)
 Plan: 3 of 6
 Status: In progress
-Last activity: 2026-02-28 -- Completed 15-03-PLAN.md (DM ARM Enforcement & SDTM Detection)
+Last activity: 2026-02-28 -- Completed 15-02-PLAN.md (cSDRG Content & eCTD Assembly)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 67%
 
