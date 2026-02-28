@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 11 of 15 (Execution Contract)
-Plan: 1 of 4
+Plan: 2 of 4
 Status: In progress
-Last activity: 2026-02-28 -- Completed 11-01-PLAN.md (Targeted Bug Fixes)
+Last activity: 2026-02-28 -- Completed 11-02-PLAN.md (Derivation Rule Handlers)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [█░░░] 25%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [██░░] 50%
 
 ## Performance Metrics
 
@@ -437,6 +437,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-09-01-01] TABESSION renamed to TABRSESS (8 chars max for XPT v5 compliance)
 - 2026-02-28: [D-09-01-02] SV label truncated to 'Desc of Unplanned Visit' for 40-char XPT label limit
 - 2026-02-28: [D-09-01-03] TA label truncated to 'Planned Order of Element in Arm' for 40-char XPT label limit
+- 2026-02-28: [D-11-02-01] Handler functions fall back to mapping.source_variable when no args provided (supports bare keyword rules)
+- 2026-02-28: [D-11-02-02] RACE_CHECKBOX returns CT upper-case race names (e.g., "WHITE", "MULTIPLE") per C74457
+- 2026-02-28: [D-11-02-03] Cross-domain date aggregation uses kwargs["cross_domain_dfs"] dict -- deferred to executor to populate
 - 2026-02-28: [D-11-01-01] Wildcard "*" checked explicitly alongside null in known_false_positives -- null means "match all" preserved
 - 2026-02-28: [D-11-01-02] Hour-without-minute truncates to date-only per ISO 8601 (standalone "T10" is invalid)
 - 2026-02-28: [D-11-01-03] DDMonYYYY regex ordered after DD Mon YYYY to avoid false matches on spaced format
@@ -484,5 +487,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 11-01-PLAN.md (Targeted Bug Fixes)
+Stopped at: Completed 11-02-PLAN.md (Derivation Rule Handlers)
 Resume file: None
