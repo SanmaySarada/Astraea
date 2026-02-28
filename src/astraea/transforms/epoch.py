@@ -51,14 +51,15 @@ def assign_epoch(
     if missing_se:
         raise KeyError(f"Missing required columns in se_df: {missing_se}")
 
-    # Pre-group SE data by USUBJID for efficient lookup
+    # Pre-group SE data by USUBJID for efficient lookup (vectorized)
+    se_records = se_df.to_dict("records")
     se_grouped: dict[str, list[dict[str, str]]] = {}
-    for _, se_row in se_df.iterrows():
-        subj = str(se_row[usubjid_col])
+    for rec in se_records:
+        subj = str(rec[usubjid_col])
         element = {
-            "sestdtc": str(se_row["SESTDTC"]) if pd.notna(se_row["SESTDTC"]) else "",
-            "seendtc": str(se_row.get("SEENDTC", "")) if pd.notna(se_row.get("SEENDTC")) else "",
-            "epoch": str(se_row["EPOCH"]) if pd.notna(se_row["EPOCH"]) else "",
+            "sestdtc": str(rec["SESTDTC"]) if pd.notna(rec["SESTDTC"]) else "",
+            "seendtc": str(rec.get("SEENDTC", "")) if pd.notna(rec.get("SEENDTC")) else "",
+            "epoch": str(rec["EPOCH"]) if pd.notna(rec["EPOCH"]) else "",
         }
         se_grouped.setdefault(subj, []).append(element)
 
@@ -97,3 +98,89 @@ def assign_epoch(
 
     result = df.apply(_find_epoch, axis=1)
     return result
+
+
+def detect_epoch_overlaps(
+    se_df: pd.DataFrame,
+    usubjid_col: str = "USUBJID",
+) -> list[dict]:
+    """Detect overlapping SE epoch date ranges per subject.
+
+    Groups SE data by USUBJID, sorts by SESTDTC, and checks for overlapping
+    date ranges. Adjacent elements (SEENDTC == SESTDTC of next) are NOT
+    considered overlaps -- uses strict less-than comparison.
+
+    Args:
+        se_df: Subject Elements (SE) domain DataFrame. Must contain columns:
+            USUBJID, SESTDTC, SEENDTC, EPOCH.
+        usubjid_col: Column name for USUBJID. Default "USUBJID".
+
+    Returns:
+        List of dicts with keys: usubjid, epoch_1, epoch_2, overlap_start,
+        overlap_end. Empty list if no overlaps found.
+
+    Notes:
+        - Open-ended elements (missing SEENDTC) extend to infinity.
+        - Uses string comparison for ISO 8601 dates.
+    """
+    if se_df.empty:
+        return []
+
+    required_cols = [usubjid_col, "SESTDTC", "EPOCH"]
+    missing = [c for c in required_cols if c not in se_df.columns]
+    if missing:
+        raise KeyError(f"Missing required columns in se_df: {missing}")
+
+    overlaps: list[dict] = []
+
+    # Group by subject
+    for subj, group in se_df.groupby(usubjid_col):
+        # Sort by SESTDTC
+        sorted_group = group.sort_values("SESTDTC").reset_index(drop=True)
+        records = sorted_group.to_dict("records")
+
+        for i in range(len(records)):
+            for j in range(i + 1, len(records)):
+                rec_a = records[i]
+                rec_b = records[j]
+
+                # Get date strings (first 10 chars for date-only comparison)
+                start_a = str(rec_a["SESTDTC"])[:10] if pd.notna(rec_a["SESTDTC"]) else ""
+                end_a_raw = rec_a.get("SEENDTC")
+                end_a = str(end_a_raw)[:10] if pd.notna(end_a_raw) and str(end_a_raw).strip() else ""
+                start_b = str(rec_b["SESTDTC"])[:10] if pd.notna(rec_b["SESTDTC"]) else ""
+                end_b_raw = rec_b.get("SEENDTC")
+                end_b = str(end_b_raw)[:10] if pd.notna(end_b_raw) and str(end_b_raw).strip() else ""
+
+                if not start_a or not start_b:
+                    continue
+
+                epoch_a = str(rec_a["EPOCH"]) if pd.notna(rec_a["EPOCH"]) else ""
+                epoch_b = str(rec_b["EPOCH"]) if pd.notna(rec_b["EPOCH"]) else ""
+
+                # Check overlap: start_B < end_A (strict less-than)
+                # If end_A is open-ended (empty), it extends to infinity
+                if end_a:
+                    if start_b < end_a:  # strict less-than: adjacent is NOT overlap
+                        overlap_start = max(start_a, start_b)
+                        overlap_end = min(end_a, end_b) if end_b else end_a
+                        overlaps.append({
+                            "usubjid": str(subj),
+                            "epoch_1": epoch_a,
+                            "epoch_2": epoch_b,
+                            "overlap_start": overlap_start,
+                            "overlap_end": overlap_end,
+                        })
+                else:
+                    # A is open-ended: any B that starts is within A
+                    overlap_start = max(start_a, start_b)
+                    overlap_end = end_b if end_b else ""
+                    overlaps.append({
+                        "usubjid": str(subj),
+                        "epoch_1": epoch_a,
+                        "epoch_2": epoch_b,
+                        "overlap_start": overlap_start,
+                        "overlap_end": overlap_end,
+                    })
+
+    return overlaps
