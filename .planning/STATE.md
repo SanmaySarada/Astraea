@@ -10,9 +10,9 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 13 of 15 (Define.xml and Findings Completeness)
-Plan: 4 of 4
+Plan: 1 of 4
 Status: In progress
-Last activity: 2026-02-28 -- Completed 13-02-PLAN.md (Define.xml Attribute Additions) -- 802 unit tests passing
+Last activity: 2026-02-28 -- Completed 13-01-PLAN.md (Define.xml Structural Fixes) -- 804 unit tests passing
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 40%
 
@@ -497,6 +497,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-13-02-01] VariableOrigin import added to define_xml.py for Origin Source attribute dispatch
 - 2026-02-28: [D-13-02-02] CRF origin Source includes source_variable in parentheses (e.g., "CRF (GENDER)") for traceability
 - 2026-02-28: [D-13-02-03] Assigned origin Source uses "Sponsor defined" per CDISC define.xml conventions
+- 2026-02-28: [D-13-01-01] ValueListDef OID uses VL.{domain}.{result_var} not VL.{domain}.{testcd} per define.xml 2.0
+- 2026-02-28: [D-13-01-02] WhereClauseDef OID includes result variable: WC.{domain}.{result_var}.{testcd} for uniqueness
+- 2026-02-28: [D-13-01-03] Pre-computed vld_variables dict passed to _add_item_group as keyword arg for ValueListRef
 
 ### Pending Todos
 
@@ -541,5 +544,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 13-02-PLAN.md (Define.xml Attribute Additions)
+Stopped at: Completed 13-01-PLAN.md (Define.xml Structural Fixes)
 Resume file: None
