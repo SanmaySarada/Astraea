@@ -296,9 +296,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 07.1-01-PLAN.md -- AutoFixer core: issue classification, fix functions, FixAction audit model, unit tests
-- [ ] 07.1-02-PLAN.md -- FixLoopEngine: validate-fix-revalidate loop, XPT writeback, audit trail export, unit tests
-- [ ] 07.1-03-PLAN.md -- CLI commands (auto-fix, validate --auto-fix), Rich display helpers, CLI tests
+- [x] 07.1-01-PLAN.md -- AutoFixer core: issue classification, fix functions, FixAction audit model, unit tests
+- [x] 07.1-02-PLAN.md -- FixLoopEngine: validate-fix-revalidate loop, XPT writeback, audit trail export, unit tests
+- [x] 07.1-03-PLAN.md -- CLI commands (auto-fix, validate --auto-fix), Rich display helpers, CLI tests
 
 ---
 
@@ -332,7 +332,7 @@ Plans:
 | 5 - Event and Intervention Domains | Complete | 2026-02-27 |
 | 6 - Findings Domains and Complex Transformations | Complete | 2026-02-27 |
 | 7 - Validation and Submission Readiness | Complete | 2026-02-28 |
-| 7.1 - Auto-Fix Validation Issues (INSERTED) | Not started | -- |
+| 7.1 - Auto-Fix Validation Issues (INSERTED) | Complete | 2026-02-28 |
 | 8 - Learning System | Not started | -- |
 
 ---
