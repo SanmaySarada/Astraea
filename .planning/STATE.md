@@ -187,11 +187,15 @@ CLI commands available: `astraea execute-domain`
 | TransposeSpec + execute_transpose | src/astraea/execution/transpose.py | 17 | Done |
 | SuppVariable model | src/astraea/models/suppqual.py | -- | Done |
 | SUPPQUAL generator + integrity | src/astraea/execution/suppqual.py | 26 | Done |
+| FindingsExecutor + normalizers | src/astraea/execution/findings.py | -- | Done |
+| LB execution tests (multi-source) | tests/integration/execution/test_lb_execution.py | 8 | Done |
+| EG execution tests (pre/post-dose) | tests/integration/execution/test_eg_execution.py | 6 | Done |
+| VS execution tests (synthetic) | tests/integration/execution/test_vs_execution.py | 8 | Done |
 | TSConfig model + TS builder | src/astraea/execution/trial_summary.py | 20 | Done |
 | PE domain execution test | tests/integration/execution/test_pe_execution.py | 5 | Done |
-| **Total so far** | | **68 new tests** | **2/6 plans** |
+| **Total so far** | | **90 new tests** | **3/6 plans** |
 
-**Combined test suite: 1185 tests (1099 pass + 86 skipped)**
+**Combined test suite: 1207 tests (1121 pass + 86 skipped)**
 
 ## Accumulated Context
 
@@ -303,6 +307,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-06-01-01] TRANSPOSE handled at DataFrame level by execute_transpose(), not per-variable in PATTERN_HANDLERS
 - 2026-02-27: [D-06-01-02] SUPPQUAL generation is deterministic post-processing, never LLM-generated (per PITFALLS.md C4)
 - 2026-02-27: [D-06-01-03] SuppVariable.qnam auto-uppercased and validated as alphanumeric-only per XPT constraints
+- 2026-02-28: [D-06-02-01] FindingsExecutor wraps DatasetExecutor via composition (not inheritance) for clean normalization/execution separation
+- 2026-02-28: [D-06-02-02] VS domain tested with synthetic data only -- no vs.sas7bdat exists in Fakedata
+- 2026-02-28: [D-06-02-03] Date imputation flags (--DTF) passed through as DIRECT mappings from source data (already flagged at source)
 - 2026-02-28: [D-06-03-01] TSParameter auto-uppercases tsparmcd and validates max 8 chars (XPT constraint)
 - 2026-02-28: [D-06-03-02] FDA_REQUIRED_PARAMS contains 7 codes; SSTDTC derived from DM RFSTDTC, not config
 - 2026-02-28: [D-06-03-03] PE test uses ASSIGN for PETESTCD/PETEST (study only records performed flag, no body system detail)
