@@ -172,11 +172,54 @@ class ValidationEngine:
                 )
         return results
 
+    def validate_cross_domain(
+        self,
+        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]],
+    ) -> list[RuleResult]:
+        """Run cross-domain consistency checks across all domains.
+
+        Uses the CrossDomainValidator which checks invariants that span
+        multiple domains (e.g., USUBJID consistency, STUDYID uniformity).
+
+        Args:
+            domains: Mapping of domain code to (DataFrame, DomainMappingSpec) tuples.
+
+        Returns:
+            List of RuleResult findings from cross-domain checks.
+        """
+        from astraea.validation.rules.consistency import CrossDomainValidator
+
+        domain_dfs = {code: df for code, (df, _spec) in domains.items()}
+        domain_specs = {code: spec for code, (_df, spec) in domains.items()}
+
+        validator = CrossDomainValidator()
+        try:
+            results = validator.validate(domain_dfs, domain_specs)
+            logger.info(
+                "Cross-domain validation: {} findings from {} domains",
+                len(results),
+                len(domains),
+            )
+            return results
+        except Exception as exc:
+            logger.error("Cross-domain validation failed: {}", exc)
+            return [
+                RuleResult(
+                    rule_id="ASTR-C000",
+                    rule_description="Cross-domain validation execution",
+                    category=RuleCategory.CONSISTENCY,
+                    severity=RuleSeverity.WARNING,
+                    message=f"Cross-domain validation failed: {exc}",
+                )
+            ]
+
     def validate_all(
         self,
         domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]],
     ) -> list[RuleResult]:
         """Run all registered rules across multiple domains.
+
+        Runs per-domain rules first, then cross-domain consistency checks.
 
         Args:
             domains: Mapping of domain code to (DataFrame, DomainMappingSpec) tuples.
@@ -194,6 +237,11 @@ class ValidationEngine:
             )
             domain_results = self.validate_domain(domain_code, df, spec)
             all_results.extend(domain_results)
+
+        # Run cross-domain checks after all per-domain rules
+        cross_domain_results = self.validate_cross_domain(domains)
+        all_results.extend(cross_domain_results)
+
         return all_results
 
     @staticmethod
