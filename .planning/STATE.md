@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 8 COMPLETE -- Learning System (4/4 plans complete). ALL PHASES COMPLETE.
+**Current focus:** Phase 8 COMPLETE -- Learning System (5/5 plans complete). ALL PHASES COMPLETE.
 
 ## Current Position
 
 Phase: 8 of 8 (Learning System)
-Plan: 4 of 4 (Cross-Study Template Library)
+Plan: 5 of 5 (DSPy Optimizer and Learning CLI)
 Status: COMPLETE -- All 8 phases finished
-Last activity: 2026-02-28 -- Completed 08-04-PLAN.md (Cross-study template library)
+Last activity: 2026-02-28 -- Completed 08-05-PLAN.md (DSPy optimizer and learning CLI)
 
 Progress: [████████████████████████████████████████████████████████████] 100%
 
@@ -270,9 +270,13 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 | Accuracy metrics computation | src/astraea/learning/metrics.py | 11 | Done |
 | Review-to-learning ingestion | src/astraea/learning/ingestion.py | 7 | Done |
 | Cross-study template library | src/astraea/learning/template_library.py | 26 | Done |
-| **Total** | | **90 new tests** | **4/4 plans COMPLETE** |
+| DSPy optimizer wrapper | src/astraea/learning/dspy_optimizer.py | 14 | Done |
+| CLI commands (learn-ingest, learn-stats, learn-optimize) | src/astraea/cli/app.py, display.py | 10 | Done |
+| **Total** | | **114 new tests** | **5/5 plans COMPLETE** |
 
-**Combined test suite: ~1628 tests**
+**Combined test suite: ~1652 tests**
+
+CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea learn-optimize`
 
 ## Accumulated Context
 
@@ -427,6 +431,9 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 - 2026-02-28: [D-08-04-01] Keywords extracted from both source variable names and mapping logic for richer matching
 - 2026-02-28: [D-08-04-02] SQLite UNIQUE on domain column ensures one template per domain with INSERT OR REPLACE
 - 2026-02-28: [D-08-04-03] Weighted average for accuracy recalculation: existing_weight = len(source_study_ids) - 1
+- 2026-02-28: [D-08-05-01] DSPy imports guarded with try/except ImportError so learning system works even without dspy installed
+- 2026-02-28: [D-08-05-02] SDTMMapperModule wraps internal _DSPyMapperModule via composition (not direct dspy.Module subclass in public API)
+- 2026-02-28: [D-08-05-03] learn-optimize requires both ANTHROPIC_API_KEY and minimum 10 examples before attempting compilation
 
 ### Pending Todos
 
@@ -471,5 +478,5 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-04-PLAN.md (Cross-study template library) -- ALL PHASES COMPLETE
+Stopped at: Completed 08-05-PLAN.md (DSPy optimizer and learning CLI) -- ALL PHASES COMPLETE
 Resume file: None
