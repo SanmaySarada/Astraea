@@ -64,7 +64,7 @@ class IssueClassification(BaseModel):
 
 
 # Rule IDs that are auto-fixable for specific variables only
-_AUTO_FIXABLE_MISSING_VARS = {"STUDYID", "DOMAIN", "USUBJID"}
+_AUTO_FIXABLE_MISSING_VARS = {"STUDYID", "DOMAIN"}
 
 
 class AutoFixer:
@@ -315,10 +315,6 @@ class AutoFixer:
                 elif var == "DOMAIN":
                     # Reuse domain column fix
                     fixed_df, actions = self._fix_domain_column(domain, fixed_df, issue)
-                elif var == "USUBJID":
-                    # USUBJID requires source data; skip if not derivable
-                    logger.warning("USUBJID auto-fix requires source data -- skipping")
-                    continue
             elif rule_id == "ASTR-L001":
                 fixed_df, actions = self._fix_variable_name_length(domain, fixed_df, issue)
             elif rule_id == "ASTR-L002":

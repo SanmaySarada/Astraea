@@ -109,9 +109,9 @@ class ValidationReport(BaseModel):
                     continue
                 entry_domain = entry.get("domain")
                 entry_variable = entry.get("variable")
-                if entry_domain is not None and result.domain != entry_domain:
+                if entry_domain is not None and entry_domain != "*" and result.domain != entry_domain:
                     continue
-                if entry_variable is not None and result.variable != entry_variable:
+                if entry_variable is not None and entry_variable != "*" and result.variable != entry_variable:
                     continue
                 result.known_false_positive = True
                 result.known_false_positive_reason = entry.get("reason", "")
