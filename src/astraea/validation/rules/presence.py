@@ -222,6 +222,117 @@ class USUBJIDPresentRule(ValidationRule):
         return results
 
 
+class SeqUniquenessRule(ValidationRule):
+    """Check that --SEQ is unique per USUBJID within a domain.
+
+    Each subject should have unique sequence numbers within a domain.
+    Duplicate --SEQ values for the same USUBJID indicate a data
+    integrity issue that will cause FDA findings.
+    """
+
+    rule_id: str = "ASTR-P005"
+    description: str = "--SEQ must be unique per USUBJID within a domain"
+    category: RuleCategory = RuleCategory.PRESENCE
+    severity: RuleSeverity = RuleSeverity.ERROR
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        """Check --SEQ uniqueness per USUBJID."""
+        prefix = domain[:2]
+        seq_col = f"{prefix}SEQ"
+
+        if seq_col not in df.columns or "USUBJID" not in df.columns:
+            return []
+
+        # Check for duplicate SEQ values within each USUBJID
+        dup_subjects: list[str] = []
+        for usubjid, group in df.groupby("USUBJID"):
+            seq_values = group[seq_col].dropna()
+            if seq_values.duplicated().any():
+                dup_subjects.append(str(usubjid))
+
+        if dup_subjects:
+            return [
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=self.severity,
+                    domain=domain,
+                    variable=seq_col,
+                    message=(
+                        f"{seq_col} has duplicate values within USUBJID for "
+                        f"{len(dup_subjects)} subject(s)"
+                    ),
+                    affected_count=len(dup_subjects),
+                    p21_equivalent="SD0007",
+                    fix_suggestion=(
+                        f"Ensure {seq_col} values are unique per USUBJID "
+                        f"within the {domain} domain"
+                    ),
+                )
+            ]
+
+        return []
+
+
+class DMOneRecordPerSubjectRule(ValidationRule):
+    """Check that DM has exactly one record per subject.
+
+    The Demographics domain must contain exactly one record per USUBJID.
+    Duplicate DM records indicate a data processing error and will
+    cause FDA rejection.
+    """
+
+    rule_id: str = "ASTR-P006"
+    description: str = "DM must have exactly one record per subject"
+    category: RuleCategory = RuleCategory.PRESENCE
+    severity: RuleSeverity = RuleSeverity.ERROR
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        """Check for duplicate USUBJID in DM."""
+        if domain != "DM":
+            return []
+
+        if "USUBJID" not in df.columns:
+            return []
+
+        duplicated_mask = df["USUBJID"].duplicated(keep=False)
+        if duplicated_mask.any():
+            dup_count = int(df.loc[duplicated_mask, "USUBJID"].nunique())
+            return [
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=self.severity,
+                    domain=domain,
+                    variable="USUBJID",
+                    message=(
+                        f"DM has duplicate records for {dup_count} subject(s). "
+                        f"DM must have exactly one record per USUBJID."
+                    ),
+                    affected_count=dup_count,
+                    fix_suggestion="Remove duplicate DM records to ensure one per USUBJID",
+                )
+            ]
+
+        return []
+
+
 def get_presence_rules() -> list[ValidationRule]:
     """Return all presence validation rule instances."""
     return [
@@ -229,4 +340,6 @@ def get_presence_rules() -> list[ValidationRule]:
         ExpectedVariableRule(),
         NoRecordsRule(),
         USUBJIDPresentRule(),
+        SeqUniquenessRule(),
+        DMOneRecordPerSubjectRule(),
     ]

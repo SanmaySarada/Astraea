@@ -14,9 +14,11 @@ from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
 from astraea.validation.rules.base import RuleCategory, RuleSeverity
 from astraea.validation.rules.presence import (
+    DMOneRecordPerSubjectRule,
     ExpectedVariableRule,
     NoRecordsRule,
     RequiredVariableRule,
+    SeqUniquenessRule,
     USUBJIDPresentRule,
     get_presence_rules,
 )
@@ -227,14 +229,125 @@ class TestUSUBJIDPresentRule:
         assert "2 null" in results[0].message
 
 
+class TestSeqUniquenessRule:
+    """Tests for SeqUniquenessRule (ASTR-P005)."""
+
+    def test_rule_metadata(self) -> None:
+        rule = SeqUniquenessRule()
+        assert rule.rule_id == "ASTR-P005"
+        assert rule.category == RuleCategory.PRESENCE
+        assert rule.severity == RuleSeverity.ERROR
+
+    def test_unique_seq_no_findings(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """Unique AESEQ per USUBJID should produce no findings."""
+        df = pd.DataFrame(
+            {
+                "USUBJID": ["S1", "S1", "S1", "S2", "S2"],
+                "AESEQ": [1, 2, 3, 1, 2],
+            }
+        )
+        spec = _make_spec("AE")
+        rule = SeqUniquenessRule()
+        results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 0
+
+    def test_duplicate_seq_detected(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """Duplicate AESEQ for same USUBJID should produce ERROR."""
+        df = pd.DataFrame(
+            {
+                "USUBJID": ["S1", "S1", "S1"],
+                "AESEQ": [1, 1, 2],
+            }
+        )
+        spec = _make_spec("AE")
+        rule = SeqUniquenessRule()
+        results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 1
+        assert results[0].severity == RuleSeverity.ERROR
+        assert "AESEQ" in results[0].message
+        assert results[0].affected_count == 1
+
+    def test_handles_missing_seq_col(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """Missing SEQ column should skip gracefully."""
+        df = pd.DataFrame({"USUBJID": ["S1", "S2"]})
+        spec = _make_spec("AE")
+        rule = SeqUniquenessRule()
+        results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 0
+
+    def test_different_domain_prefix(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """LB domain should check LBSEQ column."""
+        df = pd.DataFrame(
+            {
+                "USUBJID": ["S1", "S1"],
+                "LBSEQ": [1, 1],  # duplicate
+            }
+        )
+        spec = _make_spec("LB")
+        rule = SeqUniquenessRule()
+        results = rule.evaluate("LB", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 1
+        assert "LBSEQ" in results[0].message
+
+
+class TestDMOneRecordPerSubjectRule:
+    """Tests for DMOneRecordPerSubjectRule (ASTR-P006)."""
+
+    def test_rule_metadata(self) -> None:
+        rule = DMOneRecordPerSubjectRule()
+        assert rule.rule_id == "ASTR-P006"
+        assert rule.category == RuleCategory.PRESENCE
+        assert rule.severity == RuleSeverity.ERROR
+
+    def test_unique_subjects_no_findings(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """Unique USUBJIDs should produce no findings."""
+        df = pd.DataFrame({"USUBJID": ["S1", "S2", "S3"]})
+        spec = _make_spec("DM")
+        rule = DMOneRecordPerSubjectRule()
+        results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 0
+
+    def test_duplicate_subjects_detected(
+        self, sdtm_ref: SDTMReference, ct_ref: CTReference
+    ) -> None:
+        """Duplicate USUBJID in DM should produce ERROR."""
+        df = pd.DataFrame({"USUBJID": ["S1", "S1", "S2"]})
+        spec = _make_spec("DM")
+        rule = DMOneRecordPerSubjectRule()
+        results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 1
+        assert results[0].severity == RuleSeverity.ERROR
+        assert results[0].affected_count == 1
+
+    def test_skips_non_dm(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """Should not fire for non-DM domains."""
+        df = pd.DataFrame({"USUBJID": ["S1", "S1"]})
+        spec = _make_spec("AE")
+        rule = DMOneRecordPerSubjectRule()
+        results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 0
+
+    def test_missing_usubjid_col(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+        """Missing USUBJID column should skip gracefully."""
+        df = pd.DataFrame({"STUDYID": ["TEST"]})
+        spec = _make_spec("DM")
+        rule = DMOneRecordPerSubjectRule()
+        results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
+        assert len(results) == 0
+
+
 class TestGetPresenceRules:
     """Tests for the get_presence_rules factory."""
 
     def test_returns_all_rules(self) -> None:
         rules = get_presence_rules()
-        assert len(rules) == 4
+        assert len(rules) == 6
         rule_ids = {r.rule_id for r in rules}
         assert "ASTR-P001" in rule_ids
         assert "ASTR-P002" in rule_ids
         assert "ASTR-P003" in rule_ids
         assert "ASTR-P004" in rule_ids
+        assert "ASTR-P005" in rule_ids
+        assert "ASTR-P006" in rule_ids
