@@ -60,22 +60,127 @@ def _mapping(
 def vs_spec() -> DomainMappingSpec:
     """VS domain spec with Findings-class mappings."""
     mappings = [
-        _mapping(var="STUDYID", pattern=MappingPattern.ASSIGN, label="Study Identifier", assigned="PHA022121-C301", order=1),
-        _mapping(var="DOMAIN", pattern=MappingPattern.ASSIGN, label="Domain Abbreviation", assigned="VS", order=2),
-        _mapping(var="USUBJID", pattern=MappingPattern.DERIVATION, label="Unique Subject Identifier", derivation="generate_usubjid", order=3),
-        _mapping(var="VSSEQ", pattern=MappingPattern.DERIVATION, label="Sequence Number", derivation="generate_seq", order=4),
-        _mapping(var="VSTESTCD", pattern=MappingPattern.DIRECT, label="Vital Signs Test Short Name", source="VSTESTCD", order=5),
-        _mapping(var="VSTEST", pattern=MappingPattern.DIRECT, label="Vital Signs Test Name", source="VSTEST", order=6),
-        _mapping(var="VSORRES", pattern=MappingPattern.DIRECT, label="Result or Finding in Original Units", source="VSORRES", order=7, core=CoreDesignation.EXP),
-        _mapping(var="VSORRESU", pattern=MappingPattern.DIRECT, label="Original Units", source="VSORRESU", order=8, core=CoreDesignation.EXP),
-        _mapping(var="VSSTRESC", pattern=MappingPattern.DIRECT, label="Character Result/Finding in Std Format", source="VSSTRESC", order=9, core=CoreDesignation.EXP),
-        _mapping(var="VSSTRESN", pattern=MappingPattern.DIRECT, label="Numeric Result/Finding in Std Units", source="VSSTRESN", order=10, core=CoreDesignation.EXP),
-        _mapping(var="VSSTRESU", pattern=MappingPattern.DIRECT, label="Standard Units", source="VSSTRESU", order=11, core=CoreDesignation.EXP),
-        _mapping(var="VSPOS", pattern=MappingPattern.DIRECT, label="Position of Subject During Observation", source="VSPOS", order=12, core=CoreDesignation.PERM),
-        _mapping(var="VSLOC", pattern=MappingPattern.DIRECT, label="Location of Vital Signs Measurement", source="VSLOC", order=13, core=CoreDesignation.PERM),
-        _mapping(var="VSBLFL", pattern=MappingPattern.DIRECT, label="Baseline Flag", source="VSBLFL", order=14, core=CoreDesignation.EXP),
-        _mapping(var="VSDTC", pattern=MappingPattern.DIRECT, label="Date/Time of Measurements", source="VSDTC", order=15),
-        _mapping(var="VSNRIND", pattern=MappingPattern.DIRECT, label="Reference Range Indicator", source="VSNRIND", order=16, core=CoreDesignation.EXP),
+        _mapping(
+            var="STUDYID",
+            pattern=MappingPattern.ASSIGN,
+            label="Study Identifier",
+            assigned="PHA022121-C301",
+            order=1,
+        ),
+        _mapping(
+            var="DOMAIN",
+            pattern=MappingPattern.ASSIGN,
+            label="Domain Abbreviation",
+            assigned="VS",
+            order=2,
+        ),
+        _mapping(
+            var="USUBJID",
+            pattern=MappingPattern.DERIVATION,
+            label="Unique Subject Identifier",
+            derivation="generate_usubjid",
+            order=3,
+        ),
+        _mapping(
+            var="VSSEQ",
+            pattern=MappingPattern.DERIVATION,
+            label="Sequence Number",
+            derivation="generate_seq",
+            order=4,
+        ),
+        _mapping(
+            var="VSTESTCD",
+            pattern=MappingPattern.DIRECT,
+            label="Vital Signs Test Short Name",
+            source="VSTESTCD",
+            order=5,
+        ),
+        _mapping(
+            var="VSTEST",
+            pattern=MappingPattern.DIRECT,
+            label="Vital Signs Test Name",
+            source="VSTEST",
+            order=6,
+        ),
+        _mapping(
+            var="VSORRES",
+            pattern=MappingPattern.DIRECT,
+            label="Result or Finding in Original Units",
+            source="VSORRES",
+            order=7,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSORRESU",
+            pattern=MappingPattern.DIRECT,
+            label="Original Units",
+            source="VSORRESU",
+            order=8,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSSTRESC",
+            pattern=MappingPattern.DIRECT,
+            label="Character Result/Finding in Std Format",
+            source="VSSTRESC",
+            order=9,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSSTRESN",
+            pattern=MappingPattern.DIRECT,
+            label="Numeric Result/Finding in Std Units",
+            source="VSSTRESN",
+            order=10,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSSTRESU",
+            pattern=MappingPattern.DIRECT,
+            label="Standard Units",
+            source="VSSTRESU",
+            order=11,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSPOS",
+            pattern=MappingPattern.DIRECT,
+            label="Position of Subject During Observation",
+            source="VSPOS",
+            order=12,
+            core=CoreDesignation.PERM,
+        ),
+        _mapping(
+            var="VSLOC",
+            pattern=MappingPattern.DIRECT,
+            label="Location of Vital Signs Measurement",
+            source="VSLOC",
+            order=13,
+            core=CoreDesignation.PERM,
+        ),
+        _mapping(
+            var="VSBLFL",
+            pattern=MappingPattern.DIRECT,
+            label="Baseline Flag",
+            source="VSBLFL",
+            order=14,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="VSDTC",
+            pattern=MappingPattern.DIRECT,
+            label="Date/Time of Measurements",
+            source="VSDTC",
+            order=15,
+        ),
+        _mapping(
+            var="VSNRIND",
+            pattern=MappingPattern.DIRECT,
+            label="Reference Range Indicator",
+            source="VSNRIND",
+            order=16,
+            core=CoreDesignation.EXP,
+        ),
     ]
     return DomainMappingSpec(
         domain="VS",
@@ -107,61 +212,101 @@ def raw_vs_data() -> pd.DataFrame:
     sites = ["101"] * 12
     testcds = ["SYSBP", "DIABP", "PULSE", "WEIGHT"] * 3
     tests = [
-        "Systolic Blood Pressure", "Diastolic Blood Pressure", "Pulse Rate", "Weight",
-        "Systolic Blood Pressure", "Diastolic Blood Pressure", "Pulse Rate", "Weight",
-        "Systolic Blood Pressure", "Diastolic Blood Pressure", "Pulse Rate", "Weight",
+        "Systolic Blood Pressure",
+        "Diastolic Blood Pressure",
+        "Pulse Rate",
+        "Weight",
+        "Systolic Blood Pressure",
+        "Diastolic Blood Pressure",
+        "Pulse Rate",
+        "Weight",
+        "Systolic Blood Pressure",
+        "Diastolic Blood Pressure",
+        "Pulse Rate",
+        "Weight",
     ]
     results = ["120", "80", "72", "75", "125", "82", "70", "75", "118", "78", "68", "80"]
     units = ["mmHg", "mmHg", "beats/min", "kg"] * 3
     positions = [
-        "SUPINE", "SUPINE", "SUPINE", None,
-        "STANDING", "STANDING", "SITTING", None,
-        "SUPINE", "SUPINE", "SITTING", None,
+        "SUPINE",
+        "SUPINE",
+        "SUPINE",
+        None,
+        "STANDING",
+        "STANDING",
+        "SITTING",
+        None,
+        "SUPINE",
+        "SUPINE",
+        "SITTING",
+        None,
     ]
     locations = ["ARM", "ARM", None, None, "ARM", "ARM", None, None, "LEG", "LEG", None, None]
     baselines = ["Y", "Y", "Y", "Y", "", "", "", "", "Y", "Y", "Y", "Y"]
     dates = [
-        "2022-01-15", "2022-01-15", "2022-01-15", "2022-01-15",
-        "2022-02-15", "2022-02-15", "2022-02-15", "2022-02-15",
-        "2022-01-20", "2022-01-20", "2022-01-20", "2022-01-20",
+        "2022-01-15",
+        "2022-01-15",
+        "2022-01-15",
+        "2022-01-15",
+        "2022-02-15",
+        "2022-02-15",
+        "2022-02-15",
+        "2022-02-15",
+        "2022-01-20",
+        "2022-01-20",
+        "2022-01-20",
+        "2022-01-20",
     ]
     nrinds = [
-        "NORMAL", "NORMAL", "NORMAL", "NORMAL",
-        "HIGH", "NORMAL", "NORMAL", "NORMAL",
-        "NORMAL", "LOW", "NORMAL", "HIGH",
+        "NORMAL",
+        "NORMAL",
+        "NORMAL",
+        "NORMAL",
+        "HIGH",
+        "NORMAL",
+        "NORMAL",
+        "NORMAL",
+        "NORMAL",
+        "LOW",
+        "NORMAL",
+        "HIGH",
     ]
 
-    return pd.DataFrame({
-        "Subject": subjects,
-        "SiteNumber": sites,
-        "VSTESTCD": testcds,
-        "VSTEST": tests,
-        "VSORRES": results,
-        "VSORRESU": units,
-        "VSSTRESC": results,
-        "VSSTRESN": [float(r) for r in results],
-        "VSSTRESU": units,
-        "VSPOS": positions,
-        "VSLOC": locations,
-        "VSBLFL": baselines,
-        "VSDTC": dates,
-        "VSNRIND": nrinds,
-    })
+    return pd.DataFrame(
+        {
+            "Subject": subjects,
+            "SiteNumber": sites,
+            "VSTESTCD": testcds,
+            "VSTEST": tests,
+            "VSORRES": results,
+            "VSORRESU": units,
+            "VSSTRESC": results,
+            "VSSTRESN": [float(r) for r in results],
+            "VSSTRESU": units,
+            "VSPOS": positions,
+            "VSLOC": locations,
+            "VSBLFL": baselines,
+            "VSDTC": dates,
+            "VSNRIND": nrinds,
+        }
+    )
 
 
 @pytest.fixture()
 def raw_vs_crf_style() -> pd.DataFrame:
     """VS data with CRF-style column names for normalization testing."""
-    return pd.DataFrame({
-        "Subject": ["001", "001"],
-        "SiteNumber": ["101", "101"],
-        "VSTEST": ["Systolic Blood Pressure", "Diastolic Blood Pressure"],
-        "VSORRES": ["120", "80"],
-        "VSORRESU": ["mmHg", "mmHg"],
-        "VSDAT": ["2022-01-15", "2022-01-15"],
-        "VSTIM": ["08:30", "08:30"],
-        "VSPERF": ["Y", "Y"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "001"],
+            "SiteNumber": ["101", "101"],
+            "VSTEST": ["Systolic Blood Pressure", "Diastolic Blood Pressure"],
+            "VSORRES": ["120", "80"],
+            "VSORRESU": ["mmHg", "mmHg"],
+            "VSDAT": ["2022-01-15", "2022-01-15"],
+            "VSTIM": ["08:30", "08:30"],
+            "VSPERF": ["Y", "Y"],
+        }
+    )
 
 
 @pytest.fixture()
@@ -187,9 +332,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Execute spec, verify row count and SDTM columns present."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         assert len(result) == 12
         assert "STUDYID" in result.columns
         assert "DOMAIN" in result.columns
@@ -206,9 +349,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Verify VSSEQ unique per USUBJID, monotonically increasing."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         assert "VSSEQ" in result.columns
         for _, group in result.groupby("USUBJID"):
             seq_values = list(group["VSSEQ"])
@@ -223,9 +364,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Verify DOMAIN = 'VS' for all rows."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         assert all(result["DOMAIN"] == "VS")
 
     def test_vs_column_order(
@@ -235,9 +374,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Verify columns in spec order."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         cols = list(result.columns)
         assert cols.index("STUDYID") < cols.index("DOMAIN")
         assert cols.index("DOMAIN") < cols.index("USUBJID")
@@ -253,9 +390,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Verify all VSPOS values are valid terms from CT C71148."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         assert "VSPOS" in result.columns
         valid_positions = {"SUPINE", "STANDING", "SITTING"}
         actual_positions = set(result["VSPOS"].dropna().unique())
@@ -270,9 +405,7 @@ class TestVSExecution:
         vs_executor: DatasetExecutor,
     ) -> None:
         """Verify VSNRIND column exists and is populated with NORMAL, LOW, HIGH."""
-        result = vs_executor.execute(
-            vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301"
-        )
+        result = vs_executor.execute(vs_spec, {"vs": raw_vs_data}, study_id="PHA022121-C301")
         assert "VSNRIND" in result.columns
         nrind_values = set(result["VSNRIND"].dropna().unique())
         assert "NORMAL" in nrind_values

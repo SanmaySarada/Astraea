@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
 import pandas as pd
+import pytest
 
 from astraea.execution.pattern_handlers import (
     PATTERN_HANDLERS,
@@ -91,9 +91,7 @@ class TestHandleDirect:
             source_variable="AETERM",
         )
         result = handle_direct(sample_df, mapping)
-        pd.testing.assert_series_equal(
-            result, sample_df["AETERM"], check_names=False
-        )
+        pd.testing.assert_series_equal(result, sample_df["AETERM"], check_names=False)
 
     def test_direct_missing_col_raises(self, sample_df: pd.DataFrame) -> None:
         mapping = _make_mapping(
@@ -122,9 +120,7 @@ class TestHandleRename:
             source_variable="Subject",
         )
         result = handle_rename(sample_df, mapping)
-        pd.testing.assert_series_equal(
-            result, sample_df["Subject"], check_names=False
-        )
+        pd.testing.assert_series_equal(result, sample_df["Subject"], check_names=False)
 
 
 class TestHandleReformat:
@@ -153,9 +149,7 @@ class TestHandleReformat:
         )
         result = handle_reformat(sample_df, mapping)
         # Should pass through original values
-        pd.testing.assert_series_equal(
-            result, sample_df["AESTDT"], check_names=False
-        )
+        pd.testing.assert_series_equal(result, sample_df["AESTDT"], check_names=False)
 
 
 class TestHandleLookupRecode:
@@ -180,24 +174,18 @@ class TestHandleLookupRecode:
         result = handle_lookup_recode(sample_df, mapping, ct_reference=mock_ct)
         assert list(result) == ["M", "F", "M"]
 
-    def test_lookup_recode_no_codelist_passes_through(
-        self, sample_df: pd.DataFrame
-    ) -> None:
+    def test_lookup_recode_no_codelist_passes_through(self, sample_df: pd.DataFrame) -> None:
         mapping = _make_mapping(
             sdtm_variable="SEX",
             pattern=MappingPattern.LOOKUP_RECODE,
             source_variable="SEX",
         )
         result = handle_lookup_recode(sample_df, mapping)
-        pd.testing.assert_series_equal(
-            result, sample_df["SEX"], check_names=False
-        )
+        pd.testing.assert_series_equal(result, sample_df["SEX"], check_names=False)
 
 
 class TestHandleDerivation:
-    def test_derivation_unknown_rule_returns_none(
-        self, sample_df: pd.DataFrame
-    ) -> None:
+    def test_derivation_unknown_rule_returns_none(self, sample_df: pd.DataFrame) -> None:
         mapping = _make_mapping(
             sdtm_variable="CUSTOM",
             pattern=MappingPattern.DERIVATION,

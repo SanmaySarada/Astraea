@@ -168,9 +168,7 @@ class TestValidationEngine:
         # All results should have domain set to AE
         assert all(r.domain == "AE" for r in results if r.domain is not None)
 
-    def test_validate_all_runs_across_domains(
-        self, engine: ValidationEngine
-    ) -> None:
+    def test_validate_all_runs_across_domains(self, engine: ValidationEngine) -> None:
         rule = ErrorRule(
             rule_id="E-001",
             description="Error",
@@ -225,9 +223,7 @@ class TestValidationEngine:
                 message="presence error",
             ),
         ]
-        filtered = engine.filter_results(
-            results, category=RuleCategory.TERMINOLOGY
-        )
+        filtered = engine.filter_results(results, category=RuleCategory.TERMINOLOGY)
         assert len(filtered) == 1
         assert filtered[0].rule_id == "A"
 

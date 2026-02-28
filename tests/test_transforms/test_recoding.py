@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import math
 
-import pytest
-
 from astraea.transforms.recoding import numeric_to_yn
 
 

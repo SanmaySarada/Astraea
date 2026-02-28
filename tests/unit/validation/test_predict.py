@@ -131,11 +131,13 @@ class TestPP001RequiredVariables:
 
     def test_missing_required_detected(self, ct_ref: CTReference) -> None:
         """Missing required variables produce ERROR results."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("DOMAIN"),
-            # Missing USUBJID, AESEQ, AETERM, AEDECOD
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("DOMAIN"),
+                # Missing USUBJID, AESEQ, AETERM, AEDECOD
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp001 = [r for r in results if r.rule_id == "ASTR-PP001"]
@@ -146,14 +148,16 @@ class TestPP001RequiredVariables:
 
     def test_all_required_present(self, ct_ref: CTReference) -> None:
         """No PP001 issues when all required variables are mapped."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("DOMAIN"),
-            _make_mapping("USUBJID"),
-            _make_mapping("AESEQ"),
-            _make_mapping("AETERM"),
-            _make_mapping("AEDECOD"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("DOMAIN"),
+                _make_mapping("USUBJID"),
+                _make_mapping("AESEQ"),
+                _make_mapping("AETERM"),
+                _make_mapping("AEDECOD"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp001 = [r for r in results if r.rule_id == "ASTR-PP001"]
@@ -168,11 +172,13 @@ class TestPP002DuplicateMappings:
 
     def test_duplicate_detected(self, ct_ref: CTReference) -> None:
         """Duplicate SDTM variable mappings produce ERROR."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("STUDYID"),  # duplicate
-            _make_mapping("DOMAIN"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("STUDYID"),  # duplicate
+                _make_mapping("DOMAIN"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp002 = [r for r in results if r.rule_id == "ASTR-PP002"]
@@ -182,10 +188,12 @@ class TestPP002DuplicateMappings:
 
     def test_no_duplicates(self, ct_ref: CTReference) -> None:
         """No PP002 issues when all variables are unique."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("DOMAIN"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("DOMAIN"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp002 = [r for r in results if r.rule_id == "ASTR-PP002"]
@@ -200,9 +208,11 @@ class TestPP003CodelistExists:
 
     def test_missing_codelist_detected(self, ct_ref: CTReference) -> None:
         """Nonexistent codelist code produces WARNING."""
-        spec = _make_spec(mappings=[
-            _make_mapping("AESER", codelist_code="C99999"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("AESER", codelist_code="C99999"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp003 = [r for r in results if r.rule_id == "ASTR-PP003"]
@@ -212,9 +222,11 @@ class TestPP003CodelistExists:
 
     def test_valid_codelist_no_issue(self, ct_ref: CTReference) -> None:
         """Valid codelist code produces no PP003 issue."""
-        spec = _make_spec(mappings=[
-            _make_mapping("AESER", codelist_code="C66742"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("AESER", codelist_code="C66742"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp003 = [r for r in results if r.rule_id == "ASTR-PP003"]
@@ -229,15 +241,17 @@ class TestPP004AssignCTValues:
 
     def test_invalid_assign_value_detected(self, ct_ref: CTReference) -> None:
         """Invalid ASSIGN value in non-extensible codelist produces ERROR."""
-        spec = _make_spec(mappings=[
-            _make_mapping(
-                "AESER",
-                pattern=MappingPattern.ASSIGN,
-                source_variable=None,
-                assigned_value="INVALID",
-                codelist_code="C66742",
-            ),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping(
+                    "AESER",
+                    pattern=MappingPattern.ASSIGN,
+                    source_variable=None,
+                    assigned_value="INVALID",
+                    codelist_code="C66742",
+                ),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp004 = [r for r in results if r.rule_id == "ASTR-PP004"]
@@ -248,15 +262,17 @@ class TestPP004AssignCTValues:
     def test_valid_assign_value_no_issue(self, ct_ref: CTReference) -> None:
         """Valid ASSIGN value in non-extensible codelist produces no issue."""
         # C66742 is NY (No Yes) codelist - "Y" and "N" are valid
-        spec = _make_spec(mappings=[
-            _make_mapping(
-                "AESER",
-                pattern=MappingPattern.ASSIGN,
-                source_variable=None,
-                assigned_value="Y",
-                codelist_code="C66742",
-            ),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping(
+                    "AESER",
+                    pattern=MappingPattern.ASSIGN,
+                    source_variable=None,
+                    assigned_value="Y",
+                    codelist_code="C66742",
+                ),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp004 = [r for r in results if r.rule_id == "ASTR-PP004"]
@@ -271,9 +287,11 @@ class TestPP005VariableInIG:
 
     def test_unknown_variable_detected(self, ct_ref: CTReference) -> None:
         """Variable not in SDTM-IG produces WARNING."""
-        spec = _make_spec(mappings=[
-            _make_mapping("AEUNKNOWN"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("AEUNKNOWN"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp005 = [r for r in results if r.rule_id == "ASTR-PP005"]
@@ -283,9 +301,11 @@ class TestPP005VariableInIG:
 
     def test_known_variable_no_issue(self, ct_ref: CTReference) -> None:
         """Variable that exists in SDTM-IG produces no PP005 issue."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp005 = [r for r in results if r.rule_id == "ASTR-PP005"]
@@ -300,9 +320,11 @@ class TestPP006OriginPopulated:
 
     def test_missing_origin_detected(self, ct_ref: CTReference) -> None:
         """Missing origin produces NOTICE."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID", origin=None),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID", origin=None),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp006 = [r for r in results if r.rule_id == "ASTR-PP006"]
@@ -311,9 +333,11 @@ class TestPP006OriginPopulated:
 
     def test_origin_present_no_issue(self, ct_ref: CTReference) -> None:
         """Origin present produces no PP006 issue."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID", origin=VariableOrigin.ASSIGNED),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID", origin=VariableOrigin.ASSIGNED),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp006 = [r for r in results if r.rule_id == "ASTR-PP006"]
@@ -328,13 +352,15 @@ class TestPP007ComputationalMethod:
 
     def test_missing_method_detected(self, ct_ref: CTReference) -> None:
         """Derivation without computational_method produces NOTICE."""
-        spec = _make_spec(mappings=[
-            _make_mapping(
-                "AESEQ",
-                pattern=MappingPattern.DERIVATION,
-                computational_method=None,
-            ),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping(
+                    "AESEQ",
+                    pattern=MappingPattern.DERIVATION,
+                    computational_method=None,
+                ),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp007 = [r for r in results if r.rule_id == "ASTR-PP007"]
@@ -343,13 +369,15 @@ class TestPP007ComputationalMethod:
 
     def test_method_present_no_issue(self, ct_ref: CTReference) -> None:
         """Derivation with computational_method produces no issue."""
-        spec = _make_spec(mappings=[
-            _make_mapping(
-                "AESEQ",
-                pattern=MappingPattern.DERIVATION,
-                computational_method="Sequence number by USUBJID and AESTDTC",
-            ),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping(
+                    "AESEQ",
+                    pattern=MappingPattern.DERIVATION,
+                    computational_method="Sequence number by USUBJID and AESTDTC",
+                ),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp007 = [r for r in results if r.rule_id == "ASTR-PP007"]
@@ -357,9 +385,11 @@ class TestPP007ComputationalMethod:
 
     def test_non_derivation_no_issue(self, ct_ref: CTReference) -> None:
         """Non-derivation patterns do not trigger PP007."""
-        spec = _make_spec(mappings=[
-            _make_mapping("AETERM", pattern=MappingPattern.DIRECT),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("AETERM", pattern=MappingPattern.DIRECT),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp007 = [r for r in results if r.rule_id == "ASTR-PP007"]
@@ -374,10 +404,12 @@ class TestResultsToIssueDicts:
 
     def test_converts_correctly(self, ct_ref: CTReference) -> None:
         """Dicts have correct keys and values."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("STUDYID"),  # duplicate
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("STUDYID"),  # duplicate
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         pp002 = [r for r in results if r.rule_id == "ASTR-PP002"]
@@ -407,23 +439,30 @@ class TestPredictAndPreventIntegration:
 
     def test_clean_spec_minimal_issues(self, ct_ref: CTReference) -> None:
         """A well-formed spec has only NOTICE-level issues (origin, method)."""
-        spec = _make_spec(mappings=[
-            _make_mapping(
-                "STUDYID", pattern=MappingPattern.ASSIGN,
-                source_variable=None, assigned_value="TEST-001",
-            ),
-            _make_mapping(
-                "DOMAIN", pattern=MappingPattern.ASSIGN,
-                source_variable=None, assigned_value="AE",
-            ),
-            _make_mapping("USUBJID"),
-            _make_mapping(
-                "AESEQ", pattern=MappingPattern.DERIVATION,
-                computational_method="Sequence by USUBJID",
-            ),
-            _make_mapping("AETERM"),
-            _make_mapping("AEDECOD"),
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping(
+                    "STUDYID",
+                    pattern=MappingPattern.ASSIGN,
+                    source_variable=None,
+                    assigned_value="TEST-001",
+                ),
+                _make_mapping(
+                    "DOMAIN",
+                    pattern=MappingPattern.ASSIGN,
+                    source_variable=None,
+                    assigned_value="AE",
+                ),
+                _make_mapping("USUBJID"),
+                _make_mapping(
+                    "AESEQ",
+                    pattern=MappingPattern.DERIVATION,
+                    computational_method="Sequence by USUBJID",
+                ),
+                _make_mapping("AETERM"),
+                _make_mapping("AEDECOD"),
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
         errors = [r for r in results if r.severity == RuleSeverity.ERROR]
@@ -431,12 +470,14 @@ class TestPredictAndPreventIntegration:
 
     def test_multiple_issues_combined(self, ct_ref: CTReference) -> None:
         """Multiple issue types detected in single run."""
-        spec = _make_spec(mappings=[
-            _make_mapping("STUDYID"),
-            _make_mapping("STUDYID"),  # duplicate
-            _make_mapping("AEUNKNOWN", origin=None),  # unknown var + no origin
-            # missing DOMAIN, USUBJID, AESEQ, AETERM, AEDECOD
-        ])
+        spec = _make_spec(
+            mappings=[
+                _make_mapping("STUDYID"),
+                _make_mapping("STUDYID"),  # duplicate
+                _make_mapping("AEUNKNOWN", origin=None),  # unknown var + no origin
+                # missing DOMAIN, USUBJID, AESEQ, AETERM, AEDECOD
+            ]
+        )
         domain_spec = _make_domain_spec()
         results = predict_and_prevent(spec, domain_spec, ct_ref)
 

@@ -38,9 +38,7 @@ def match_form_to_datasets(
 
     for profile in profiles:
         # Get clinical (non-EDC) variable names, uppercased
-        clinical_vars = {
-            vp.name.upper() for vp in profile.variables if not vp.is_edc_column
-        }
+        clinical_vars = {vp.name.upper() for vp in profile.variables if not vp.is_edc_column}
         overlap = len(form_fields & clinical_vars)
         score = overlap / len(form_fields)
         if score > 0.0:
@@ -115,8 +113,4 @@ def get_unmatched_forms(
     Returns:
         Form names that matched no datasets.
     """
-    return sorted(
-        form_name
-        for form_name, matches in form_matches.items()
-        if len(matches) == 0
-    )
+    return sorted(form_name for form_name, matches in form_matches.items() if len(matches) == 0)

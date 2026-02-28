@@ -137,9 +137,7 @@ class DatasetExecutor:
                 m for m in spec.variable_mappings if m.mapping_pattern in pattern_group
             ]
             for mapping in group_mappings:
-                self._apply_mapping(
-                    mapping, merged_df, result_df, mapped_vars, handler_kwargs
-                )
+                self._apply_mapping(mapping, merged_df, result_df, mapped_vars, handler_kwargs)
 
         # Step c: Derive --DY variables
         if cross_domain and cross_domain.rfstdtc_lookup:
@@ -276,9 +274,7 @@ class DatasetExecutor:
             domain_subjects = set(domain_df["USUBJID"].dropna().unique())
             orphans = domain_subjects - dm_subjects
             for orphan in sorted(orphans):
-                errors.append(
-                    f"USUBJID '{orphan}' in {domain_name} not found in DM"
-                )
+                errors.append(f"USUBJID '{orphan}' in {domain_name} not found in DM")
 
         return errors
 
@@ -317,9 +313,7 @@ class DatasetExecutor:
             mapped_vars.add(mapping.sdtm_variable)
         except Exception as exc:
             if mapping.sdtm_variable in _CRITICAL_VARIABLES:
-                msg = (
-                    f"Critical variable {mapping.sdtm_variable} failed: {exc}"
-                )
+                msg = f"Critical variable {mapping.sdtm_variable} failed: {exc}"
                 raise ExecutionError(msg) from exc
 
             logger.warning(
@@ -340,9 +334,7 @@ class DatasetExecutor:
         """Derive --DY columns from --DTC columns using cross-domain RFSTDTC."""
         # Get the set of --DY variables defined in the spec
         dy_vars = {
-            m.sdtm_variable
-            for m in spec.variable_mappings
-            if m.sdtm_variable.endswith("DY")
+            m.sdtm_variable for m in spec.variable_mappings if m.sdtm_variable.endswith("DY")
         }
 
         if not dy_vars:
@@ -360,9 +352,7 @@ class DatasetExecutor:
                             rfstdtc_lookup=cross_domain.rfstdtc_lookup,
                         )
                     except Exception as exc:
-                        logger.warning(
-                            "Failed to derive {}: {}", dy_name, exc
-                        )
+                        logger.warning("Failed to derive {}: {}", dy_name, exc)
 
     def _assign_epoch(
         self,
@@ -372,9 +362,7 @@ class DatasetExecutor:
     ) -> None:
         """Assign EPOCH from SE domain data."""
         # Check if EPOCH is in the spec
-        has_epoch = any(
-            m.sdtm_variable == "EPOCH" for m in spec.variable_mappings
-        )
+        has_epoch = any(m.sdtm_variable == "EPOCH" for m in spec.variable_mappings)
         if not has_epoch:
             return
 
@@ -428,9 +416,7 @@ class DatasetExecutor:
         seq_var = f"{domain}SEQ"
 
         # Check if SEQ is in the spec
-        has_seq = any(
-            m.sdtm_variable == seq_var for m in spec.variable_mappings
-        )
+        has_seq = any(m.sdtm_variable == seq_var for m in spec.variable_mappings)
         if not has_seq:
             return
 
@@ -443,21 +429,17 @@ class DatasetExecutor:
             domain_spec = self.sdtm_ref.get_domain_spec(domain)
             if domain_spec and domain_spec.key_variables:
                 sort_keys = [
-                    k for k in domain_spec.key_variables
+                    k
+                    for k in domain_spec.key_variables
                     if k != "STUDYID" and k != "USUBJID" and k != seq_var
                 ]
 
         # Fallback: use date columns as sort keys
         if not sort_keys:
-            sort_keys = [
-                c for c in result_df.columns
-                if c.endswith("DTC") or c.endswith("STDTC")
-            ]
+            sort_keys = [c for c in result_df.columns if c.endswith("DTC") or c.endswith("STDTC")]
 
         try:
-            result_df[seq_var] = generate_seq(
-                result_df, domain, sort_keys
-            )
+            result_df[seq_var] = generate_seq(result_df, domain, sort_keys)
         except Exception as exc:
             logger.warning("Failed to generate {}: {}", seq_var, exc)
 
@@ -495,10 +477,7 @@ class DatasetExecutor:
         if self.sdtm_ref:
             domain_spec = self.sdtm_ref.get_domain_spec(spec.domain.upper())
             if domain_spec and domain_spec.key_variables:
-                sort_cols = [
-                    k for k in domain_spec.key_variables
-                    if k in result_df.columns
-                ]
+                sort_cols = [k for k in domain_spec.key_variables if k in result_df.columns]
 
         if not sort_cols:
             # Fallback: sort by STUDYID, USUBJID if available
@@ -507,8 +486,6 @@ class DatasetExecutor:
                     sort_cols.append(col)
 
         if sort_cols:
-            return result_df.sort_values(sort_cols, na_position="last").reset_index(
-                drop=True
-            )
+            return result_df.sort_values(sort_cols, na_position="last").reset_index(drop=True)
 
         return result_df

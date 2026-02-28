@@ -50,8 +50,7 @@ class TestProfileDataset:
         """Every variable should have n_total equal to the dataset row count."""
         for var in dm_profile.variables:
             assert var.n_total == dm_profile.row_count, (
-                f"Variable {var.name} has n_total={var.n_total}, "
-                f"expected {dm_profile.row_count}"
+                f"Variable {var.name} has n_total={var.n_total}, expected {dm_profile.row_count}"
             )
 
     def test_missing_pct_in_range(self, dm_profile: DatasetProfile) -> None:
@@ -67,8 +66,7 @@ class TestProfileDataset:
             if var.n_total > 0:
                 expected_pct = round(var.n_missing / var.n_total * 100, 2)
                 assert abs(var.missing_pct - expected_pct) < 0.1, (
-                    f"Variable {var.name}: missing_pct={var.missing_pct} vs "
-                    f"expected={expected_pct}"
+                    f"Variable {var.name}: missing_pct={var.missing_pct} vs expected={expected_pct}"
                 )
 
 
@@ -85,9 +83,7 @@ class TestEDCColumnDetection:
         # These columns exist in every Fakedata/ dataset
         expected_edc = {"projectid", "project", "studyid", "environmentname"}
         found = expected_edc & edc_lower
-        assert len(found) >= 3, (
-            f"Expected at least 3 of {expected_edc} but found {found}"
-        )
+        assert len(found) >= 3, f"Expected at least 3 of {expected_edc} but found {found}"
 
     def test_clinical_columns_not_edc(self, dm_profile: DatasetProfile) -> None:
         """Clinical columns like SEX, AGE should NOT be flagged as EDC."""
@@ -112,7 +108,8 @@ class TestDateDetection:
     def test_datetime_format_detected(self, dm_profile: DatasetProfile) -> None:
         """SAS DATETIME columns should be detected with SAS_DATETIME format."""
         datetime_vars = [
-            v for v in dm_profile.variables
+            v
+            for v in dm_profile.variables
             if v.is_date and v.detected_date_format == "SAS_DATETIME"
         ]
         assert len(datetime_vars) > 0
@@ -120,8 +117,7 @@ class TestDateDetection:
     def test_ae_has_raw_string_dates(self, ae_profile: DatasetProfile) -> None:
         """AE dataset has _RAW date columns with 'DD Mon YYYY' format."""
         raw_date_vars = [
-            v for v in ae_profile.variables
-            if v.is_date and v.detected_date_format == "DD Mon YYYY"
+            v for v in ae_profile.variables if v.is_date and v.detected_date_format == "DD Mon YYYY"
         ]
         assert len(raw_date_vars) > 0, (
             "Expected at least one _RAW date column with 'DD Mon YYYY' format. "
@@ -131,7 +127,8 @@ class TestDateDetection:
     def test_ae_has_sas_datetime_columns(self, ae_profile: DatasetProfile) -> None:
         """AE dataset has SAS DATETIME columns (AESTDAT, AEENDAT, etc.)."""
         sas_dt_vars = [
-            v for v in ae_profile.variables
+            v
+            for v in ae_profile.variables
             if v.is_date and v.detected_date_format == "SAS_DATETIME"
         ]
         assert len(sas_dt_vars) > 0
@@ -175,13 +172,9 @@ class TestSampleAndTopValues:
 
     def test_sample_values_populated(self, dm_profile: DatasetProfile) -> None:
         """Variables with non-null data should have sample values."""
-        non_missing_vars = [
-            v for v in dm_profile.variables if v.n_missing < v.n_total
-        ]
+        non_missing_vars = [v for v in dm_profile.variables if v.n_missing < v.n_total]
         for var in non_missing_vars:
-            assert len(var.sample_values) > 0, (
-                f"Variable {var.name} has data but no sample values"
-            )
+            assert len(var.sample_values) > 0, f"Variable {var.name} has data but no sample values"
 
     def test_sample_values_max_ten(self, dm_profile: DatasetProfile) -> None:
         """Sample values should have at most 10 entries."""
@@ -191,8 +184,7 @@ class TestSampleAndTopValues:
     def test_top_values_for_low_cardinality(self, dm_profile: DatasetProfile) -> None:
         """Variables with few unique values should have top_values."""
         low_card = [
-            v for v in dm_profile.variables
-            if 1 <= v.n_unique <= 10 and v.n_missing < v.n_total
+            v for v in dm_profile.variables if 1 <= v.n_unique <= 10 and v.n_missing < v.n_total
         ]
         for var in low_card:
             assert len(var.top_values) > 0, (

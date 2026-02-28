@@ -275,8 +275,7 @@ class TestCMMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in cm_mapping_result.variable_mappings}
         missing = REQUIRED_CM_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required CM variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required CM variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_cmtrt_has_source(self, cm_mapping_result: DomainMappingSpec) -> None:
@@ -314,25 +313,17 @@ class TestCMMappingEndToEnd:
 class TestCMCTValidation:
     """Validate controlled terminology references in CM mapping output."""
 
-    def test_route_references_codelist(
-        self, cm_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_route_references_codelist(self, cm_mapping_result: DomainMappingSpec) -> None:
         """CMROUTE mapping should reference codelist C66729 if present."""
-        cmroute = [
-            m for m in cm_mapping_result.variable_mappings if m.sdtm_variable == "CMROUTE"
-        ]
+        cmroute = [m for m in cm_mapping_result.variable_mappings if m.sdtm_variable == "CMROUTE"]
         if cmroute and cmroute[0].codelist_code is not None:
             assert cmroute[0].codelist_code == "C66729", (
                 f"CMROUTE codelist should be C66729, got {cmroute[0].codelist_code}"
             )
 
-    def test_frequency_references_codelist(
-        self, cm_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_frequency_references_codelist(self, cm_mapping_result: DomainMappingSpec) -> None:
         """CMDOSFRQ mapping should reference codelist C71113 if present."""
-        cmdosfrq = [
-            m for m in cm_mapping_result.variable_mappings if m.sdtm_variable == "CMDOSFRQ"
-        ]
+        cmdosfrq = [m for m in cm_mapping_result.variable_mappings if m.sdtm_variable == "CMDOSFRQ"]
         if cmdosfrq and cmdosfrq[0].codelist_code is not None:
             assert cmdosfrq[0].codelist_code == "C71113", (
                 f"CMDOSFRQ codelist should be C71113, got {cmdosfrq[0].codelist_code}"

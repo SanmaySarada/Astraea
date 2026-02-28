@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -16,8 +15,7 @@ except ImportError:
 
 pytestmark = pytest.mark.skipif(not HAS_DSPY, reason="dspy not installed")
 
-
-from astraea.learning.dspy_optimizer import (
+from astraea.learning.dspy_optimizer import (  # noqa: E402
     SDTMMapperModule,
     _extract_pattern,
     _extract_variable_name,
@@ -25,7 +23,7 @@ from astraea.learning.dspy_optimizer import (
     load_compiled_program,
     mapping_accuracy_metric,
 )
-from astraea.learning.models import MappingExample
+from astraea.learning.models import MappingExample  # noqa: E402
 
 
 def _make_example(
@@ -82,7 +80,7 @@ class TestBuildTrainset:
         assert isinstance(result[0], dspy.Example)
 
     def test_example_has_correct_fields(self, tmp_path: Path) -> None:
-        """Each dspy.Example should have domain_spec, source_profile, ecrf_context, variable_mapping."""
+        """Each Example has domain_spec, source_profile, ecrf_context, variable_mapping."""
         from astraea.learning.example_store import ExampleStore
 
         store = ExampleStore(tmp_path / "test.db")
@@ -121,9 +119,7 @@ class TestMappingAccuracyMetric:
 
     def test_returns_true_on_exact_match(self) -> None:
         """Should return True when variable and pattern match."""
-        example = dspy.Example(
-            variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry"
-        )
+        example = dspy.Example(variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry")
         prediction = dspy.Prediction(
             variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry"
         )
@@ -131,9 +127,7 @@ class TestMappingAccuracyMetric:
 
     def test_returns_true_on_case_insensitive_match(self) -> None:
         """Should match case-insensitively."""
-        example = dspy.Example(
-            variable_mapping="AETERM -> DIRECT from AETERM. Logic: Direct carry"
-        )
+        example = dspy.Example(variable_mapping="AETERM -> DIRECT from AETERM. Logic: Direct carry")
         prediction = dspy.Prediction(
             variable_mapping="aeterm -> direct from aeterm. Logic: Direct carry"
         )
@@ -141,9 +135,7 @@ class TestMappingAccuracyMetric:
 
     def test_returns_false_on_variable_mismatch(self) -> None:
         """Should return False when variable names differ."""
-        example = dspy.Example(
-            variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry"
-        )
+        example = dspy.Example(variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry")
         prediction = dspy.Prediction(
             variable_mapping="AEDECOD -> direct from AETERM. Logic: Direct carry"
         )
@@ -151,9 +143,7 @@ class TestMappingAccuracyMetric:
 
     def test_returns_false_on_pattern_mismatch(self) -> None:
         """Should return False when patterns differ."""
-        example = dspy.Example(
-            variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry"
-        )
+        example = dspy.Example(variable_mapping="AETERM -> direct from AETERM. Logic: Direct carry")
         prediction = dspy.Prediction(
             variable_mapping="AETERM -> derive from AETERM. Logic: Derivation"
         )

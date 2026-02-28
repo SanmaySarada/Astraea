@@ -21,7 +21,7 @@ from astraea.models.sdtm import CoreDesignation
 from astraea.reference import load_ct_reference, load_sdtm_reference
 from astraea.validation.engine import ValidationEngine
 from astraea.validation.report import ValidationReport
-from astraea.validation.rules.base import RuleCategory, RuleSeverity
+from astraea.validation.rules.base import RuleSeverity
 from astraea.validation.rules.consistency import CrossDomainValidator
 from astraea.validation.rules.fda_trc import TRCPreCheck
 
@@ -64,39 +64,62 @@ def _make_dm_spec() -> DomainMappingSpec:
     """Create DM spec with standard variables."""
     mappings = [
         _mapping(
-            var="STUDYID", label="Study Identifier",
-            pattern=MappingPattern.ASSIGN, assigned="TEST-001", order=1,
+            var="STUDYID",
+            label="Study Identifier",
+            pattern=MappingPattern.ASSIGN,
+            assigned="TEST-001",
+            order=1,
         ),
         _mapping(
-            var="DOMAIN", label="Domain Abbreviation",
-            pattern=MappingPattern.ASSIGN, assigned="DM", order=2,
+            var="DOMAIN",
+            label="Domain Abbreviation",
+            pattern=MappingPattern.ASSIGN,
+            assigned="DM",
+            order=2,
         ),
         _mapping(
-            var="USUBJID", label="Unique Subject Identifier",
-            pattern=MappingPattern.DERIVATION, source="SUBJID", order=3,
+            var="USUBJID",
+            label="Unique Subject Identifier",
+            pattern=MappingPattern.DERIVATION,
+            source="SUBJID",
+            order=3,
             origin=VariableOrigin.DERIVED,
             computational_method="STUDYID || '-' || SITEID || '-' || SUBJID",
         ),
         _mapping(
-            var="SUBJID", label="Subject Identifier for the Study",
-            source="SUBJID", order=4,
+            var="SUBJID",
+            label="Subject Identifier for the Study",
+            source="SUBJID",
+            order=4,
         ),
         _mapping(
-            var="RFSTDTC", label="Subject Reference Start Date/Time",
-            source="RFSTDTC", order=5, core=CoreDesignation.EXP,
+            var="RFSTDTC",
+            label="Subject Reference Start Date/Time",
+            source="RFSTDTC",
+            order=5,
+            core=CoreDesignation.EXP,
         ),
         _mapping(
-            var="SITEID", label="Study Site Identifier",
-            source="SITEID", order=6, core=CoreDesignation.REQ,
+            var="SITEID",
+            label="Study Site Identifier",
+            source="SITEID",
+            order=6,
+            core=CoreDesignation.REQ,
         ),
         _mapping(
-            var="SEX", label="Sex",
-            source="SEX", order=7, core=CoreDesignation.REQ,
+            var="SEX",
+            label="Sex",
+            source="SEX",
+            order=7,
+            core=CoreDesignation.REQ,
             codelist="C66731",
         ),
         _mapping(
-            var="ETHNIC", label="Ethnicity",
-            source="ETHNIC", order=8, core=CoreDesignation.EXP,
+            var="ETHNIC",
+            label="Ethnicity",
+            source="ETHNIC",
+            order=8,
+            core=CoreDesignation.EXP,
             codelist="C66790",
         ),
     ]
@@ -123,29 +146,45 @@ def _make_ae_spec() -> DomainMappingSpec:
     """Create AE spec -- intentionally missing AEDECOD (Required)."""
     mappings = [
         _mapping(
-            var="STUDYID", label="Study Identifier",
-            pattern=MappingPattern.ASSIGN, assigned="TEST-001", order=1,
+            var="STUDYID",
+            label="Study Identifier",
+            pattern=MappingPattern.ASSIGN,
+            assigned="TEST-001",
+            order=1,
         ),
         _mapping(
-            var="DOMAIN", label="Domain Abbreviation",
-            pattern=MappingPattern.ASSIGN, assigned="AE", order=2,
+            var="DOMAIN",
+            label="Domain Abbreviation",
+            pattern=MappingPattern.ASSIGN,
+            assigned="AE",
+            order=2,
         ),
         _mapping(
-            var="USUBJID", label="Unique Subject Identifier",
-            source="SUBJID", order=3,
+            var="USUBJID",
+            label="Unique Subject Identifier",
+            source="SUBJID",
+            order=3,
         ),
         _mapping(
-            var="AESEQ", label="Sequence Number", dtype="Num",
-            source="AESEQ", order=4,
+            var="AESEQ",
+            label="Sequence Number",
+            dtype="Num",
+            source="AESEQ",
+            order=4,
         ),
         _mapping(
-            var="AETERM", label="Reported Term for the Adverse Event",
-            source="AETERM", order=5,
+            var="AETERM",
+            label="Reported Term for the Adverse Event",
+            source="AETERM",
+            order=5,
         ),
         # AEDECOD intentionally MISSING (Required variable)
         _mapping(
-            var="AESTDTC", label="Start Date/Time of Adverse Event",
-            source="AESTDTC", order=6, core=CoreDesignation.EXP,
+            var="AESTDTC",
+            label="Start Date/Time of Adverse Event",
+            source="AESTDTC",
+            order=6,
+            core=CoreDesignation.EXP,
         ),
     ]
     return DomainMappingSpec(
@@ -171,40 +210,64 @@ def _make_lb_spec() -> DomainMappingSpec:
     """Create LB spec for findings domain."""
     mappings = [
         _mapping(
-            var="STUDYID", label="Study Identifier",
-            pattern=MappingPattern.ASSIGN, assigned="TEST-001", order=1,
+            var="STUDYID",
+            label="Study Identifier",
+            pattern=MappingPattern.ASSIGN,
+            assigned="TEST-001",
+            order=1,
         ),
         _mapping(
-            var="DOMAIN", label="Domain Abbreviation",
-            pattern=MappingPattern.ASSIGN, assigned="LB", order=2,
+            var="DOMAIN",
+            label="Domain Abbreviation",
+            pattern=MappingPattern.ASSIGN,
+            assigned="LB",
+            order=2,
         ),
         _mapping(
-            var="USUBJID", label="Unique Subject Identifier",
-            source="SUBJID", order=3,
+            var="USUBJID",
+            label="Unique Subject Identifier",
+            source="SUBJID",
+            order=3,
         ),
         _mapping(
-            var="LBSEQ", label="Sequence Number", dtype="Num",
-            source="LBSEQ", order=4,
+            var="LBSEQ",
+            label="Sequence Number",
+            dtype="Num",
+            source="LBSEQ",
+            order=4,
         ),
         _mapping(
-            var="LBTESTCD", label="Lab Test or Examination Short Name",
-            source="LBTESTCD", order=5,
+            var="LBTESTCD",
+            label="Lab Test or Examination Short Name",
+            source="LBTESTCD",
+            order=5,
         ),
         _mapping(
-            var="LBTEST", label="Lab Test or Examination Name",
-            source="LBTEST", order=6,
+            var="LBTEST",
+            label="Lab Test or Examination Name",
+            source="LBTEST",
+            order=6,
         ),
         _mapping(
-            var="LBORRES", label="Result or Finding in Original Units",
-            source="LBORRES", order=7, core=CoreDesignation.EXP,
+            var="LBORRES",
+            label="Result or Finding in Original Units",
+            source="LBORRES",
+            order=7,
+            core=CoreDesignation.EXP,
         ),
         _mapping(
-            var="LBSTRESC", label="Character Result/Finding in Std Format",
-            source="LBSTRESC", order=8, core=CoreDesignation.EXP,
+            var="LBSTRESC",
+            label="Character Result/Finding in Std Format",
+            source="LBSTRESC",
+            order=8,
+            core=CoreDesignation.EXP,
         ),
         _mapping(
-            var="LBSPEC", label="Specimen Type",
-            source="LBSPEC", order=9, core=CoreDesignation.EXP,
+            var="LBSPEC",
+            label="Specimen Type",
+            source="LBSPEC",
+            order=9,
+            core=CoreDesignation.EXP,
             codelist="C78734",  # Specimen Type codelist
         ),
     ]
@@ -229,46 +292,52 @@ def _make_lb_spec() -> DomainMappingSpec:
 
 def _make_dm_df() -> pd.DataFrame:
     """Create DM DataFrame with 3 subjects."""
-    return pd.DataFrame({
-        "STUDYID": ["TEST-001", "TEST-001", "TEST-001"],
-        "DOMAIN": ["DM", "DM", "DM"],
-        "USUBJID": ["TEST-001-001-001", "TEST-001-001-002", "TEST-001-001-003"],
-        "SUBJID": ["001", "002", "003"],
-        "RFSTDTC": ["2022-01-15", "2022-02-01", "2022-03-10"],
-        "SITEID": ["001", "001", "001"],
-        "SEX": ["M", "F", "M"],
-        # ETHNIC has intentionally invalid value for C66790
-        "ETHNIC": ["HISPANIC OR LATINO", "NOT HISPANIC OR LATINO", "INVALID_ETHNIC"],
-    })
+    return pd.DataFrame(
+        {
+            "STUDYID": ["TEST-001", "TEST-001", "TEST-001"],
+            "DOMAIN": ["DM", "DM", "DM"],
+            "USUBJID": ["TEST-001-001-001", "TEST-001-001-002", "TEST-001-001-003"],
+            "SUBJID": ["001", "002", "003"],
+            "RFSTDTC": ["2022-01-15", "2022-02-01", "2022-03-10"],
+            "SITEID": ["001", "001", "001"],
+            "SEX": ["M", "F", "M"],
+            # ETHNIC has intentionally invalid value for C66790
+            "ETHNIC": ["HISPANIC OR LATINO", "NOT HISPANIC OR LATINO", "INVALID_ETHNIC"],
+        }
+    )
 
 
 def _make_ae_df() -> pd.DataFrame:
     """Create AE DataFrame -- includes a USUBJID orphan not in DM."""
-    return pd.DataFrame({
-        "STUDYID": ["TEST-001", "TEST-001", "TEST-001"],
-        "DOMAIN": ["AE", "AE", "AE"],
-        # Third USUBJID is NOT in DM (orphan)
-        "USUBJID": ["TEST-001-001-001", "TEST-001-001-002", "TEST-001-001-999"],
-        "AESEQ": [1, 1, 1],
-        "AETERM": ["Headache", "Nausea", "Fatigue"],
-        "AESTDTC": ["2022-02-01", "2022-03-15", "2022-04-01"],
-    })
+    return pd.DataFrame(
+        {
+            "STUDYID": ["TEST-001", "TEST-001", "TEST-001"],
+            "DOMAIN": ["AE", "AE", "AE"],
+            # Third USUBJID is NOT in DM (orphan)
+            "USUBJID": ["TEST-001-001-001", "TEST-001-001-002", "TEST-001-001-999"],
+            "AESEQ": [1, 1, 1],
+            "AETERM": ["Headache", "Nausea", "Fatigue"],
+            "AESTDTC": ["2022-02-01", "2022-03-15", "2022-04-01"],
+        }
+    )
 
 
 def _make_lb_df() -> pd.DataFrame:
     """Create LB DataFrame with invalid CT values."""
-    return pd.DataFrame({
-        "STUDYID": ["TEST-001", "TEST-001"],
-        "DOMAIN": ["LB", "LB"],
-        "USUBJID": ["TEST-001-001-001", "TEST-001-001-002"],
-        "LBSEQ": [1, 1],
-        "LBTESTCD": ["ALB", "ALT"],
-        "LBTEST": ["Albumin", "Alanine Aminotransferase"],
-        "LBORRES": ["4.2", "25"],
-        "LBSTRESC": ["4.2", "25"],
-        # Invalid specimen type -- not in the CT codelist
-        "LBSPEC": ["BLOOD", "TOTALLY_INVALID_SPECIMEN"],
-    })
+    return pd.DataFrame(
+        {
+            "STUDYID": ["TEST-001", "TEST-001"],
+            "DOMAIN": ["LB", "LB"],
+            "USUBJID": ["TEST-001-001-001", "TEST-001-001-002"],
+            "LBSEQ": [1, 1],
+            "LBTESTCD": ["ALB", "ALT"],
+            "LBTEST": ["Albumin", "Alanine Aminotransferase"],
+            "LBORRES": ["4.2", "25"],
+            "LBSTRESC": ["4.2", "25"],
+            # Invalid specimen type -- not in the CT codelist
+            "LBSPEC": ["BLOOD", "TOTALLY_INVALID_SPECIMEN"],
+        }
+    )
 
 
 @pytest.fixture
@@ -300,7 +369,7 @@ class TestFullValidationPipeline:
         # Should have findings from multiple categories
         assert len(results) > 0
 
-        rule_ids = {r.rule_id for r in results}
+        _rule_ids = {r.rule_id for r in results}
         severities = {r.severity for r in results}
 
         # Should include at least one error (cross-domain or presence)
@@ -319,10 +388,7 @@ class TestFullValidationPipeline:
         results = validator.validate(domain_dfs, domain_specs)
 
         # Should find the AE orphan USUBJID
-        orphan_results = [
-            r for r in results
-            if "ASTR-C001" in r.rule_id
-        ]
+        orphan_results = [r for r in results if "ASTR-C001" in r.rule_id]
         assert len(orphan_results) > 0
         # Orphan is in AE domain
         ae_orphans = [r for r in orphan_results if r.domain == "AE"]
@@ -331,18 +397,22 @@ class TestFullValidationPipeline:
     def test_trc_precheck_pass(self, tmp_path):
         """TRCPreCheck passes when DM, TS, and define.xml are present."""
         # Create DM DataFrame
-        dm_df = pd.DataFrame({
-            "STUDYID": ["TEST-001"],
-            "DOMAIN": ["DM"],
-            "USUBJID": ["TEST-001-001-001"],
-        })
+        dm_df = pd.DataFrame(
+            {
+                "STUDYID": ["TEST-001"],
+                "DOMAIN": ["DM"],
+                "USUBJID": ["TEST-001-001-001"],
+            }
+        )
         # Create TS DataFrame with SSTDTC
-        ts_df = pd.DataFrame({
-            "STUDYID": ["TEST-001"],
-            "DOMAIN": ["TS"],
-            "TSPARMCD": ["SSTDTC"],
-            "TSVAL": ["2022-01-01"],
-        })
+        ts_df = pd.DataFrame(
+            {
+                "STUDYID": ["TEST-001"],
+                "DOMAIN": ["TS"],
+                "TSPARMCD": ["SSTDTC"],
+                "TSVAL": ["2022-01-01"],
+            }
+        )
 
         # Create define.xml (empty but present)
         (tmp_path / "define.xml").write_text("<ODM/>")

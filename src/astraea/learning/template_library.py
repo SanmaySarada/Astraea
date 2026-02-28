@@ -31,9 +31,7 @@ class VariablePattern(BaseModel):
     keywords tend to appear, and what issues have been found during reviews.
     """
 
-    sdtm_variable: str = Field(
-        ..., description="SDTM variable name (e.g., 'AETERM', 'USUBJID')"
-    )
+    sdtm_variable: str = Field(..., description="SDTM variable name (e.g., 'AETERM', 'USUBJID')")
     typical_pattern: str = Field(
         ..., description="Most common mapping pattern for this variable across studies"
     )
@@ -64,9 +62,7 @@ class DomainTemplate(BaseModel):
         default_factory=lambda: uuid.uuid4().hex,
         description="Unique template identifier",
     )
-    domain: str = Field(
-        ..., description="SDTM domain code (e.g., 'AE', 'DM')"
-    )
+    domain: str = Field(..., description="SDTM domain code (e.g., 'AE', 'DM')")
     domain_class: str = Field(
         ...,
         description="Domain class (Events, Interventions, Findings, Special Purpose)",
@@ -111,10 +107,30 @@ def _extract_keywords(text: str) -> list[str]:
     Returns:
         Deduplicated list of lowercase keyword strings.
     """
-    stop_words = frozenset({
-        "the", "a", "an", "is", "in", "to", "of", "for", "and", "or",
-        "from", "with", "on", "at", "by", "as", "if", "be", "no", "not",
-    })
+    stop_words = frozenset(
+        {
+            "the",
+            "a",
+            "an",
+            "is",
+            "in",
+            "to",
+            "of",
+            "for",
+            "and",
+            "or",
+            "from",
+            "with",
+            "on",
+            "at",
+            "by",
+            "as",
+            "if",
+            "be",
+            "no",
+            "not",
+        }
+    )
     tokens = re.split(r"[_\s\.\-,;:()\"'/]+", text.lower())
     keywords = [t for t in tokens if len(t) >= 2 and t not in stop_words]
     # Deduplicate preserving order
@@ -226,9 +242,7 @@ class TemplateLibrary:
 
             # Get derivation template from the most common derivation rule
             derivation_template = None
-            derivation_rules = [
-                m.derivation_rule for m in mappings if m.derivation_rule
-            ]
+            derivation_rules = [m.derivation_rule for m in mappings if m.derivation_rule]
             if derivation_rules:
                 rule_counts = Counter(derivation_rules)
                 derivation_template = rule_counts.most_common(1)[0][0]
@@ -255,9 +269,7 @@ class TemplateLibrary:
         if metrics:
             domain_metrics = [m for m in metrics if m.domain == domain]
             if domain_metrics:
-                accuracy_rate = sum(
-                    m.accuracy_rate for m in domain_metrics
-                ) / len(domain_metrics)
+                accuracy_rate = sum(m.accuracy_rate for m in domain_metrics) / len(domain_metrics)
 
         now = datetime.now(tz=UTC).isoformat()
         return DomainTemplate(
@@ -291,9 +303,7 @@ class TemplateLibrary:
                 template.domain_class,
                 json.dumps(template.source_study_ids),
                 json.dumps(template.pattern_distribution),
-                json.dumps(
-                    [vp.model_dump() for vp in template.variable_patterns]
-                ),
+                json.dumps([vp.model_dump() for vp in template.variable_patterns]),
                 template.accuracy_rate,
                 template.created_at,
                 template.updated_at,
@@ -326,9 +336,7 @@ class TemplateLibrary:
         Returns:
             List of all DomainTemplate objects, ordered by domain.
         """
-        rows = self._conn.execute(
-            "SELECT * FROM domain_templates ORDER BY domain"
-        ).fetchall()
+        rows = self._conn.execute("SELECT * FROM domain_templates ORDER BY domain").fetchall()
 
         return [self._row_to_template(row) for row in rows]
 
@@ -376,9 +384,7 @@ class TemplateLibrary:
             pattern_dist[pattern_key] = pattern_dist.get(pattern_key, 0) + 1
 
         # Merge variable patterns
-        existing_patterns = {
-            vp.sdtm_variable: vp for vp in existing.variable_patterns
-        }
+        existing_patterns = {vp.sdtm_variable: vp for vp in existing.variable_patterns}
         for vm in new_spec.variable_mappings:
             keywords: list[str] = []
             if vm.source_variable:
@@ -430,9 +436,8 @@ class TemplateLibrary:
         prev_weight = len(existing.source_study_ids)
         if new_metrics:
             new_accuracy = new_metrics.accuracy_rate
-            accuracy_rate = (
-                (existing.accuracy_rate * prev_weight + new_accuracy)
-                / (prev_weight + 1)
+            accuracy_rate = (existing.accuracy_rate * prev_weight + new_accuracy) / (
+                prev_weight + 1
             )
         else:
             accuracy_rate = existing.accuracy_rate
@@ -473,8 +478,7 @@ class TemplateLibrary:
             source_study_ids=json.loads(row["source_study_ids_json"]),
             pattern_distribution=json.loads(row["pattern_distribution_json"]),
             variable_patterns=[
-                VariablePattern(**vp)
-                for vp in json.loads(row["variable_patterns_json"])
+                VariablePattern(**vp) for vp in json.loads(row["variable_patterns_json"])
             ],
             accuracy_rate=row["accuracy_rate"],
             created_at=row["created_at"],

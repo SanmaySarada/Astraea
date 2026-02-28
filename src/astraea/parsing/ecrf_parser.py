@@ -186,11 +186,13 @@ def parse_ecrf(
                 error=str(e),
             )
             # Create empty form placeholder so we know it was attempted
-            forms.append(ECRFForm(
-                form_name=form_name,
-                fields=[],
-                page_numbers=page_numbers,
-            ))
+            forms.append(
+                ECRFForm(
+                    form_name=form_name,
+                    fields=[],
+                    page_numbers=page_numbers,
+                )
+            )
 
     result = ECRFExtractionResult(
         forms=forms,

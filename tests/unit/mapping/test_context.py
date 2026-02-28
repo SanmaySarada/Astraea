@@ -320,9 +320,7 @@ class TestGetRelevantCodelists:
         codelists = _get_relevant_codelists(dm_spec, ct_ref)
         # Should only include codelists referenced by DM variables
         # Every returned codelist code must be referenced by at least one DM variable
-        dm_codelist_codes = {
-            v.codelist_code for v in dm_spec.variables if v.codelist_code
-        }
+        dm_codelist_codes = {v.codelist_code for v in dm_spec.variables if v.codelist_code}
         for code in codelists:
             assert code in dm_codelist_codes
 
@@ -385,9 +383,7 @@ class TestBuildPromptOutputSize:
             study_metadata=study_metadata,
         )
         size_bytes = len(output.encode("utf-8"))
-        assert size_bytes < 20480, (
-            f"Context output is {size_bytes} bytes, exceeds 20KB limit"
-        )
+        assert size_bytes < 20480, f"Context output is {size_bytes} bytes, exceeds 20KB limit"
 
 
 class TestBuildPromptUnknownDomain:

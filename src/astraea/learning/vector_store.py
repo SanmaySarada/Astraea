@@ -42,9 +42,7 @@ class LearningVectorStore:
         )
         self._corrections = self._client.get_or_create_collection(
             name="corrections",
-            metadata={
-                "description": "Human corrections with original and corrected mapping"
-            },
+            metadata={"description": "Human corrections with original and corrected mapping"},
         )
 
     def add_example(self, example: MappingExample) -> None:
@@ -145,11 +143,13 @@ class LearningVectorStore:
         output = []
         if results["documents"] and results["documents"][0]:
             for i, doc in enumerate(results["documents"][0]):
-                output.append({
-                    "document": doc,
-                    "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
-                    "distance": results["distances"][0][i] if results["distances"] else 0.0,
-                })
+                output.append(
+                    {
+                        "document": doc,
+                        "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
+                        "distance": results["distances"][0][i] if results["distances"] else 0.0,
+                    }
+                )
         return output
 
     def query_similar_corrections(
@@ -188,11 +188,13 @@ class LearningVectorStore:
         output = []
         if results["documents"] and results["documents"][0]:
             for i, doc in enumerate(results["documents"][0]):
-                output.append({
-                    "document": doc,
-                    "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
-                    "distance": results["distances"][0][i] if results["distances"] else 0.0,
-                })
+                output.append(
+                    {
+                        "document": doc,
+                        "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
+                        "distance": results["distances"][0][i] if results["distances"] else 0.0,
+                    }
+                )
         return output
 
     def get_collection_counts(self) -> dict[str, int]:

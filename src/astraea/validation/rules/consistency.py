@@ -46,9 +46,7 @@ class CrossDomainValidator:
 
         return results
 
-    def _check_usubjid_consistency(
-        self, domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_usubjid_consistency(self, domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """ASTR-C001: All USUBJIDs in every domain must exist in DM.USUBJID.
 
         Severity: ERROR. P21 equivalent: SD0085.
@@ -111,15 +109,11 @@ class CrossDomainValidator:
                         p21_equivalent="SD0085",
                     )
                 )
-                logger.warning(
-                    "ASTR-C001: {} has {} orphan USUBJIDs", domain_code, len(orphans)
-                )
+                logger.warning("ASTR-C001: {} has {} orphan USUBJIDs", domain_code, len(orphans))
 
         return results
 
-    def _check_studyid_consistency(
-        self, domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_studyid_consistency(self, domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """ASTR-C002: STUDYID must have exactly one unique value across all domains.
 
         Severity: ERROR.
@@ -161,9 +155,7 @@ class CrossDomainValidator:
 
         return results
 
-    def _check_rfstdtc_consistency(
-        self, domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_rfstdtc_consistency(self, domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """ASTR-C003: RFSTDTC should equal earliest EXSTDTC per subject.
 
         If DM has RFSTDTC and EX has EXSTDTC, verify consistency.
@@ -256,20 +248,14 @@ class CrossDomainValidator:
                             f"{domain_code} DOMAIN column contains unexpected values: "
                             f"{sorted(unexpected)}"
                         ),
-                        affected_count=sum(
-                            1
-                            for v in df["DOMAIN"].dropna()
-                            if v != domain_code
-                        ),
+                        affected_count=sum(1 for v in df["DOMAIN"].dropna() if v != domain_code),
                         fix_suggestion=f"Set all DOMAIN values to '{domain_code}'",
                     )
                 )
 
         return results
 
-    def _check_studyday_consistency(
-        self, domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_studyday_consistency(self, domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """ASTR-C005: Study day signs must be consistent with RFSTDTC.
 
         If --DY columns exist, positive values should be on/after RFSTDTC,
@@ -329,9 +315,7 @@ class CrossDomainValidator:
 
                     # Positive DY should be on/after RFSTDTC;
                     # Negative DY should be before RFSTDTC
-                    if (dy_num > 0 and dtc_date < rfstdtc) or (
-                        dy_num < 0 and dtc_date > rfstdtc
-                    ):
+                    if (dy_num > 0 and dtc_date < rfstdtc) or (dy_num < 0 and dtc_date > rfstdtc):
                         inconsistent_count += 1
 
                 if inconsistent_count > 0:

@@ -204,8 +204,7 @@ class TestIEMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ie_mapping_result.variable_mappings}
         missing = REQUIRED_IE_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required IE variables: {missing}. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Missing required IE variables: {missing}. Mapped variables: {sorted(mapped_vars)}"
         )
 
     def test_findings_class(self, ie_mapping_result: DomainMappingSpec) -> None:
@@ -228,8 +227,7 @@ class TestIEMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ie_mapping_result.variable_mappings}
         has_result = "IEORRES" in mapped_vars or "IESTRESC" in mapped_vars
         assert has_result, (
-            f"Neither IEORRES nor IESTRESC found. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Neither IEORRES nor IESTRESC found. Mapped variables: {sorted(mapped_vars)}"
         )
 
 

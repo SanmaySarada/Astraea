@@ -117,7 +117,11 @@ class TestExtractFormFields:
         extract_form_fields(
             client=mock_client,
             form_name="Demographics",
-            form_text="Field Name Data Type SAS Label Units Values Include Field OID -- enough text to pass minimum",
+            form_text=(
+                "Field Name Data Type SAS Label Units"
+                " Values Include Field OID"
+                " -- enough text to pass minimum"
+            ),
             page_numbers=[5],
         )
         mock_client.parse.assert_called_once()
@@ -156,9 +160,7 @@ class TestExtractFormFields:
 
 
 class TestParseECRF:
-    def test_orchestrator_skips_header(
-        self, mock_client: MagicMock, tmp_path: Path
-    ) -> None:
+    def test_orchestrator_skips_header(self, mock_client: MagicMock, tmp_path: Path) -> None:
         """parse_ecrf should skip HEADER and UNKNOWN groups."""
         # Create a tiny fake PDF that pymupdf4llm can process
         # Instead, mock the two deterministic functions
@@ -168,7 +170,9 @@ class TestParseECRF:
         ]
         mock_forms = {
             "HEADER": [(1, "Cover page")],
-            "Demographics": [(2, "Form: Demographics\nField table data here with enough text to pass minimum")],
+            "Demographics": [
+                (2, "Form: Demographics\nField table data here with enough text to pass minimum")
+            ],
         }
 
         with (
@@ -181,17 +185,32 @@ class TestParseECRF:
         assert result.forms[0].form_name == "Demographics"
 
     def test_orchestrator_concatenates_pages(
-        self, mock_client: MagicMock,
+        self,
+        mock_client: MagicMock,
     ) -> None:
         """Multi-page forms should have their text concatenated."""
         mock_pages = [
-            {"text": "Form: AE\nPage 1 text with enough characters to pass the minimum length check"},
-            {"text": "Form: AE\nPage 2 text with enough characters to pass the minimum length check"},
+            {
+                "text": (
+                    "Form: AE\nPage 1 text with enough characters to pass the minimum length check"
+                )
+            },
+            {
+                "text": (
+                    "Form: AE\nPage 2 text with enough characters to pass the minimum length check"
+                )
+            },
         ]
         mock_forms = {
             "AE": [
-                (1, "Form: AE\nPage 1 text with enough characters to pass the minimum length check"),
-                (2, "Form: AE\nPage 2 text with enough characters to pass the minimum length check"),
+                (
+                    1,
+                    "Form: AE\nPage 1 text with enough characters to pass the minimum length check",
+                ),
+                (
+                    2,
+                    "Form: AE\nPage 2 text with enough characters to pass the minimum length check",
+                ),
             ],
         }
 
@@ -271,7 +290,10 @@ class TestParseECRF:
         with (
             patch("astraea.parsing.ecrf_parser.extract_ecrf_pages", return_value=[]),
             patch("astraea.parsing.ecrf_parser.group_pages_by_form", return_value=mock_forms),
-            patch("astraea.parsing.ecrf_parser.extract_form_fields", side_effect=_mock_extract_form_fields),
+            patch(
+                "astraea.parsing.ecrf_parser.extract_form_fields",
+                side_effect=_mock_extract_form_fields,
+            ),
         ):
             result = parse_ecrf(pdf_path="/fake/path.pdf", client=client)
 
@@ -289,11 +311,16 @@ class TestParseECRF:
         assert ae_form.page_numbers == [10]
 
     def test_pre_extracted_pages_skips_pdf_extraction(
-        self, mock_client: MagicMock,
+        self,
+        mock_client: MagicMock,
     ) -> None:
         """When pre_extracted_pages is provided, extract_ecrf_pages is not called."""
         pre_pages = [
-            {"text": "Form: Demographics\nField table data with enough text to pass minimum length"},
+            {
+                "text": (
+                    "Form: Demographics\nField table data with enough text to pass minimum length"
+                )
+            },
         ]
         mock_forms = {
             "Demographics": [

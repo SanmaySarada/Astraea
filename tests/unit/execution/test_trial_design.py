@@ -18,7 +18,6 @@ from astraea.models.trial_design import (
     VisitDef,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -39,9 +38,21 @@ def basic_config() -> TrialDesignConfig:
             ArmDef(armcd="PBO", arm="Placebo", taetord=3, etcd="FUP"),
         ],
         elements=[
-            ElementDef(etcd="SCRN", element="Screening", testrl="Informed consent", teenrl="Randomization", tedur="P28D"),
+            ElementDef(
+                etcd="SCRN",
+                element="Screening",
+                testrl="Informed consent",
+                teenrl="Randomization",
+                tedur="P28D",
+            ),
             ElementDef(etcd="TRT", element="Treatment", testrl="Randomization", teenrl="Last dose"),
-            ElementDef(etcd="FUP", element="Follow-up", testrl="Last dose", teenrl="End of study", tedur="P30D"),
+            ElementDef(
+                etcd="FUP",
+                element="Follow-up",
+                testrl="Last dose",
+                teenrl="End of study",
+                tedur="P30D",
+            ),
         ],
         visits=[
             VisitDef(visitnum=1.0, visit="Screening", visitdy=-28, armcd="DRUG"),
@@ -78,7 +89,17 @@ class TestBuildTA:
 
     def test_ta_columns(self, basic_config: TrialDesignConfig) -> None:
         ta = build_ta_domain(basic_config, STUDY_ID)
-        expected_cols = {"STUDYID", "DOMAIN", "ARMCD", "ARM", "TAETORD", "ETCD", "ELEMENT", "TABRSESS", "EPOCH"}
+        expected_cols = {
+            "STUDYID",
+            "DOMAIN",
+            "ARMCD",
+            "ARM",
+            "TAETORD",
+            "ETCD",
+            "ELEMENT",
+            "TABRSESS",
+            "EPOCH",
+        }
         assert expected_cols == set(ta.columns)
         assert (ta["DOMAIN"] == "TA").all()
         assert (ta["STUDYID"] == STUDY_ID).all()
@@ -159,7 +180,7 @@ class TestTrialDesignConfig:
         assert len(basic_config.inclusion_exclusion) == 5
 
     def test_config_rejects_empty_arms(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             TrialDesignConfig(
                 arms=[],
                 elements=[ElementDef(etcd="E1", element="Element 1")],
@@ -167,7 +188,7 @@ class TestTrialDesignConfig:
             )
 
     def test_config_rejects_empty_elements(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             TrialDesignConfig(
                 arms=[ArmDef(armcd="A", arm="Arm A", taetord=1, etcd="E1")],
                 elements=[],

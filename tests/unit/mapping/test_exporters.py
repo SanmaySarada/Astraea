@@ -292,9 +292,7 @@ class TestExportToExcel:
         assert summary["LOW Confidence"] == 1
         assert summary["Source Datasets"] == "dm.sas7bdat"
 
-    def test_export_to_excel_suppqual_label_dynamic_domain(
-        self, tmp_path: Path
-    ) -> None:
+    def test_export_to_excel_suppqual_label_dynamic_domain(self, tmp_path: Path) -> None:
         """SUPPQUAL candidate label uses dynamic domain name, not hardcoded 'DM'."""
         ae_spec = DomainMappingSpec(
             domain="AE",

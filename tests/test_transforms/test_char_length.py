@@ -25,11 +25,13 @@ class TestOptimizeCharLengths:
 
     def test_numeric_columns_excluded(self) -> None:
         """Numeric columns are not included in result."""
-        df = pd.DataFrame({
-            "num_int": [1, 2, 3],
-            "num_float": [1.0, 2.0, 3.0],
-            "text": ["abc", "defgh", "ij"],
-        })
+        df = pd.DataFrame(
+            {
+                "num_int": [1, 2, 3],
+                "num_float": [1.0, 2.0, 3.0],
+                "text": ["abc", "defgh", "ij"],
+            }
+        )
         widths = optimize_char_lengths(df)
         assert "num_int" not in widths
         assert "num_float" not in widths
@@ -43,11 +45,13 @@ class TestOptimizeCharLengths:
 
     def test_mixed_lengths(self) -> None:
         """Multiple columns return correct max per column."""
-        df = pd.DataFrame({
-            "short": ["a", "bb"],
-            "long": ["hello world", "hi"],
-            "medium": ["12345", "6789"],
-        })
+        df = pd.DataFrame(
+            {
+                "short": ["a", "bb"],
+                "long": ["hello world", "hi"],
+                "medium": ["12345", "6789"],
+            }
+        )
         widths = optimize_char_lengths(df)
         assert widths["short"] == 2
         assert widths["long"] == 11

@@ -20,9 +20,7 @@ class HeuristicScore(BaseModel):
     """
 
     domain: str = Field(..., description="SDTM domain code (e.g., 'AE', 'DM', 'LB')")
-    score: float = Field(
-        ..., ge=0.0, le=1.0, description="Heuristic confidence score (0.0 to 1.0)"
-    )
+    score: float = Field(..., ge=0.0, le=1.0, description="Heuristic confidence score (0.0 to 1.0)")
     signals: list[str] = Field(
         default_factory=list,
         description="What matched (e.g., 'filename exact match', 'variable AETERM found')",
@@ -48,9 +46,7 @@ class DomainClassification(BaseModel):
     confidence: float = Field(
         ..., ge=0.0, le=1.0, description="Classification confidence (0.0 to 1.0)"
     )
-    reasoning: str = Field(
-        default="", description="Explanation of the classification decision"
-    )
+    reasoning: str = Field(default="", description="Explanation of the classification decision")
     merge_candidates: list[str] = Field(
         default_factory=list,
         description="Other datasets that should merge with this one into the same domain",

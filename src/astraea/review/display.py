@@ -66,9 +66,7 @@ def display_review_table(
         f"[bold]Source:[/bold] {', '.join(spec.source_datasets)}",
         f"[bold]Timestamp:[/bold] {spec.mapping_timestamp}",
     ]
-    console.print(
-        Panel("\n".join(info_lines), title=f"Review: {spec.domain}")
-    )
+    console.print(Panel("\n".join(info_lines), title=f"Review: {spec.domain}"))
 
     # Variable mapping table
     table = Table(title=f"{spec.domain} Mappings", show_lines=True)
@@ -85,9 +83,7 @@ def display_review_table(
     for idx, m in enumerate(spec.variable_mappings, start=1):
         # Status from decisions
         decision = decisions.get(m.sdtm_variable)
-        status_text = _format_status(
-            decision.status if decision else None
-        )
+        status_text = _format_status(decision.status if decision else None)
 
         core_text = _format_core(m.core)
 
@@ -125,15 +121,9 @@ def display_review_table(
     console.print(table)
 
     # Summary counts
-    approved = sum(
-        1 for d in decisions.values() if d.status == ReviewStatus.APPROVED
-    )
-    corrected = sum(
-        1 for d in decisions.values() if d.status == ReviewStatus.CORRECTED
-    )
-    skipped = sum(
-        1 for d in decisions.values() if d.status == ReviewStatus.SKIPPED
-    )
+    approved = sum(1 for d in decisions.values() if d.status == ReviewStatus.APPROVED)
+    corrected = sum(1 for d in decisions.values() if d.status == ReviewStatus.CORRECTED)
+    skipped = sum(1 for d in decisions.values() if d.status == ReviewStatus.SKIPPED)
     pending = spec.total_variables - approved - corrected - skipped
 
     console.print(
@@ -145,9 +135,7 @@ def display_review_table(
     )
 
 
-def display_variable_detail(
-    mapping: VariableMapping, console: Console
-) -> None:
+def display_variable_detail(mapping: VariableMapping, console: Console) -> None:
     """Display full detail for a single variable mapping.
 
     Shows a panel with all mapping attributes including source,
@@ -167,9 +155,7 @@ def display_variable_detail(
     if mapping.mapping_pattern.value == "assign" and mapping.assigned_value:
         lines.append(f'[bold]Source:[/bold] Assigned: "{mapping.assigned_value}"')
     elif mapping.source_dataset and mapping.source_variable:
-        lines.append(
-            f"[bold]Source:[/bold] {mapping.source_dataset}.{mapping.source_variable}"
-        )
+        lines.append(f"[bold]Source:[/bold] {mapping.source_dataset}.{mapping.source_variable}")
     elif mapping.source_variable:
         lines.append(f"[bold]Source:[/bold] {mapping.source_variable}")
     else:
@@ -193,14 +179,10 @@ def display_variable_detail(
     if mapping.confidence_rationale:
         lines.append(f"[bold]Rationale:[/bold] {mapping.confidence_rationale}")
 
-    console.print(
-        Panel("\n".join(lines), title=f"Variable: {mapping.sdtm_variable}")
-    )
+    console.print(Panel("\n".join(lines), title=f"Variable: {mapping.sdtm_variable}"))
 
 
-def display_review_summary(
-    domain_review: DomainReview, console: Console
-) -> None:
+def display_review_summary(domain_review: DomainReview, console: Console) -> None:
     """Display a summary of the review for a single domain.
 
     Shows total variables, approved/corrected/skipped/pending counts,
@@ -211,18 +193,11 @@ def display_review_summary(
         console: Rich Console for output.
     """
     total = len(domain_review.original_spec.variable_mappings)
-    approved = sum(
-        1 for d in domain_review.decisions.values()
-        if d.status == ReviewStatus.APPROVED
-    )
+    approved = sum(1 for d in domain_review.decisions.values() if d.status == ReviewStatus.APPROVED)
     corrected = sum(
-        1 for d in domain_review.decisions.values()
-        if d.status == ReviewStatus.CORRECTED
+        1 for d in domain_review.decisions.values() if d.status == ReviewStatus.CORRECTED
     )
-    skipped = sum(
-        1 for d in domain_review.decisions.values()
-        if d.status == ReviewStatus.SKIPPED
-    )
+    skipped = sum(1 for d in domain_review.decisions.values() if d.status == ReviewStatus.SKIPPED)
     pending = total - approved - corrected - skipped
 
     lines = [
@@ -239,18 +214,12 @@ def display_review_summary(
         lines.append("")
         lines.append("[bold]Corrections:[/bold]")
         for c in domain_review.corrections:
-            lines.append(
-                f"  {c.sdtm_variable} -> {c.correction_type.value}: {c.reason}"
-            )
+            lines.append(f"  {c.sdtm_variable} -> {c.correction_type.value}: {c.reason}")
 
-    console.print(
-        Panel("\n".join(lines), title=f"Review Summary: {domain_review.domain}")
-    )
+    console.print(Panel("\n".join(lines), title=f"Review Summary: {domain_review.domain}"))
 
 
-def display_session_list(
-    sessions: list[dict], console: Console
-) -> None:
+def display_session_list(sessions: list[dict], console: Console) -> None:
     """Display a table of review sessions.
 
     Shows session ID, study, status (color-coded), created/updated

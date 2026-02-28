@@ -12,10 +12,12 @@ class TestFilterRows:
     """Tests for filter_rows function."""
 
     def _make_df(self) -> pd.DataFrame:
-        return pd.DataFrame({
-            "EXYN": ["Y", "Y", "N", "Y", "N"],
-            "EXDOSE": [100, 200, 0, 150, 0],
-        })
+        return pd.DataFrame(
+            {
+                "EXYN": ["Y", "Y", "N", "Y", "N"],
+                "EXDOSE": [100, 200, 0, 150, 0],
+            }
+        )
 
     def test_keep_values_filters_correctly(self) -> None:
         df = self._make_df()

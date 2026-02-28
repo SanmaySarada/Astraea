@@ -60,12 +60,9 @@ def ingest_domain_review(
     # Build set of corrected variables for quick lookup
     corrected_vars: set[str] = set()
     for decision in domain_review.decisions.values():
-        if (
-            decision.status == ReviewStatus.CORRECTED
-            and decision.correction_type not in (
-                CorrectionType.REJECT,
-                CorrectionType.ADD,
-            )
+        if decision.status == ReviewStatus.CORRECTED and decision.correction_type not in (
+            CorrectionType.REJECT,
+            CorrectionType.ADD,
         ):
             corrected_vars.add(decision.sdtm_variable)
 
@@ -93,8 +90,7 @@ def ingest_domain_review(
     # Ingest each correction as a CorrectionRecord
     for correction in domain_review.corrections:
         correction_id = (
-            f"{session_id}_{domain}_{correction.sdtm_variable}"
-            f"_{correction.correction_type.value}"
+            f"{session_id}_{domain}_{correction.sdtm_variable}_{correction.correction_type.value}"
         )
         record = CorrectionRecord(
             correction_id=correction_id,
@@ -111,9 +107,7 @@ def ingest_domain_review(
             ),
             original_logic=correction.original_mapping.mapping_logic,
             corrected_logic=(
-                correction.corrected_mapping.mapping_logic
-                if correction.corrected_mapping
-                else None
+                correction.corrected_mapping.mapping_logic if correction.corrected_mapping else None
             ),
             reason=correction.reason,
         )

@@ -23,9 +23,7 @@ class VariableMetadata(BaseModel):
     dtype: Literal["numeric", "character"] = Field(
         ..., description="SAS data type: numeric or character"
     )
-    storage_width: int | None = Field(
-        default=None, ge=1, description="Storage width in bytes"
-    )
+    storage_width: int | None = Field(default=None, ge=1, description="Storage width in bytes")
 
 
 class DatasetMetadata(BaseModel):

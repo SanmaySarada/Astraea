@@ -112,9 +112,7 @@ def ae_spec() -> DomainMappingSpec:
 class TestCreateSession:
     """Tests for SessionStore.create_session."""
 
-    def test_returns_valid_session(
-        self, store: SessionStore, dm_spec: DomainMappingSpec
-    ) -> None:
+    def test_returns_valid_session(self, store: SessionStore, dm_spec: DomainMappingSpec) -> None:
         session = store.create_session(
             study_id="PHA022121-C301",
             domains=["DM"],
@@ -159,9 +157,7 @@ class TestCreateSession:
 class TestSaveLoadSession:
     """Tests for save_session and load_session round-trip."""
 
-    def test_basic_roundtrip(
-        self, store: SessionStore, dm_spec: DomainMappingSpec
-    ) -> None:
+    def test_basic_roundtrip(self, store: SessionStore, dm_spec: DomainMappingSpec) -> None:
         session = store.create_session(
             study_id="PHA022121-C301",
             domains=["DM"],
@@ -213,9 +209,7 @@ class TestSaveLoadSession:
 class TestSaveDomainReview:
     """Tests for save_domain_review."""
 
-    def test_updates_domain_review(
-        self, store: SessionStore, dm_spec: DomainMappingSpec
-    ) -> None:
+    def test_updates_domain_review(self, store: SessionStore, dm_spec: DomainMappingSpec) -> None:
         session = store.create_session(
             study_id="PHA022121-C301",
             domains=["DM"],
@@ -252,9 +246,7 @@ class TestSaveDomainReview:
 class TestSaveCorrection:
     """Tests for save_correction."""
 
-    def test_correction_persisted(
-        self, store: SessionStore, dm_spec: DomainMappingSpec
-    ) -> None:
+    def test_correction_persisted(self, store: SessionStore, dm_spec: DomainMappingSpec) -> None:
         session = store.create_session(
             study_id="PHA022121-C301",
             domains=["DM"],
@@ -339,9 +331,7 @@ class TestSaveCorrection:
 class TestListSessions:
     """Tests for list_sessions."""
 
-    def test_returns_summaries(
-        self, store: SessionStore, dm_spec: DomainMappingSpec
-    ) -> None:
+    def test_returns_summaries(self, store: SessionStore, dm_spec: DomainMappingSpec) -> None:
         store.create_session(
             study_id="PHA022121-C301",
             domains=["DM"],

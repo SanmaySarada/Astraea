@@ -49,9 +49,7 @@ def validate_and_enrich(
     issues: list[str] = []
 
     for vp in proposal.variable_proposals:
-        mapping, var_issues = _validate_single_proposal(
-            vp, domain_spec, ct_ref
-        )
+        mapping, var_issues = _validate_single_proposal(vp, domain_spec, ct_ref)
         enriched.append(mapping)
         issues.extend(var_issues)
 
@@ -79,18 +77,14 @@ def _validate_single_proposal(
             break
 
     if var_spec is None:
-        issues.append(
-            f"Variable {vp.sdtm_variable} not in SDTM-IG for domain "
-            f"{domain_spec.domain}"
-        )
+        issues.append(f"Variable {vp.sdtm_variable} not in SDTM-IG for domain {domain_spec.domain}")
         # Use defaults for unknown variables
         sdtm_label = vp.sdtm_variable
         sdtm_data_type = "Char"
         core = CoreDesignation.PERM
         confidence = min(confidence, 0.3)
         logger.warning(
-            "Variable {var} not found in SDTM-IG for {domain}, "
-            "confidence capped at 0.3",
+            "Variable {var} not found in SDTM-IG for {domain}, confidence capped at 0.3",
             var=vp.sdtm_variable,
             domain=domain_spec.domain,
         )
@@ -105,8 +99,7 @@ def _validate_single_proposal(
         cl = ct_ref.lookup_codelist(vp.codelist_code)
         if cl is None:
             issues.append(
-                f"{vp.sdtm_variable}: codelist {vp.codelist_code} not found "
-                f"in CT reference"
+                f"{vp.sdtm_variable}: codelist {vp.codelist_code} not found in CT reference"
             )
             # Don't penalize ASSIGN patterns with trivially correct values
             # (e.g., DOMAIN="DM", STUDYID=constant) — missing codelist is a
@@ -192,9 +185,7 @@ def check_required_coverage(
         List of missing required variable names. Empty if all covered.
     """
     mapped_names = {m.sdtm_variable.upper() for m in mappings}
-    required_vars = [
-        v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ
-    ]
+    required_vars = [v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ]
 
     missing = [name for name in required_vars if name not in mapped_names]
 

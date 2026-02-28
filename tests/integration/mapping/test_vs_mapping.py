@@ -17,7 +17,6 @@ Requires ANTHROPIC_API_KEY environment variable to be set.
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 import pytest
 from rich.console import Console
@@ -42,7 +41,13 @@ STUDY_ID = "PHA022121-C301"
 
 # Required VS variables per SDTM-IG v3.4
 REQUIRED_VS_VARIABLES = {
-    "STUDYID", "DOMAIN", "USUBJID", "VSSEQ", "VSTESTCD", "VSTEST", "VSORRES",
+    "STUDYID",
+    "DOMAIN",
+    "USUBJID",
+    "VSSEQ",
+    "VSTESTCD",
+    "VSTEST",
+    "VSORRES",
 }
 
 # Skip condition: no API key means we cannot run LLM calls
@@ -421,8 +426,7 @@ class TestVSMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in vs_mapping_result.variable_mappings}
         missing = REQUIRED_VS_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required VS variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required VS variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_vs_mapping_domain_class(self, vs_mapping_result: DomainMappingSpec) -> None:
@@ -435,9 +439,7 @@ class TestVSMappingEndToEnd:
         """Verify average confidence >= 0.5 (lower threshold since synthetic profile)."""
         confidences = [m.confidence for m in vs_mapping_result.variable_mappings]
         avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
-        assert avg_conf >= 0.5, (
-            f"Average confidence {avg_conf:.2f} is below 0.5 threshold"
-        )
+        assert avg_conf >= 0.5, f"Average confidence {avg_conf:.2f} is below 0.5 threshold"
 
 
 @pytest.mark.integration
@@ -445,38 +447,28 @@ class TestVSMappingEndToEnd:
 class TestVSCTValidation:
     """Validate controlled terminology references in VS mapping output."""
 
-    def test_vs_mapping_position_codelist(
-        self, vs_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_vs_mapping_position_codelist(self, vs_mapping_result: DomainMappingSpec) -> None:
         """Verify VSPOS mapping references CT codelist C71148 (position).
 
         C71148 is the CDISC CT codelist for Position of Subject during
         data collection. This is a key CT validation for the VS domain.
         """
-        vspos = [
-            m for m in vs_mapping_result.variable_mappings if m.sdtm_variable == "VSPOS"
-        ]
+        vspos = [m for m in vs_mapping_result.variable_mappings if m.sdtm_variable == "VSPOS"]
         if vspos:
             assert vspos[0].codelist_code is not None, (
                 "VSPOS should reference a CT codelist (C71148 for Position)"
             )
             assert vspos[0].codelist_code == "C71148", (
-                f"VSPOS codelist should be C71148 (Position), "
-                f"got {vspos[0].codelist_code}"
+                f"VSPOS codelist should be C71148 (Position), got {vspos[0].codelist_code}"
             )
 
-    def test_vs_mapping_laterality_codelist(
-        self, vs_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_vs_mapping_laterality_codelist(self, vs_mapping_result: DomainMappingSpec) -> None:
         """If VSLAT mapping exists, verify it references CT codelist C66785 (laterality).
 
         C66785 is the CDISC CT codelist for Laterality (LEFT, RIGHT, BILATERAL).
         """
-        vslat = [
-            m for m in vs_mapping_result.variable_mappings if m.sdtm_variable == "VSLAT"
-        ]
+        vslat = [m for m in vs_mapping_result.variable_mappings if m.sdtm_variable == "VSLAT"]
         if vslat and vslat[0].codelist_code is not None:
             assert vslat[0].codelist_code == "C66785", (
-                f"VSLAT codelist should be C66785 (Laterality), "
-                f"got {vslat[0].codelist_code}"
+                f"VSLAT codelist should be C66785 (Laterality), got {vslat[0].codelist_code}"
             )

@@ -48,9 +48,7 @@ class TRCPreCheck:
 
         return results
 
-    def _check_dm_present(
-        self, generated_domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_dm_present(self, generated_domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """FDA-TRC-1736: DM domain must be present in submission."""
         if "DM" not in generated_domains:
             return [
@@ -80,9 +78,7 @@ class TRCPreCheck:
 
         return []
 
-    def _check_ts_present(
-        self, generated_domains: dict[str, pd.DataFrame]
-    ) -> list[RuleResult]:
+    def _check_ts_present(self, generated_domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
         """FDA-TRC-1734: TS domain must be present with SSTDTC parameter."""
         results: list[RuleResult] = []
 

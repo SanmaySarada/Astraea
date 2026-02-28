@@ -58,41 +58,62 @@ def build_ts_domain(
 
     # -- Always-included parameters (8 core) --
     _add = params.append
-    _add(TSParameter(
-        tsparmcd="TITLE", tsparm="Trial Title",
-        tsval=config.study_title,
-    ))
-    _add(TSParameter(
-        tsparmcd="SPONSOR", tsparm="Clinical Study Sponsor",
-        tsval=config.sponsor,
-    ))
-    _add(TSParameter(
-        tsparmcd="INDIC",
-        tsparm="Trial Disease/Condition Indication",
-        tsval=config.indication,
-    ))
-    _add(TSParameter(
-        tsparmcd="TRT",
-        tsparm="Investigational Therapy or Treatment",
-        tsval=config.treatment,
-    ))
-    _add(TSParameter(
-        tsparmcd="PCLAS",
-        tsparm="Pharmacological Class of Inv. Therapy",
-        tsval=config.pharmacological_class,
-    ))
-    _add(TSParameter(
-        tsparmcd="STYPE", tsparm="Study Type",
-        tsval=config.study_type,
-    ))
-    _add(TSParameter(
-        tsparmcd="SDTMVER", tsparm="SDTM Version",
-        tsval=config.sdtm_version,
-    ))
-    _add(TSParameter(
-        tsparmcd="TPHASE", tsparm="Trial Phase",
-        tsval=config.trial_phase,
-    ))
+    _add(
+        TSParameter(
+            tsparmcd="TITLE",
+            tsparm="Trial Title",
+            tsval=config.study_title,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="SPONSOR",
+            tsparm="Clinical Study Sponsor",
+            tsval=config.sponsor,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="INDIC",
+            tsparm="Trial Disease/Condition Indication",
+            tsval=config.indication,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="TRT",
+            tsparm="Investigational Therapy or Treatment",
+            tsval=config.treatment,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="PCLAS",
+            tsparm="Pharmacological Class of Inv. Therapy",
+            tsval=config.pharmacological_class,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="STYPE",
+            tsparm="Study Type",
+            tsval=config.study_type,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="SDTMVER",
+            tsparm="SDTM Version",
+            tsval=config.sdtm_version,
+        )
+    )
+    _add(
+        TSParameter(
+            tsparmcd="TPHASE",
+            tsparm="Trial Phase",
+            tsval=config.trial_phase,
+        )
+    )
 
     # -- Conditionally-included parameters --
     if config.planned_enrollment is not None:
@@ -224,8 +245,6 @@ def validate_ts_completeness(ts_df: pd.DataFrame) -> list[str]:
                 rows = ts_df[ts_df["TSPARMCD"] == code]
                 tsval = rows["TSVAL"].iloc[0] if not rows.empty else None
                 if tsval is None or (isinstance(tsval, str) and tsval.strip() == ""):
-                    issues.append(
-                        f"FDA-mandatory parameter {code} has empty TSVAL"
-                    )
+                    issues.append(f"FDA-mandatory parameter {code} has empty TSVAL")
 
     return issues

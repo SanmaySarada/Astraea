@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 from typer.testing import CliRunner
 
 from astraea.cli.app import app
@@ -129,9 +128,7 @@ class TestParseEcrfCommand:
         mock_parse.return_value = _make_extraction_result()
 
         with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}):
-            result = runner.invoke(
-                app, ["parse-ecrf", str(pdf_file), "--detail"]
-            )
+            result = runner.invoke(app, ["parse-ecrf", str(pdf_file), "--detail"])
 
         assert result.exit_code == 0
         assert "AETERM" in result.output
@@ -205,9 +202,7 @@ class TestParseEcrfCommand:
         extraction = _make_extraction_result()
         cache_file.write_text(extraction.model_dump_json(indent=2))
 
-        result = runner.invoke(
-            app, ["parse-ecrf", str(pdf_file), "--cache-dir", str(cache_dir)]
-        )
+        result = runner.invoke(app, ["parse-ecrf", str(pdf_file), "--cache-dir", str(cache_dir)])
 
         assert result.exit_code == 0
         assert "cached" in result.output.lower() or "Loading" in result.output

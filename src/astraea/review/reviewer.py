@@ -138,9 +138,7 @@ class DomainReviewer:
         display_review_summary(domain_review, self._console)
         return domain_review
 
-    def _approve_all(
-        self, session_id: str, domain_review: DomainReview
-    ) -> None:
+    def _approve_all(self, session_id: str, domain_review: DomainReview) -> None:
         """Approve all pending variables."""
         now = datetime.now(tz=UTC).isoformat()
         for mapping in domain_review.original_spec.variable_mappings:
@@ -153,9 +151,7 @@ class DomainReviewer:
                 )
         self._store.save_domain_review(session_id, domain_review)
 
-    def _review_two_tier(
-        self, session_id: str, domain_review: DomainReview
-    ) -> None:
+    def _review_two_tier(self, session_id: str, domain_review: DomainReview) -> None:
         """Two-tier review: batch HIGH, individual MEDIUM/LOW.
 
         Args:
@@ -172,14 +168,8 @@ class DomainReviewer:
             if m.sdtm_variable not in domain_review.decisions
         ]
 
-        high_mappings = [
-            m for m in pending_mappings
-            if m.confidence_level == ConfidenceLevel.HIGH
-        ]
-        other_mappings = [
-            m for m in pending_mappings
-            if m.confidence_level != ConfidenceLevel.HIGH
-        ]
+        high_mappings = [m for m in pending_mappings if m.confidence_level == ConfidenceLevel.HIGH]
+        other_mappings = [m for m in pending_mappings if m.confidence_level != ConfidenceLevel.HIGH]
 
         # Batch approve HIGH confidence
         if high_mappings:
@@ -226,9 +216,7 @@ class DomainReviewer:
                 self._store.save_domain_review(session_id, domain_review)
 
             elif var_action == "c":
-                corrected_mapping, correction_type, reason = self._collect_correction(
-                    mapping
-                )
+                corrected_mapping, correction_type, reason = self._collect_correction(mapping)
 
                 decision = ReviewDecision(
                     sdtm_variable=mapping.sdtm_variable,
@@ -300,8 +288,7 @@ class DomainReviewer:
                 source_label=mapping.source_label,
                 mapping_pattern=mapping.mapping_pattern,
                 mapping_logic=(
-                    f"Corrected: source changed from "
-                    f"{mapping.source_variable} to {new_source}"
+                    f"Corrected: source changed from {mapping.source_variable} to {new_source}"
                 ),
                 derivation_rule=mapping.derivation_rule,
                 assigned_value=mapping.assigned_value,

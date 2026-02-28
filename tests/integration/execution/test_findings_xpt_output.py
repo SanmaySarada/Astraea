@@ -17,7 +17,6 @@ import pytest
 from astraea.execution.executor import DatasetExecutor
 from astraea.io.xpt_writer import write_xpt_v5
 
-
 # ---------------------------------------------------------------------------
 # Fixtures: minimal SDTM DataFrames for each Findings domain
 # ---------------------------------------------------------------------------
@@ -56,10 +55,10 @@ def lb_df() -> pd.DataFrame:
             "LBNRIND": ["NORMAL", "NORMAL", "NORMAL", "HIGH", "NORMAL", "HIGH"],
             "LBDTC": [
                 "2022-03-15",
-                "2022-03",      # partial date (day imputed)
+                "2022-03",  # partial date (day imputed)
                 "2022-03-15",
                 "2022-04-01",
-                "2022-04",      # partial date (day imputed)
+                "2022-04",  # partial date (day imputed)
                 "2022-04-01",
             ],
             "LBDTF": ["", "D", "", "", "D", ""],
@@ -95,7 +94,7 @@ def eg_df() -> pd.DataFrame:
             "EGDTC": [
                 "2022-03-15",
                 "2022-03-15",
-                "2022-04",       # partial date (day imputed)
+                "2022-04",  # partial date (day imputed)
                 "2022-04-01",
             ],
             "EGTPT": ["Pre-dose", "Pre-dose", "Post-dose", "Post-dose"],
@@ -278,7 +277,9 @@ class TestFindingsXPTRoundtrip:
     """Verify Findings domain DataFrames survive XPT write-read roundtrip."""
 
     def test_lb_xpt_roundtrip(
-        self, lb_df: pd.DataFrame, tmp_path: Path,
+        self,
+        lb_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """LB DataFrame survives XPT write-read with correct columns and rows."""
         xpt_path = tmp_path / "lb.xpt"
@@ -289,7 +290,9 @@ class TestFindingsXPTRoundtrip:
         assert set(df_read.columns) == {c.upper() for c in lb_df.columns}
 
     def test_eg_xpt_roundtrip(
-        self, eg_df: pd.DataFrame, tmp_path: Path,
+        self,
+        eg_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """EG DataFrame survives XPT write-read roundtrip."""
         xpt_path = tmp_path / "eg.xpt"
@@ -300,7 +303,9 @@ class TestFindingsXPTRoundtrip:
         assert set(df_read.columns) == {c.upper() for c in eg_df.columns}
 
     def test_pe_xpt_roundtrip(
-        self, pe_df: pd.DataFrame, tmp_path: Path,
+        self,
+        pe_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """PE DataFrame survives XPT write-read roundtrip."""
         xpt_path = tmp_path / "pe.xpt"
@@ -311,7 +316,9 @@ class TestFindingsXPTRoundtrip:
         assert set(df_read.columns) == {c.upper() for c in pe_df.columns}
 
     def test_vs_xpt_roundtrip(
-        self, vs_df: pd.DataFrame, tmp_path: Path,
+        self,
+        vs_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """VS DataFrame survives XPT write-read including VSPOS column."""
         xpt_path = tmp_path / "vs.xpt"
@@ -323,12 +330,16 @@ class TestFindingsXPTRoundtrip:
         assert set(df_read.columns) == {c.upper() for c in vs_df.columns}
 
     def test_supplb_xpt_roundtrip(
-        self, supplb_df: pd.DataFrame, tmp_path: Path,
+        self,
+        supplb_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """SUPPLB DataFrame survives XPT write-read roundtrip."""
         xpt_path = tmp_path / "supplb.xpt"
         write_xpt_v5(
-            supplb_df, xpt_path, table_name="SUPPLB",
+            supplb_df,
+            xpt_path,
+            table_name="SUPPLB",
             column_labels=SUPPLB_LABELS,
         )
 
@@ -346,7 +357,9 @@ class TestFindingsXPTMetadata:
     """Verify variable labels and name constraints for Findings domains."""
 
     def test_lb_xpt_variable_labels(
-        self, lb_df: pd.DataFrame, tmp_path: Path,
+        self,
+        lb_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """LB column labels survive XPT roundtrip."""
         xpt_path = tmp_path / "lb.xpt"
@@ -422,7 +435,9 @@ class TestDateImputationFlagRoundtrip:
     """Verify date imputation flags (--DTF) survive XPT roundtrip."""
 
     def test_lb_date_imputation_flag_roundtrip(
-        self, lb_df: pd.DataFrame, tmp_path: Path,
+        self,
+        lb_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """LBDTF column with 'D' values survives XPT write-read."""
         xpt_path = tmp_path / "lb.xpt"
@@ -441,7 +456,9 @@ class TestDateImputationFlagRoundtrip:
         assert (non_d_rows == "").all()
 
     def test_eg_date_imputation_flag_roundtrip(
-        self, eg_df: pd.DataFrame, tmp_path: Path,
+        self,
+        eg_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """EGDTF column with 'D' value for 1 row survives XPT roundtrip."""
         xpt_path = tmp_path / "eg.xpt"

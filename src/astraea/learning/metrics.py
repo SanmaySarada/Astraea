@@ -52,17 +52,10 @@ def compute_domain_accuracy(
             else:
                 corrected += 1
 
-    accuracy_rate = (
-        approved_unchanged / total_proposed if total_proposed > 0 else 0.0
-    )
-    correction_rate = (
-        corrected / total_proposed if total_proposed > 0 else 0.0
-    )
+    accuracy_rate = approved_unchanged / total_proposed if total_proposed > 0 else 0.0
+    correction_rate = corrected / total_proposed if total_proposed > 0 else 0.0
 
-    completed_at = (
-        domain_review.reviewed_at
-        or datetime.now(tz=UTC).isoformat()
-    )
+    completed_at = domain_review.reviewed_at or datetime.now(tz=UTC).isoformat()
 
     return StudyMetrics(
         study_id=study_id,
@@ -125,9 +118,7 @@ def compute_improvement_report(
             "trend": trend,
         }
 
-    overall_accuracy = (
-        sum(m.accuracy_rate for m in metrics_list) / len(metrics_list)
-    )
+    overall_accuracy = sum(m.accuracy_rate for m in metrics_list) / len(metrics_list)
     total_examples = sum(m.total_proposed for m in metrics_list)
     total_corrections = sum(m.corrected for m in metrics_list)
 
@@ -155,9 +146,7 @@ def format_improvement_summary(report: dict) -> str:
     lines.append("Learning System Improvement Report")
     lines.append("=" * 40)
     lines.append("")
-    lines.append(
-        f"Overall Accuracy: {report['overall_accuracy']:.1%}"
-    )
+    lines.append(f"Overall Accuracy: {report['overall_accuracy']:.1%}")
     lines.append(f"Total Examples:   {report['total_examples']}")
     lines.append(f"Total Corrections: {report['total_corrections']}")
     lines.append("")

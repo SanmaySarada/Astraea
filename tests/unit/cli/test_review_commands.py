@@ -98,7 +98,8 @@ class TestReviewDomainCmd:
             [
                 "review-domain",
                 str(tmp_path / "nonexistent.json"),
-                "--db", str(tmp_path / "sessions.db"),
+                "--db",
+                str(tmp_path / "sessions.db"),
             ],
         )
         assert result.exit_code == 1
@@ -113,7 +114,8 @@ class TestReviewDomainCmd:
             [
                 "review-domain",
                 str(bad_file),
-                "--db", str(tmp_path / "sessions.db"),
+                "--db",
+                str(tmp_path / "sessions.db"),
             ],
         )
         assert result.exit_code == 1
@@ -130,8 +132,10 @@ class TestReviewDomainCmd:
             [
                 "review-domain",
                 str(spec_file),
-                "--session", "nonexistent123",
-                "--db", str(tmp_path / "sessions.db"),
+                "--session",
+                "nonexistent123",
+                "--db",
+                str(tmp_path / "sessions.db"),
             ],
         )
         assert result.exit_code == 1
@@ -319,7 +323,5 @@ class TestApplyCorrections:
         }
         result = _apply_corrections(spec, decisions)
         assert len(result.variable_mappings) == 3
-        sex_mapping = [
-            m for m in result.variable_mappings if m.sdtm_variable == "SEX"
-        ][0]
+        sex_mapping = [m for m in result.variable_mappings if m.sdtm_variable == "SEX"][0]
         assert sex_mapping.source_variable == "GENDER"

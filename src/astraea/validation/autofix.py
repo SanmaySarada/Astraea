@@ -58,13 +58,9 @@ class IssueClassification(BaseModel):
     """Classification result for a single validation RuleResult."""
 
     result: RuleResult = Field(..., description="The original validation result")
-    classification: FixClassification = Field(
-        ..., description="Auto-fixable or needs human"
-    )
+    classification: FixClassification = Field(..., description="Auto-fixable or needs human")
     reason: str = Field(..., description="Why it is classified this way")
-    suggested_fix: str | None = Field(
-        default=None, description="For needs-human, provide context"
-    )
+    suggested_fix: str | None = Field(default=None, description="For needs-human, provide context")
 
 
 # Rule IDs that are auto-fixable for specific variables only
@@ -251,10 +247,7 @@ class AutoFixer:
             )
 
         # Check if ALL invalid values are just case mismatches
-        all_case_fixable = all(
-            v not in cl.terms and v.upper() in case_map
-            for v in quoted_values
-        )
+        all_case_fixable = all(v not in cl.terms and v.upper() in case_map for v in quoted_values)
 
         if all_case_fixable:
             return IssueClassification(
@@ -318,26 +311,18 @@ class AutoFixer:
             elif rule_id == "ASTR-P001":
                 var = (issue.variable or "").upper()
                 if var == "STUDYID":
-                    fixed_df, actions = self._fix_missing_studyid(
-                        domain, fixed_df, fixed_spec
-                    )
+                    fixed_df, actions = self._fix_missing_studyid(domain, fixed_df, fixed_spec)
                 elif var == "DOMAIN":
                     # Reuse domain column fix
                     fixed_df, actions = self._fix_domain_column(domain, fixed_df, issue)
                 elif var == "USUBJID":
                     # USUBJID requires source data; skip if not derivable
-                    logger.warning(
-                        "USUBJID auto-fix requires source data -- skipping"
-                    )
+                    logger.warning("USUBJID auto-fix requires source data -- skipping")
                     continue
             elif rule_id == "ASTR-L001":
-                fixed_df, actions = self._fix_variable_name_length(
-                    domain, fixed_df, issue
-                )
+                fixed_df, actions = self._fix_variable_name_length(domain, fixed_df, issue)
             elif rule_id == "ASTR-L002":
-                fixed_spec, actions = self._fix_variable_label_length(
-                    domain, fixed_spec, issue
-                )
+                fixed_spec, actions = self._fix_variable_label_length(domain, fixed_spec, issue)
             elif rule_id == "ASTR-F002":
                 fixed_df, actions = self._fix_ascii(domain, fixed_df, issue)
             elif rule_id == "ASTR-F003":
@@ -393,9 +378,7 @@ class AutoFixer:
             return df, actions
 
         # Build case-insensitive lookup: upper(term) -> correct term
-        case_map: dict[str, str] = {
-            term.upper(): term for term in cl.terms
-        }
+        case_map: dict[str, str] = {term.upper(): term for term in cl.terms}
 
         fixed_df = df.copy()
         non_null_mask = fixed_df[var_name].notna()
@@ -531,7 +514,7 @@ class AutoFixer:
         existing_cols = {str(c) for c in fixed_df.columns}
         if truncated in existing_cols and truncated != var_name:
             for i in range(1, 10):
-                candidate = var_name[: 7] + str(i)
+                candidate = var_name[:7] + str(i)
                 if candidate not in existing_cols:
                     truncated = candidate
                     break

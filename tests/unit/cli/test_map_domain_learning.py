@@ -38,9 +38,7 @@ class TestTryLoadLearningRetriever:
         result = _try_load_learning_retriever(None, quiet_console)
         assert result is None
 
-    def test_explicit_learning_db_path(
-        self, quiet_console: Console, tmp_path: Path
-    ) -> None:
+    def test_explicit_learning_db_path(self, quiet_console: Console, tmp_path: Path) -> None:
         """When --learning-db is explicitly provided, loads from that path."""
         learning_dir = tmp_path / "my_learning_db"
         learning_dir.mkdir()
@@ -95,22 +93,16 @@ class TestTryLoadLearningRetriever:
         mock_vs_module.LearningVectorStore.assert_called_once()
         mock_ret_module.LearningRetriever.assert_called_once_with(mock_vector_store)
 
-    def test_import_error_returns_none(
-        self, quiet_console: Console, tmp_path: Path
-    ) -> None:
+    def test_import_error_returns_none(self, quiet_console: Console, tmp_path: Path) -> None:
         """When chromadb is not installed (ImportError), returns None gracefully."""
         learning_dir = tmp_path / "learning"
         learning_dir.mkdir()
 
         # Make the lazy import raise ImportError
         mock_ret_module = MagicMock()
-        mock_ret_module.LearningRetriever.side_effect = ImportError(
-            "No module named 'chromadb'"
-        )
+        mock_ret_module.LearningRetriever.side_effect = ImportError("No module named 'chromadb'")
         mock_vs_module = MagicMock()
-        mock_vs_module.LearningVectorStore.side_effect = ImportError(
-            "No module named 'chromadb'"
-        )
+        mock_vs_module.LearningVectorStore.side_effect = ImportError("No module named 'chromadb'")
 
         with patch.dict(
             "sys.modules",

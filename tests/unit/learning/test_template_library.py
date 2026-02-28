@@ -62,24 +62,48 @@ def _make_spec(
     """Create a minimal DomainMappingSpec for testing."""
     if variable_mappings is None:
         variable_mappings = [
-            _make_variable_mapping("STUDYID", MappingPattern.ASSIGN, None, None,
-                                   "Assign constant study ID"),
-            _make_variable_mapping("DOMAIN", MappingPattern.ASSIGN, None, None,
-                                   "Assign constant domain code"),
-            _make_variable_mapping("USUBJID", MappingPattern.DERIVATION, "Subject", "ae",
-                                   "Derive from STUDYID + SITEID + SUBJID",
-                                   derivation_rule="CONCAT(STUDYID, '-', SITEID, '-', SUBJID)"),
-            _make_variable_mapping("AETERM", MappingPattern.DIRECT, "AETERM", "ae",
-                                   "Direct carry from source ae.AETERM"),
-            _make_variable_mapping("AEDECOD", MappingPattern.LOOKUP_RECODE, "AETERM", "ae",
-                                   "MedDRA preferred term lookup"),
-            _make_variable_mapping("AESTDTC", MappingPattern.REFORMAT, "AESTDT", "ae",
-                                   "Convert SAS date to ISO 8601"),
-            _make_variable_mapping("AEENDTC", MappingPattern.REFORMAT, "AEENDT", "ae",
-                                   "Convert SAS date to ISO 8601"),
-            _make_variable_mapping("AESEQ", MappingPattern.DERIVATION, None, None,
-                                   "Sequence number within subject",
-                                   derivation_rule="SEQ_BY(USUBJID)"),
+            _make_variable_mapping(
+                "STUDYID", MappingPattern.ASSIGN, None, None, "Assign constant study ID"
+            ),
+            _make_variable_mapping(
+                "DOMAIN", MappingPattern.ASSIGN, None, None, "Assign constant domain code"
+            ),
+            _make_variable_mapping(
+                "USUBJID",
+                MappingPattern.DERIVATION,
+                "Subject",
+                "ae",
+                "Derive from STUDYID + SITEID + SUBJID",
+                derivation_rule="CONCAT(STUDYID, '-', SITEID, '-', SUBJID)",
+            ),
+            _make_variable_mapping(
+                "AETERM",
+                MappingPattern.DIRECT,
+                "AETERM",
+                "ae",
+                "Direct carry from source ae.AETERM",
+            ),
+            _make_variable_mapping(
+                "AEDECOD",
+                MappingPattern.LOOKUP_RECODE,
+                "AETERM",
+                "ae",
+                "MedDRA preferred term lookup",
+            ),
+            _make_variable_mapping(
+                "AESTDTC", MappingPattern.REFORMAT, "AESTDT", "ae", "Convert SAS date to ISO 8601"
+            ),
+            _make_variable_mapping(
+                "AEENDTC", MappingPattern.REFORMAT, "AEENDT", "ae", "Convert SAS date to ISO 8601"
+            ),
+            _make_variable_mapping(
+                "AESEQ",
+                MappingPattern.DERIVATION,
+                None,
+                None,
+                "Sequence number within subject",
+                derivation_rule="SEQ_BY(USUBJID)",
+            ),
         ]
     total = len(variable_mappings)
     req = sum(1 for v in variable_mappings if v.core == CoreDesignation.REQ)
@@ -296,8 +320,14 @@ class TestSaveAndRetrieve:
         ae_spec = _make_spec(domain="AE")
         dm_mappings = [
             _make_variable_mapping("STUDYID", MappingPattern.ASSIGN, None, None, "Assign study ID"),
-            _make_variable_mapping("USUBJID", MappingPattern.DERIVATION, "Subject", "dm",
-                                   "Derive USUBJID", "CONCAT(STUDYID, '-', SUBJID)"),
+            _make_variable_mapping(
+                "USUBJID",
+                MappingPattern.DERIVATION,
+                "Subject",
+                "dm",
+                "Derive USUBJID",
+                "CONCAT(STUDYID, '-', SUBJID)",
+            ),
         ]
         dm_spec = _make_spec(domain="DM", variable_mappings=dm_mappings)
 
@@ -370,7 +400,10 @@ class TestUpdateTemplate:
 
         # Create spec2 with a new variable not in spec1
         new_mapping = _make_variable_mapping(
-            "AESEV", MappingPattern.LOOKUP_RECODE, "AESEV", "ae",
+            "AESEV",
+            MappingPattern.LOOKUP_RECODE,
+            "AESEV",
+            "ae",
             "Severity lookup recode",
         )
         spec2 = _make_spec(

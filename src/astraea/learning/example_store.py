@@ -178,9 +178,7 @@ class ExampleStore:
         )
         self._conn.commit()
 
-    def get_examples_for_domain(
-        self, domain: str, limit: int = 50
-    ) -> list[MappingExample]:
+    def get_examples_for_domain(self, domain: str, limit: int = 50) -> list[MappingExample]:
         """Retrieve mapping examples filtered by domain.
 
         Args:
@@ -263,9 +261,7 @@ class ExampleStore:
             for row in rows
         ]
 
-    def get_study_metrics(
-        self, study_id: str | None = None
-    ) -> list[StudyMetrics]:
+    def get_study_metrics(self, study_id: str | None = None) -> list[StudyMetrics]:
         """Retrieve study metrics, optionally filtered by study.
 
         Args:
@@ -320,16 +316,12 @@ class ExampleStore:
 
     def get_example_count(self) -> int:
         """Return total number of mapping examples."""
-        row = self._conn.execute(
-            "SELECT COUNT(*) as cnt FROM mapping_examples"
-        ).fetchone()
+        row = self._conn.execute("SELECT COUNT(*) as cnt FROM mapping_examples").fetchone()
         return row["cnt"]
 
     def get_correction_count(self) -> int:
         """Return total number of corrections (including invalidated)."""
-        row = self._conn.execute(
-            "SELECT COUNT(*) as cnt FROM corrections"
-        ).fetchone()
+        row = self._conn.execute("SELECT COUNT(*) as cnt FROM corrections").fetchone()
         return row["cnt"]
 
     def close(self) -> None:

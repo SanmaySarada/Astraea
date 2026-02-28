@@ -354,8 +354,7 @@ class TestAEMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ae_mapping_result.variable_mappings}
         missing = REQUIRED_AE_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required AE variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required AE variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_studyid_is_assign(self, ae_mapping_result: DomainMappingSpec) -> None:
@@ -425,9 +424,7 @@ class TestAEMappingEndToEnd:
 class TestAECTValidation:
     """Validate controlled terminology references in AE mapping output."""
 
-    def test_severity_references_codelist(
-        self, ae_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_severity_references_codelist(self, ae_mapping_result: DomainMappingSpec) -> None:
         """AESEV or AETOXGR mapping should reference C66769 or have reasonable CT."""
         sev_vars = [
             m
@@ -441,25 +438,17 @@ class TestAECTValidation:
                     f"Severity codelist should be C66769, got {sev.codelist_code}"
                 )
 
-    def test_outcome_references_codelist(
-        self, ae_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_outcome_references_codelist(self, ae_mapping_result: DomainMappingSpec) -> None:
         """AEOUT mapping should reference C66768."""
-        aeout = [
-            m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEOUT"
-        ]
+        aeout = [m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEOUT"]
         if aeout and aeout[0].codelist_code is not None:
             assert aeout[0].codelist_code == "C66768", (
                 f"AEOUT codelist should be C66768, got {aeout[0].codelist_code}"
             )
 
-    def test_action_references_codelist(
-        self, ae_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_action_references_codelist(self, ae_mapping_result: DomainMappingSpec) -> None:
         """AEACN mapping should reference C66767."""
-        aeacn = [
-            m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEACN"
-        ]
+        aeacn = [m for m in ae_mapping_result.variable_mappings if m.sdtm_variable == "AEACN"]
         if aeacn and aeacn[0].codelist_code is not None:
             assert aeacn[0].codelist_code == "C66767", (
                 f"AEACN codelist should be C66767, got {aeacn[0].codelist_code}"
@@ -486,6 +475,4 @@ class TestAEExportRoundtrip:
 
         assert roundtripped.domain == ae_mapping_result.domain
         assert roundtripped.total_variables == ae_mapping_result.total_variables
-        assert len(roundtripped.variable_mappings) == len(
-            ae_mapping_result.variable_mappings
-        )
+        assert len(roundtripped.variable_mappings) == len(ae_mapping_result.variable_mappings)

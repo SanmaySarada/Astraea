@@ -11,7 +11,6 @@ from astraea.profiling.profiler import (
 
 
 class TestEDCColumnSet:
-
     def test_edc_columns_count(self):
         assert len(EDC_SYSTEM_COLUMNS) == 29
 
@@ -20,7 +19,6 @@ class TestEDCColumnSet:
 
 
 class TestIsEDCColumn:
-
     def test_subject_detected(self):
         assert _is_edc_column("Subject") is True
 

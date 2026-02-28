@@ -196,13 +196,9 @@ def _display_mapping_spec(spec: DomainMappingSpec) -> None:
     console.print(f"Domain: {spec.domain} ({spec.domain_label})")
     console.print(f"Model: {spec.model_used}")
     console.print(f"Timestamp: {spec.mapping_timestamp}")
-    console.print(
-        f"Source datasets: {', '.join(spec.source_datasets)}"
-    )
+    console.print(f"Source datasets: {', '.join(spec.source_datasets)}")
     if spec.cross_domain_sources:
-        console.print(
-            f"Cross-domain sources: {', '.join(spec.cross_domain_sources)}"
-        )
+        console.print(f"Cross-domain sources: {', '.join(spec.cross_domain_sources)}")
     console.print()
 
     # Variable mappings table
@@ -350,8 +346,7 @@ class TestDMMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in dm_mapping_result.variable_mappings}
         missing = REQUIRED_DM_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required DM variables: {missing}. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Missing required DM variables: {missing}. Mapped variables: {sorted(mapped_vars)}"
         )
 
     def test_studyid_is_assign(self, dm_mapping_result: DomainMappingSpec) -> None:
@@ -375,9 +370,7 @@ class TestDMMappingEndToEnd:
 
     def test_age_mapping_exists(self, dm_mapping_result: DomainMappingSpec) -> None:
         """AGE should be mapped (direct from source or derived)."""
-        age_mappings = [
-            m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "AGE"
-        ]
+        age_mappings = [m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "AGE"]
         assert len(age_mappings) >= 1, "AGE mapping not found in DM spec"
 
     def test_race_mapping_exists(self, dm_mapping_result: DomainMappingSpec) -> None:
@@ -399,12 +392,10 @@ class TestDMMappingEndToEnd:
             for m in dm_mapping_result.variable_mappings
             if m.source_dataset is not None
         }
-        cross_domain_files = {
-            f"{name}.sas7bdat" for name in CROSS_DOMAIN_DATASETS
-        }
-        has_cross_domain = bool(
-            all_source_datasets & cross_domain_files
-        ) or bool(dm_mapping_result.cross_domain_sources)
+        cross_domain_files = {f"{name}.sas7bdat" for name in CROSS_DOMAIN_DATASETS}
+        has_cross_domain = bool(all_source_datasets & cross_domain_files) or bool(
+            dm_mapping_result.cross_domain_sources
+        )
         assert has_cross_domain, (
             f"No cross-domain sources found. Source datasets: {all_source_datasets}, "
             f"cross_domain_sources: {dm_mapping_result.cross_domain_sources}"
@@ -454,9 +445,7 @@ class TestDMExportRoundtrip:
         assert roundtripped.total_variables == dm_mapping_result.total_variables
         assert len(roundtripped.variable_mappings) == len(dm_mapping_result.variable_mappings)
 
-    def test_excel_export(
-        self, dm_mapping_result: DomainMappingSpec, tmp_path: Path
-    ) -> None:
+    def test_excel_export(self, dm_mapping_result: DomainMappingSpec, tmp_path: Path) -> None:
         """Export to Excel and verify the workbook has expected structure.
 
         Uses a minimal in-test Excel writer since the exporters module
@@ -475,18 +464,35 @@ class TestDMExportRoundtrip:
         ws1 = wb.active
         ws1.title = "Mapping Spec"  # type: ignore[union-attr]
         headers = [
-            "#", "SDTM Variable", "SDTM Label", "Type", "Core",
-            "Source Dataset", "Source Variable", "Pattern",
-            "Mapping Logic", "Confidence", "Confidence Level",
+            "#",
+            "SDTM Variable",
+            "SDTM Label",
+            "Type",
+            "Core",
+            "Source Dataset",
+            "Source Variable",
+            "Pattern",
+            "Mapping Logic",
+            "Confidence",
+            "Confidence Level",
         ]
         ws1.append(headers)  # type: ignore[union-attr]
         for i, m in enumerate(spec.variable_mappings, 1):
-            ws1.append([  # type: ignore[union-attr]
-                i, m.sdtm_variable, m.sdtm_label, m.sdtm_data_type,
-                m.core.value, m.source_dataset or "", m.source_variable or "",
-                m.mapping_pattern.value, m.mapping_logic,
-                m.confidence, m.confidence_level.value,
-            ])
+            ws1.append(
+                [  # type: ignore[union-attr]
+                    i,
+                    m.sdtm_variable,
+                    m.sdtm_label,
+                    m.sdtm_data_type,
+                    m.core.value,
+                    m.source_dataset or "",
+                    m.source_variable or "",
+                    m.mapping_pattern.value,
+                    m.mapping_logic,
+                    m.confidence,
+                    m.confidence_level.value,
+                ]
+            )
 
         # Sheet 2: Unmapped Variables
         ws2 = wb.create_sheet("Unmapped Variables")
@@ -537,13 +543,9 @@ class TestDMExportRoundtrip:
 class TestDMCTValidation:
     """Validate controlled terminology references in the mapping output."""
 
-    def test_sex_references_correct_codelist(
-        self, dm_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_sex_references_correct_codelist(self, dm_mapping_result: DomainMappingSpec) -> None:
         """SEX mapping should reference codelist C66731 (Sex)."""
-        sex_mappings = [
-            m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "SEX"
-        ]
+        sex_mappings = [m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "SEX"]
         assert len(sex_mappings) >= 1
         sex = sex_mappings[0]
         # The LLM may or may not include codelist_code; if it does, it should be C66731
@@ -552,9 +554,7 @@ class TestDMCTValidation:
                 f"SEX codelist should be C66731, got {sex.codelist_code}"
             )
 
-    def test_ethnic_references_correct_codelist(
-        self, dm_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_ethnic_references_correct_codelist(self, dm_mapping_result: DomainMappingSpec) -> None:
         """ETHNIC mapping should reference codelist C66790 (Ethnicity)."""
         ethnic_mappings = [
             m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "ETHNIC"
@@ -566,9 +566,7 @@ class TestDMCTValidation:
                 f"ETHNIC codelist should be C66790, got {ethnic.codelist_code}"
             )
 
-    def test_race_has_reasonable_codelist(
-        self, dm_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_race_has_reasonable_codelist(self, dm_mapping_result: DomainMappingSpec) -> None:
         """RACE mapping should reference C74457 or have reasonable confidence."""
         race_mappings = [
             m for m in dm_mapping_result.variable_mappings if m.sdtm_variable == "RACE"
@@ -583,6 +581,5 @@ class TestDMCTValidation:
         else:
             # If no codelist provided, confidence should still be reasonable
             assert race.confidence >= 0.5, (
-                f"RACE without codelist should have confidence >= 0.5, "
-                f"got {race.confidence:.2f}"
+                f"RACE without codelist should have confidence >= 0.5, got {race.confidence:.2f}"
             )

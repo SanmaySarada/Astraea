@@ -85,9 +85,7 @@ class MappingContextBuilder:
         sections.append(_format_ct_section(relevant_codelists))
 
         # 5. Cross-Domain Sources section
-        sections.append(
-            _format_cross_domain_section(cross_domain_profiles)
-        )
+        sections.append(_format_cross_domain_section(cross_domain_profiles))
 
         # 6. Study Metadata section
         sections.append(_format_study_metadata_section(study_metadata))
@@ -95,9 +93,7 @@ class MappingContextBuilder:
         return "\n\n".join(sections)
 
 
-def _get_relevant_codelists(
-    domain_spec: DomainSpec, ct_ref: CTReference
-) -> dict[str, Codelist]:
+def _get_relevant_codelists(domain_spec: DomainSpec, ct_ref: CTReference) -> dict[str, Codelist]:
     """Collect only CT codelists referenced by the domain's variables.
 
     Args:
@@ -165,9 +161,7 @@ def _format_domain_section(domain_spec: DomainSpec) -> str:
         lines.append(f"### {core_label} Variables")
         for v in vars_in_group:
             codelist_str = f" codelist={v.codelist_code}" if v.codelist_code else ""
-            lines.append(
-                f"- {v.name} ({v.data_type}) | {v.label}{codelist_str}"
-            )
+            lines.append(f"- {v.name} ({v.data_type}) | {v.label}{codelist_str}")
         lines.append("")
 
     return "\n".join(lines)
@@ -237,9 +231,7 @@ def _format_ct_section(codelists: dict[str, Codelist]) -> str:
             lines.append(f"Values: {', '.join(submission_values)}")
         else:
             shown = submission_values[:20]
-            lines.append(
-                f"Values ({len(submission_values)} total, first 20): {', '.join(shown)}"
-            )
+            lines.append(f"Values ({len(submission_values)} total, first 20): {', '.join(shown)}")
 
     return "\n".join(lines)
 
@@ -256,9 +248,7 @@ def _format_cross_domain_section(
 
     for label, profile in sorted(profiles.items()):
         clinical_vars = [v for v in profile.variables if not v.is_edc_column]
-        var_summary = ", ".join(
-            f"{v.name} ({v.label})" for v in clinical_vars[:10]
-        )
+        var_summary = ", ".join(f"{v.name} ({v.label})" for v in clinical_vars[:10])
         extra = ""
         if len(clinical_vars) > 10:
             extra = f" ... and {len(clinical_vars) - 10} more"

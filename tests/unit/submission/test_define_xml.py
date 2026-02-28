@@ -117,9 +117,7 @@ def _mock_ct_ref_with_sex() -> MagicMock:
         extensible=False,
         variable_mappings=["SEX"],
         terms={
-            "M": CodelistTerm(
-                submission_value="M", nci_preferred_term="Male", definition="Male"
-            ),
+            "M": CodelistTerm(submission_value="M", nci_preferred_term="Male", definition="Male"),
             "F": CodelistTerm(
                 submission_value="F", nci_preferred_term="Female", definition="Female"
             ),

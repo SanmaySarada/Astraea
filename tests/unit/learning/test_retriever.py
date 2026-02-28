@@ -246,7 +246,12 @@ class TestMaxTotal:
         """3 corrections + approved fills to max_total=5."""
         corrections = [
             {
-                "document": f"SDTM domain AE variable VAR{i}. original logic: logic{i}. corrected logic: fixed{i}. reason: reason{i}",
+                "document": (
+                    f"SDTM domain AE variable VAR{i}."
+                    f" original logic: logic{i}."
+                    f" corrected logic: fixed{i}."
+                    f" reason: reason{i}"
+                ),
                 "metadata": {
                     "sdtm_variable": f"VAR{i}",
                     "original_pattern": "direct",
@@ -258,7 +263,11 @@ class TestMaxTotal:
         ]
         approved = [
             {
-                "document": f"SDTM domain AE variable APP{i}. mapping pattern: direct. logic: carry. source variable: SRC{i}",
+                "document": (
+                    f"SDTM domain AE variable APP{i}."
+                    f" mapping pattern: direct."
+                    f" logic: carry. source variable: SRC{i}"
+                ),
                 "metadata": {
                     "sdtm_variable": f"APP{i}",
                     "domain": "AE",

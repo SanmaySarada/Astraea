@@ -8,8 +8,6 @@ and the collection date, without individual body system findings.
 
 from __future__ import annotations
 
-import datetime
-
 import pandas as pd
 import pytest
 
@@ -172,8 +170,14 @@ class TestPEEndToEnd:
         )
         assert len(result) == 4
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "PESEQ",
-            "PETESTCD", "PETEST", "PEORRES", "PEDTC",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "PESEQ",
+            "PETESTCD",
+            "PETEST",
+            "PEORRES",
+            "PEDTC",
         }
         assert set(result.columns) == expected_cols
 

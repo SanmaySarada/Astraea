@@ -548,8 +548,7 @@ class TestJSONRoundTrip:
             == original.variable_proposals[0].sdtm_variable
         )
         assert (
-            restored.variable_proposals[1].confidence
-            == original.variable_proposals[1].confidence
+            restored.variable_proposals[1].confidence == original.variable_proposals[1].confidence
         )
         assert restored.unmapped_source_variables == original.unmapped_source_variables
         assert restored.suppqual_candidates == original.suppqual_candidates

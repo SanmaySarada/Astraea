@@ -28,7 +28,9 @@ from astraea.review.models import (
 )
 
 
-def _make_mapping(var_name: str, pattern: MappingPattern = MappingPattern.DIRECT) -> VariableMapping:
+def _make_mapping(
+    var_name: str, pattern: MappingPattern = MappingPattern.DIRECT
+) -> VariableMapping:
     """Create a minimal VariableMapping."""
     return VariableMapping(
         sdtm_variable=var_name,
@@ -45,9 +47,7 @@ def _make_mapping(var_name: str, pattern: MappingPattern = MappingPattern.DIRECT
     )
 
 
-def _make_spec(
-    domain: str, variables: list[str], study_id: str = "STUDY-001"
-) -> DomainMappingSpec:
+def _make_spec(domain: str, variables: list[str], study_id: str = "STUDY-001") -> DomainMappingSpec:
     """Create a minimal DomainMappingSpec."""
     mappings = [_make_mapping(v) for v in variables]
     return DomainMappingSpec(
@@ -80,9 +80,7 @@ def _make_decision(
     corrected = None
     if status == ReviewStatus.CORRECTED and correction_type != CorrectionType.REJECT:
         corrected = _make_mapping(var_name, MappingPattern.RENAME)
-        corrected = corrected.model_copy(
-            update={"mapping_logic": "Corrected logic"}
-        )
+        corrected = corrected.model_copy(update={"mapping_logic": "Corrected logic"})
     return ReviewDecision(
         sdtm_variable=var_name,
         status=status,
@@ -104,9 +102,7 @@ def _make_correction(
     corrected = None
     if correction_type != CorrectionType.REJECT:
         corrected = _make_mapping(var_name, MappingPattern.RENAME)
-        corrected = corrected.model_copy(
-            update={"mapping_logic": "Corrected logic"}
-        )
+        corrected = corrected.model_copy(update={"mapping_logic": "Corrected logic"})
     return HumanCorrection(
         session_id=session_id,
         domain="AE",
@@ -172,9 +168,7 @@ class TestIngestDomainReview:
         assert counts["approved_mappings"] == 4
         assert counts["corrections"] == 1
 
-    def test_was_corrected_flag_set(
-        self, stores: tuple[ExampleStore, LearningVectorStore]
-    ) -> None:
+    def test_was_corrected_flag_set(self, stores: tuple[ExampleStore, LearningVectorStore]) -> None:
         """was_corrected flag is True only for corrected variables."""
         example_store, vector_store = stores
         spec = _make_spec("AE", ["AETERM", "AEDECOD"])
@@ -193,9 +187,7 @@ class TestIngestDomainReview:
             reviewed_at="2026-02-28T10:00:00+00:00",
         )
 
-        ingest_domain_review(
-            review, "STUDY-001", example_store, vector_store
-        )
+        ingest_domain_review(review, "STUDY-001", example_store, vector_store)
 
         examples = example_store.get_examples_for_domain("AE")
         by_var = {e.sdtm_variable: e for e in examples}
@@ -203,9 +195,7 @@ class TestIngestDomainReview:
         assert by_var["AETERM"].was_corrected is False
         assert by_var["AEDECOD"].was_corrected is True
 
-    def test_idempotent_ingestion(
-        self, stores: tuple[ExampleStore, LearningVectorStore]
-    ) -> None:
+    def test_idempotent_ingestion(self, stores: tuple[ExampleStore, LearningVectorStore]) -> None:
         """Calling ingest twice does not create duplicates."""
         example_store, vector_store = stores
         spec = _make_spec("AE", ["AETERM", "AEDECOD"])
@@ -223,12 +213,8 @@ class TestIngestDomainReview:
         )
 
         # Ingest twice
-        ingest_domain_review(
-            review, "STUDY-001", example_store, vector_store, session_id="sess123"
-        )
-        ingest_domain_review(
-            review, "STUDY-001", example_store, vector_store, session_id="sess123"
-        )
+        ingest_domain_review(review, "STUDY-001", example_store, vector_store, session_id="sess123")
+        ingest_domain_review(review, "STUDY-001", example_store, vector_store, session_id="sess123")
 
         # Should still have only 2 examples (not 4)
         assert example_store.get_example_count() == 2
@@ -254,9 +240,7 @@ class TestIngestDomainReview:
             reviewed_at="2026-02-28T10:00:00+00:00",
         )
 
-        count = ingest_domain_review(
-            review, "STUDY-001", example_store, vector_store
-        )
+        count = ingest_domain_review(review, "STUDY-001", example_store, vector_store)
 
         assert count == 2
         assert example_store.get_example_count() == 2

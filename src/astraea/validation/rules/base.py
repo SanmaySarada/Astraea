@@ -69,16 +69,10 @@ class RuleResult(BaseModel):
     category: RuleCategory = Field(..., description="Rule category")
     severity: RuleSeverity = Field(..., description="Finding severity")
     domain: str | None = Field(default=None, description="Domain code if domain-specific")
-    variable: str | None = Field(
-        default=None, description="Variable name if variable-specific"
-    )
+    variable: str | None = Field(default=None, description="Variable name if variable-specific")
     message: str = Field(..., description="Detailed finding message")
-    affected_count: int = Field(
-        default=0, description="Number of affected records/rows"
-    )
-    fix_suggestion: str | None = Field(
-        default=None, description="Suggested remediation action"
-    )
+    affected_count: int = Field(default=0, description="Number of affected records/rows")
+    fix_suggestion: str | None = Field(default=None, description="Suggested remediation action")
     p21_equivalent: str | None = Field(
         default=None,
         description="Equivalent Pinnacle 21 rule ID if applicable",

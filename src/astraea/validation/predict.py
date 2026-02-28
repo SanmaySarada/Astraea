@@ -74,9 +74,7 @@ def _check_required_variables(
 ) -> list[RuleResult]:
     """ASTR-PP001: All Required variables must have mappings."""
     mapped_names = {m.sdtm_variable.upper() for m in spec.variable_mappings}
-    required_vars = [
-        v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ
-    ]
+    required_vars = [v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ]
 
     results: list[RuleResult] = []
     for var_name in required_vars:
@@ -122,8 +120,7 @@ def _check_duplicate_mappings(spec: DomainMappingSpec) -> list[RuleResult]:
                     domain=spec.domain,
                     variable=var_name,
                     message=(
-                        f"Variable {var_name} has {count} "
-                        f"mappings in {spec.domain} (expected 1)"
+                        f"Variable {var_name} has {count} mappings in {spec.domain} (expected 1)"
                     ),
                     fix_suggestion=f"Remove duplicate mapping(s) for {var_name}",
                 )
@@ -173,20 +170,13 @@ def _check_assign_ct_values(
     results: list[RuleResult] = []
 
     for m in spec.variable_mappings:
-        if (
-            m.mapping_pattern == MappingPattern.ASSIGN
-            and m.codelist_code
-            and m.assigned_value
-        ):
+        if m.mapping_pattern == MappingPattern.ASSIGN and m.codelist_code and m.assigned_value:
             cl = ct_ref.lookup_codelist(m.codelist_code)
             if cl is not None and not cl.extensible and m.assigned_value not in cl.terms:
                 results.append(
                     RuleResult(
                         rule_id="ASTR-PP004",
-                        rule_description=(
-                            "ASSIGN value must be valid in "
-                            "non-extensible codelist"
-                        ),
+                        rule_description=("ASSIGN value must be valid in non-extensible codelist"),
                         category=RuleCategory.TERMINOLOGY,
                         severity=RuleSeverity.ERROR,
                         domain=spec.domain,
@@ -270,8 +260,7 @@ def _check_computational_method(spec: DomainMappingSpec) -> list[RuleResult]:
                 RuleResult(
                     rule_id="ASTR-PP007",
                     rule_description=(
-                        "Derived variable should have "
-                        "computational method for define.xml"
+                        "Derived variable should have computational method for define.xml"
                     ),
                     category=RuleCategory.FORMAT,
                     severity=RuleSeverity.NOTICE,

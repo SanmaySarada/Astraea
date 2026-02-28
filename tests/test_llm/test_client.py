@@ -53,9 +53,7 @@ class TestAstraeaLLMClientParse:
     """Tests for the parse() method."""
 
     @patch("astraea.llm.client.anthropic.Anthropic")
-    def test_parse_calls_messages_create_with_tool_use(
-        self, mock_anthropic_cls: MagicMock
-    ) -> None:
+    def test_parse_calls_messages_create_with_tool_use(self, mock_anthropic_cls: MagicMock) -> None:
         """parse() delegates to client.messages.create() with tool use for structured output."""
         mock_client_instance = MagicMock()
         mock_anthropic_cls.return_value = mock_client_instance
@@ -93,9 +91,7 @@ class TestAstraeaLLMClientParse:
         mock_client_instance = MagicMock()
         mock_anthropic_cls.return_value = mock_client_instance
 
-        mock_response = _make_tool_use_response(
-            "extract_SampleOutput", {"name": "x", "score": 0.5}
-        )
+        mock_response = _make_tool_use_response("extract_SampleOutput", {"name": "x", "score": 0.5})
         mock_client_instance.messages.create.return_value = mock_response
 
         client = AstraeaLLMClient()
@@ -116,9 +112,7 @@ class TestAstraeaLLMClientParse:
         mock_client_instance = MagicMock()
         mock_anthropic_cls.return_value = mock_client_instance
 
-        mock_response = _make_tool_use_response(
-            "extract_SampleOutput", {"name": "x", "score": 0.5}
-        )
+        mock_response = _make_tool_use_response("extract_SampleOutput", {"name": "x", "score": 0.5})
         mock_client_instance.messages.create.return_value = mock_response
 
         client = AstraeaLLMClient()
@@ -133,9 +127,7 @@ class TestAstraeaLLMClientParse:
         assert call_kwargs["max_tokens"] == 4096
 
     @patch("astraea.llm.client.anthropic.Anthropic")
-    def test_parse_raises_on_no_tool_use_block(
-        self, mock_anthropic_cls: MagicMock
-    ) -> None:
+    def test_parse_raises_on_no_tool_use_block(self, mock_anthropic_cls: MagicMock) -> None:
         """parse() raises ValueError if response has no tool_use block."""
         mock_client_instance = MagicMock()
         mock_anthropic_cls.return_value = mock_client_instance

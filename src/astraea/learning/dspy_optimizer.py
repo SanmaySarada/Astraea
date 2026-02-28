@@ -155,8 +155,7 @@ def build_trainset(
         dspy_example = dspy.Example(
             domain_spec=f"Domain {ex.domain}",
             source_profile=(
-                f"Source: {ex.source_variable or 'N/A'} "
-                f"({ex.source_label or 'no label'})"
+                f"Source: {ex.source_variable or 'N/A'} ({ex.source_label or 'no label'})"
             ),
             ecrf_context=f"Variable: {ex.sdtm_variable}",
             variable_mapping=(

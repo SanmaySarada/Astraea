@@ -6,10 +6,6 @@ and format detection -- all critical path for SDTM compliance.
 
 from __future__ import annotations
 
-import math
-
-import pytest
-
 from astraea.transforms.dates import (
     SAS_EPOCH,
     detect_date_format,
@@ -19,10 +15,10 @@ from astraea.transforms.dates import (
     sas_datetime_to_iso,
 )
 
-
 # ---------------------------------------------------------------------------
 # sas_date_to_iso (DAYS since 1960-01-01)
 # ---------------------------------------------------------------------------
+
 
 class TestSasDateToIso:
     """SAS date values are integer days since 1960-01-01."""
@@ -43,7 +39,8 @@ class TestSasDateToIso:
 
     def test_leap_year(self):
         # 2020-02-29 is a leap day. Days from 1960-01-01 to 2020-02-29:
-        from datetime import date, timedelta
+        from datetime import date
+
         days = (date(2020, 2, 29) - SAS_EPOCH).days
         assert sas_date_to_iso(float(days)) == "2020-02-29"
 
@@ -72,6 +69,7 @@ class TestSasDateToIso:
 # ---------------------------------------------------------------------------
 # sas_datetime_to_iso (SECONDS since 1960-01-01 00:00:00)
 # ---------------------------------------------------------------------------
+
 
 class TestSasDatetimeToIso:
     """SAS datetime values are seconds since 1960-01-01 00:00:00.
@@ -129,6 +127,7 @@ class TestSasDatetimeToIso:
 # ---------------------------------------------------------------------------
 # parse_string_date_to_iso
 # ---------------------------------------------------------------------------
+
 
 class TestParseStringDateToIso:
     """String date parsing for various formats found in clinical data."""
@@ -253,6 +252,7 @@ class TestParseStringDateToIso:
 # format_partial_iso8601
 # ---------------------------------------------------------------------------
 
+
 class TestFormatPartialIso8601:
     """SDTM-IG requires truncated ISO 8601 for partial dates.
 
@@ -308,6 +308,7 @@ class TestFormatPartialIso8601:
 # ---------------------------------------------------------------------------
 # detect_date_format
 # ---------------------------------------------------------------------------
+
 
 class TestDocstringExamples:
     """Verify that docstring examples match actual function output."""

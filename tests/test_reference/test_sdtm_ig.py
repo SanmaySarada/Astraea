@@ -213,7 +213,17 @@ class TestDomainsJsonCorrections:
 
     @pytest.mark.parametrize(
         "varname",
-        ["AESER", "AESCAN", "AESCONG", "AESDISAB", "AESDTH", "AESHOSP", "AESLIFE", "AESMIE", "AECONTRT"],
+        [
+            "AESER",
+            "AESCAN",
+            "AESCONG",
+            "AESDISAB",
+            "AESDTH",
+            "AESHOSP",
+            "AESLIFE",
+            "AESMIE",
+            "AECONTRT",
+        ],
     )
     def test_ae_ny_variables_use_c66742(self, ref: SDTMReference, varname: str) -> None:
         spec = ref.get_variable_spec("AE", varname)
@@ -321,7 +331,12 @@ class TestDomainsJsonCorrections:
         spec = ref.get_domain_spec("LB")
         assert spec is not None
         assert spec.key_variables == [
-            "STUDYID", "USUBJID", "LBTESTCD", "LBSPEC", "VISITNUM", "LBDTC"
+            "STUDYID",
+            "USUBJID",
+            "LBTESTCD",
+            "LBSPEC",
+            "VISITNUM",
+            "LBDTC",
         ]
 
     def test_all_core_domains_have_keys(self, ref: SDTMReference) -> None:
@@ -518,9 +533,7 @@ class TestTrialDesignAndMissingDomains:
         spec = ref.get_domain_spec("SUPPQUAL")
         assert spec is not None
         assert "QNAM" in spec.key_variables
-        assert spec.key_variables == [
-            "STUDYID", "RDOMAIN", "USUBJID", "IDVAR", "IDVARVAL", "QNAM"
-        ]
+        assert spec.key_variables == ["STUDYID", "RDOMAIN", "USUBJID", "IDVAR", "IDVARVAL", "QNAM"]
 
     # ------------------------------------------------------------------
     # Total domain count

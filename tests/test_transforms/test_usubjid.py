@@ -12,13 +12,12 @@ from astraea.transforms.usubjid import (
     validate_usubjid_consistency,
 )
 
-
 # ---------------------------------------------------------------------------
 # generate_usubjid
 # ---------------------------------------------------------------------------
 
-class TestGenerateUsubjid:
 
+class TestGenerateUsubjid:
     def test_basic(self):
         assert generate_usubjid("301", "04401", "01") == "301-04401-01"
 
@@ -60,8 +59,8 @@ class TestGenerateUsubjid:
 # extract_usubjid_components
 # ---------------------------------------------------------------------------
 
-class TestExtractUsubjidComponents:
 
+class TestExtractUsubjidComponents:
     def test_three_parts(self):
         result = extract_usubjid_components("301-04401-01")
         assert result == {"studyid": "301", "siteid": "04401", "subjid": "01"}
@@ -97,30 +96,36 @@ class TestExtractUsubjidComponents:
 # generate_usubjid_column
 # ---------------------------------------------------------------------------
 
-class TestGenerateUsubjidColumn:
 
+class TestGenerateUsubjidColumn:
     def test_with_constant_studyid(self):
-        df = pd.DataFrame({
-            "SITEID": ["04401", "04402"],
-            "SUBJID": ["01", "02"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": ["04401", "04402"],
+                "SUBJID": ["01", "02"],
+            }
+        )
         result = generate_usubjid_column(df, studyid_value="301")
         assert list(result) == ["301-04401-01", "301-04402-02"]
 
     def test_with_studyid_column(self):
-        df = pd.DataFrame({
-            "STUDYID": ["301", "301"],
-            "SITEID": ["04401", "04402"],
-            "SUBJID": ["01", "02"],
-        })
+        df = pd.DataFrame(
+            {
+                "STUDYID": ["301", "301"],
+                "SITEID": ["04401", "04402"],
+                "SUBJID": ["01", "02"],
+            }
+        )
         result = generate_usubjid_column(df)
         assert list(result) == ["301-04401-01", "301-04402-02"]
 
     def test_whitespace_in_columns(self):
-        df = pd.DataFrame({
-            "SITEID": [" 04401 ", "04402"],
-            "SUBJID": ["01 ", " 02"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": [" 04401 ", "04402"],
+                "SUBJID": ["01 ", " 02"],
+            }
+        )
         result = generate_usubjid_column(df, studyid_value="301")
         assert list(result) == ["301-04401-01", "301-04402-02"]
 
@@ -130,38 +135,46 @@ class TestGenerateUsubjidColumn:
             generate_usubjid_column(df, studyid_value="301")
 
     def test_missing_studyid_col_when_no_value(self):
-        df = pd.DataFrame({
-            "SITEID": ["04401"],
-            "SUBJID": ["01"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": ["04401"],
+                "SUBJID": ["01"],
+            }
+        )
         with pytest.raises(KeyError, match="Missing required columns"):
             generate_usubjid_column(df)
 
     def test_custom_column_names(self):
-        df = pd.DataFrame({
-            "study": ["301"],
-            "site": ["04401"],
-            "subj": ["01"],
-        })
+        df = pd.DataFrame(
+            {
+                "study": ["301"],
+                "site": ["04401"],
+                "subj": ["01"],
+            }
+        )
         result = generate_usubjid_column(
             df, studyid_col="study", siteid_col="site", subjid_col="subj"
         )
         assert list(result) == ["301-04401-01"]
 
     def test_custom_delimiter(self):
-        df = pd.DataFrame({
-            "SITEID": ["04401"],
-            "SUBJID": ["01"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": ["04401"],
+                "SUBJID": ["01"],
+            }
+        )
         result = generate_usubjid_column(df, studyid_value="301", delimiter=".")
         assert list(result) == ["301.04401.01"]
 
     def test_nan_produces_na(self):
         """NaN in source columns should produce pd.NA, not '301-nan-01'."""
-        df = pd.DataFrame({
-            "SITEID": ["04401", None, "04403"],
-            "SUBJID": ["01", "02", "03"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": ["04401", None, "04403"],
+                "SUBJID": ["01", "02", "03"],
+            }
+        )
         result = generate_usubjid_column(df, studyid_value="301")
         assert result.iloc[0] == "301-04401-01"
         assert pd.isna(result.iloc[1])
@@ -169,10 +182,12 @@ class TestGenerateUsubjidColumn:
 
     def test_valid_column_unchanged(self):
         """Normal DataFrame still produces correct USUBJIDs."""
-        df = pd.DataFrame({
-            "SITEID": ["04401", "04402", "04403"],
-            "SUBJID": ["01", "02", "03"],
-        })
+        df = pd.DataFrame(
+            {
+                "SITEID": ["04401", "04402", "04403"],
+                "SUBJID": ["01", "02", "03"],
+            }
+        )
         result = generate_usubjid_column(df, studyid_value="301")
         expected = ["301-04401-01", "301-04402-02", "301-04403-03"]
         assert list(result) == expected
@@ -182,8 +197,8 @@ class TestGenerateUsubjidColumn:
 # validate_usubjid_consistency
 # ---------------------------------------------------------------------------
 
-class TestValidateUsubjidConsistency:
 
+class TestValidateUsubjidConsistency:
     def test_valid_returns_empty(self):
         datasets = {
             "DM": pd.DataFrame({"USUBJID": ["301-04401-01", "301-04402-02"]}),
@@ -229,9 +244,11 @@ class TestValidateUsubjidConsistency:
 
     def test_inconsistent_format(self):
         datasets = {
-            "DM": pd.DataFrame({
-                "USUBJID": ["301-04401-01", "STUDY.SITE.SUBJ"],
-            }),
+            "DM": pd.DataFrame(
+                {
+                    "USUBJID": ["301-04401-01", "STUDY.SITE.SUBJ"],
+                }
+            ),
         }
         errors = validate_usubjid_consistency(datasets)
         # 301-04401-01 has 2 dashes, STUDY.SITE.SUBJ has 0 dashes

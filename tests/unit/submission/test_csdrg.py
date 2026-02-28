@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from astraea.models.mapping import (
     ConfidenceLevel,
     DomainMappingSpec,
@@ -193,9 +191,7 @@ class TestGenerateCsdrg:
         assert result == output
         assert output.exists()
 
-    def test_generate_csdrg_suppqual_candidates_in_section_8(
-        self, tmp_path: Path
-    ) -> None:
+    def test_generate_csdrg_suppqual_candidates_in_section_8(self, tmp_path: Path) -> None:
         """Section 8 lists SUPPQUAL candidates from specs."""
         specs = [_make_spec("AE", "Adverse Events")]  # has suppqual_candidates
         report = _make_validation_report()

@@ -271,11 +271,23 @@ class TestAEEndToEnd:
         """Output should have exactly the 17 mapped SDTM variables."""
         result = ae_executor.execute(ae_spec, {"ae": raw_ae_df}, study_id="PHA022121-C301")
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "AESEQ",
-            "AETERM", "AEDECOD", "AEBODSYS",
-            "AESEV", "AESER", "AEACN", "AEREL", "AEOUT",
-            "AESDTH", "AESLIFE", "AESHOSP",
-            "AESTDTC", "AEENDTC",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "AESEQ",
+            "AETERM",
+            "AEDECOD",
+            "AEBODSYS",
+            "AESEV",
+            "AESER",
+            "AEACN",
+            "AEREL",
+            "AEOUT",
+            "AESDTH",
+            "AESLIFE",
+            "AESHOSP",
+            "AESTDTC",
+            "AEENDTC",
         }
         assert set(result.columns) == expected_cols
 

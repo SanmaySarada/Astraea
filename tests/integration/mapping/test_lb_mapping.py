@@ -46,7 +46,13 @@ STUDY_ID = "PHA022121-C301"
 
 # Required LB variables per SDTM-IG v3.4
 REQUIRED_LB_VARIABLES = {
-    "STUDYID", "DOMAIN", "USUBJID", "LBSEQ", "LBTESTCD", "LBTEST", "LBORRES",
+    "STUDYID",
+    "DOMAIN",
+    "USUBJID",
+    "LBSEQ",
+    "LBTESTCD",
+    "LBTEST",
+    "LBORRES",
 }
 
 # Skip condition: no API key means we cannot run LLM calls
@@ -307,8 +313,7 @@ class TestLBMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in lb_mapping_result.variable_mappings}
         missing = REQUIRED_LB_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required LB variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required LB variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_lb_mapping_domain_class(self, lb_mapping_result: DomainMappingSpec) -> None:
@@ -321,9 +326,7 @@ class TestLBMappingEndToEnd:
         """Verify average confidence >= 0.6."""
         confidences = [m.confidence for m in lb_mapping_result.variable_mappings]
         avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
-        assert avg_conf >= 0.6, (
-            f"Average confidence {avg_conf:.2f} is below 0.6 threshold"
-        )
+        assert avg_conf >= 0.6, f"Average confidence {avg_conf:.2f} is below 0.6 threshold"
 
 
 @pytest.mark.integration
@@ -331,15 +334,10 @@ class TestLBMappingEndToEnd:
 class TestLBCTValidation:
     """Validate controlled terminology references in LB mapping output."""
 
-    def test_lb_mapping_specimen_codelist(
-        self, lb_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_lb_mapping_specimen_codelist(self, lb_mapping_result: DomainMappingSpec) -> None:
         """Verify LBSPEC mapping references CT codelist C66789 (specimen condition) if present."""
-        lbspec = [
-            m for m in lb_mapping_result.variable_mappings if m.sdtm_variable == "LBSPEC"
-        ]
+        lbspec = [m for m in lb_mapping_result.variable_mappings if m.sdtm_variable == "LBSPEC"]
         if lbspec and lbspec[0].codelist_code is not None:
             assert lbspec[0].codelist_code == "C66789", (
-                f"LBSPEC codelist should be C66789 (Specimen Type), "
-                f"got {lbspec[0].codelist_code}"
+                f"LBSPEC codelist should be C66789 (Specimen Type), got {lbspec[0].codelist_code}"
             )

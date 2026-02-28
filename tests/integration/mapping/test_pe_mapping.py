@@ -227,17 +227,14 @@ class TestPEMappingEndToEnd:
     def test_pe_mapping_has_pedtc(self, pe_mapping_result: DomainMappingSpec) -> None:
         """Verify PEDTC mapping exists."""
         mapped_vars = {m.sdtm_variable for m in pe_mapping_result.variable_mappings}
-        assert "PEDTC" in mapped_vars, (
-            f"PEDTC not found in mapped variables: {sorted(mapped_vars)}"
-        )
+        assert "PEDTC" in mapped_vars, f"PEDTC not found in mapped variables: {sorted(mapped_vars)}"
 
     def test_pe_mapping_required_vars(self, pe_mapping_result: DomainMappingSpec) -> None:
         """Verify all REQ variables present."""
         mapped_vars = {m.sdtm_variable for m in pe_mapping_result.variable_mappings}
         missing = REQUIRED_PE_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required PE variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required PE variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_pe_mapping_domain_class(self, pe_mapping_result: DomainMappingSpec) -> None:
@@ -250,6 +247,4 @@ class TestPEMappingEndToEnd:
         """Verify average confidence >= 0.5 (lower threshold since PE data is very sparse)."""
         confidences = [m.confidence for m in pe_mapping_result.variable_mappings]
         avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
-        assert avg_conf >= 0.5, (
-            f"Average confidence {avg_conf:.2f} is below 0.5 threshold"
-        )
+        assert avg_conf >= 0.5, f"Average confidence {avg_conf:.2f} is below 0.5 threshold"

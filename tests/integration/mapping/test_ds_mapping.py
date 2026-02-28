@@ -246,8 +246,7 @@ class TestDSMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ds_mapping_result.variable_mappings}
         missing = REQUIRED_DS_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required DS variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required DS variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_dates_mapped(self, ds_mapping_result: DomainMappingSpec) -> None:
@@ -272,13 +271,9 @@ class TestDSMappingEndToEnd:
 class TestDSCTValidation:
     """Validate controlled terminology references in DS mapping output."""
 
-    def test_dsdecod_references_codelist(
-        self, ds_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_dsdecod_references_codelist(self, ds_mapping_result: DomainMappingSpec) -> None:
         """DSDECOD mapping should reference codelist C66727."""
-        dsdecod = [
-            m for m in ds_mapping_result.variable_mappings if m.sdtm_variable == "DSDECOD"
-        ]
+        dsdecod = [m for m in ds_mapping_result.variable_mappings if m.sdtm_variable == "DSDECOD"]
         if dsdecod and dsdecod[0].codelist_code is not None:
             assert dsdecod[0].codelist_code == "C66727", (
                 f"DSDECOD codelist should be C66727, got {dsdecod[0].codelist_code}"
@@ -305,6 +300,4 @@ class TestDSExportRoundtrip:
 
         assert roundtripped.domain == ds_mapping_result.domain
         assert roundtripped.total_variables == ds_mapping_result.total_variables
-        assert len(roundtripped.variable_mappings) == len(
-            ds_mapping_result.variable_mappings
-        )
+        assert len(roundtripped.variable_mappings) == len(ds_mapping_result.variable_mappings)

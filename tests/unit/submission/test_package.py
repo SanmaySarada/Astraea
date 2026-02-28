@@ -78,9 +78,7 @@ class TestCheckSubmissionSize:
 
         results = check_submission_size(tmp_path, limit_gb=0.0000001)
 
-        error_results = [
-            r for r in results if r.severity == RuleSeverity.ERROR
-        ]
+        error_results = [r for r in results if r.severity == RuleSeverity.ERROR]
         assert len(error_results) >= 1
         assert "exceeds" in error_results[0].message.lower()
 
@@ -99,9 +97,7 @@ class TestCheckSubmissionSize:
         assert warnings[0].fix_suggestion is not None
         assert "Split LB by LBCAT" in warnings[0].fix_suggestion
 
-    def test_unknown_domain_over_1gb_returns_generic_guidance(
-        self, tmp_path: Path
-    ) -> None:
+    def test_unknown_domain_over_1gb_returns_generic_guidance(self, tmp_path: Path) -> None:
         """Unknown domain > 1GB returns WARNING with generic split guidance."""
         big_path = tmp_path / "zz.xpt"
         with open(big_path, "wb") as f:

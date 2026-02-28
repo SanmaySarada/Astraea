@@ -55,8 +55,7 @@ class VariableNameLengthRule(ValidationRule):
                         domain=domain,
                         variable=col_str,
                         message=(
-                            f"Variable name '{col_str}' exceeds 8 characters "
-                            f"({len(col_str)} chars)"
+                            f"Variable name '{col_str}' exceeds 8 characters ({len(col_str)} chars)"
                         ),
                         affected_count=len(df),
                         fix_suggestion=f"Rename '{col_str}' to 8 characters or fewer",
@@ -106,9 +105,7 @@ class VariableLabelLengthRule(ValidationRule):
                             f"({len(label)} chars): '{label[:50]}...'"
                         ),
                         affected_count=0,
-                        fix_suggestion=(
-                            f"Truncate label for {vm.sdtm_variable} to 40 characters"
-                        ),
+                        fix_suggestion=(f"Truncate label for {vm.sdtm_variable} to 40 characters"),
                     )
                 )
 
@@ -123,9 +120,7 @@ class CharacterLengthRule(ValidationRule):
     """
 
     rule_id: str = "ASTR-L003"
-    description: str = (
-        "Character variable values must not exceed 200 bytes (XPT v5 limit)"
-    )
+    description: str = "Character variable values must not exceed 200 bytes (XPT v5 limit)"
     category: RuleCategory = RuleCategory.LIMIT
     severity: RuleSeverity = RuleSeverity.ERROR
 
@@ -148,9 +143,7 @@ class CharacterLengthRule(ValidationRule):
             if non_null.empty:
                 continue
 
-            byte_lengths = non_null.astype(str).apply(
-                lambda x: len(x.encode("utf-8"))
-            )
+            byte_lengths = non_null.astype(str).apply(lambda x: len(x.encode("utf-8")))
             max_bytes = int(byte_lengths.max())
             if max_bytes > 200:
                 over_count = int((byte_lengths > 200).sum())
@@ -168,8 +161,7 @@ class CharacterLengthRule(ValidationRule):
                         ),
                         affected_count=over_count,
                         fix_suggestion=(
-                            f"Truncate values in '{col}' to 200 bytes or "
-                            f"move to SUPPQUAL"
+                            f"Truncate values in '{col}' to 200 bytes or move to SUPPQUAL"
                         ),
                     )
                 )

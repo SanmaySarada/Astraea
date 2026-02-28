@@ -287,7 +287,10 @@ class TestMappingEngine:
         )
 
         assert spec.total_variables == 7
-        assert spec.high_confidence_count + spec.medium_confidence_count + spec.low_confidence_count == 7
+        assert (
+            spec.high_confidence_count + spec.medium_confidence_count + spec.low_confidence_count
+            == 7
+        )
         assert spec.high_confidence_count >= 1  # At least STUDYID, AGE, SEX are high
         assert spec.required_mapped >= 1  # At least STUDYID is required
 

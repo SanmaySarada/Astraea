@@ -185,7 +185,9 @@ def profile_dataset(df: pd.DataFrame, meta: DatasetMetadata) -> DatasetProfile:
         DatasetProfile with per-variable statistics, EDC column detection,
         and date format detection.
     """
-    logger.info("Profiling dataset: {} ({} rows x {} cols)", meta.filename, meta.row_count, meta.col_count)
+    logger.info(
+        "Profiling dataset: {} ({} rows x {} cols)", meta.filename, meta.row_count, meta.col_count
+    )
 
     n_total = len(df)
     variable_profiles: list[VariableProfile] = []
@@ -221,13 +223,13 @@ def profile_dataset(df: pd.DataFrame, meta: DatasetMetadata) -> DatasetProfile:
         detected_format: str | None = None
 
         if is_date:
-            detected_format = "SAS_DATETIME" if sas_format and "DATETIME" in sas_format else "SAS_DATE"
+            detected_format = (
+                "SAS_DATETIME" if sas_format and "DATETIME" in sas_format else "SAS_DATE"
+            )
 
         # String date detection for _RAW columns
         if not is_date and _is_potential_string_date_column(col_name):
-            non_empty = [
-                str(v) for v in series.dropna().head(20).tolist() if str(v).strip()
-            ]
+            non_empty = [str(v) for v in series.dropna().head(20).tolist() if str(v).strip()]
             fmt = detect_date_format(non_empty)
             if fmt is not None:
                 is_date = True

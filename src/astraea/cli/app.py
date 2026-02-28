@@ -151,9 +151,7 @@ def reference(
     spec = ref.get_domain_spec(domain)
 
     if spec is None:
-        console.print(
-            f"[bold red]Error:[/bold red] Domain '{domain.upper()}' not found."
-        )
+        console.print(f"[bold red]Error:[/bold red] Domain '{domain.upper()}' not found.")
         available = ref.list_domains()
         console.print(f"Available domains: {', '.join(available)}")
         raise typer.Exit(code=1)
@@ -198,8 +196,7 @@ def codelist(
         cl = ct.get_codelist_for_variable(variable)
         if cl is None:
             console.print(
-                f"[bold red]Error:[/bold red] No codelist found for variable "
-                f"'{variable.upper()}'."
+                f"[bold red]Error:[/bold red] No codelist found for variable '{variable.upper()}'."
             )
             raise typer.Exit(code=1)
         display_codelist(cl, console)
@@ -208,9 +205,7 @@ def codelist(
     if code is not None:
         cl = ct.lookup_codelist(code)
         if cl is None:
-            console.print(
-                f"[bold red]Error:[/bold red] Codelist '{code}' not found."
-            )
+            console.print(f"[bold red]Error:[/bold red] Codelist '{code}' not found.")
             available = ct.list_codelists()
             console.print(f"Available codelists: {', '.join(available[:20])}...")
             raise typer.Exit(code=1)
@@ -331,8 +326,7 @@ def map_domain(
         raise typer.Exit(code=1)
 
     console.print(
-        f"\n[bold blue][1/5][/bold blue] Profiling primary dataset: "
-        f"[cyan]{primary_sas.name}[/cyan]"
+        f"\n[bold blue][1/5][/bold blue] Profiling primary dataset: [cyan]{primary_sas.name}[/cyan]"
     )
     try:
         df, meta = read_sas_with_metadata(primary_sas)
@@ -356,9 +350,7 @@ def map_domain(
                     cd_df, cd_meta = read_sas_with_metadata(cd_path)
                     cross_domain_profiles[cd_name] = profile_dataset(cd_df, cd_meta)
                 except Exception as e:
-                    console.print(
-                        f"[yellow]Warning: Could not profile {cd_name}: {e}[/yellow]"
-                    )
+                    console.print(f"[yellow]Warning: Could not profile {cd_name}: {e}[/yellow]")
     else:
         console.print("[bold blue][2/5][/bold blue] No cross-domain sources for this domain")
 
@@ -402,16 +394,12 @@ def map_domain(
     learning_retriever = _try_load_learning_retriever(learning_db, console)
 
     # Step 4: Run mapping engine
-    console.print(
-        f"[bold blue][4/5][/bold blue] Mapping domain [bold]{domain_upper}[/bold]..."
-    )
+    console.print(f"[bold blue][4/5][/bold blue] Mapping domain [bold]{domain_upper}[/bold]...")
     try:
         sdtm_ref = load_sdtm_reference()
         ct_ref = load_ct_reference()
         llm_client = AstraeaLLMClient()
-        engine = MappingEngine(
-            llm_client, sdtm_ref, ct_ref, learning_retriever=learning_retriever
-        )
+        engine = MappingEngine(llm_client, sdtm_ref, ct_ref, learning_retriever=learning_retriever)
 
         study_meta = StudyMetadata(study_id=study_id)
         spec = engine.map_domain(
@@ -514,13 +502,9 @@ def execute_domain(
                 raw_dfs[source_name] = df
                 console.print(f"  Loaded {source_path.name}: {len(df)} rows")
             except Exception as e:
-                console.print(
-                    f"[yellow]Warning: Could not read {source_name}: {e}[/yellow]"
-                )
+                console.print(f"[yellow]Warning: Could not read {source_name}: {e}[/yellow]")
         else:
-            console.print(
-                f"[yellow]Warning: Source dataset not found: {source_name}[/yellow]"
-            )
+            console.print(f"[yellow]Warning: Source dataset not found: {source_name}[/yellow]")
 
     if not raw_dfs:
         console.print("[bold red]Error:[/bold red] No source datasets could be loaded")
@@ -716,9 +700,7 @@ def validate_cmd(
     from astraea.models.mapping import DomainMappingSpec
 
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
-        search_dir.glob("*_mapping.json")
-    )
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
     domain_specs: dict[str, DomainMappingSpec] = {}
     for spec_path in spec_files:
         try:
@@ -771,9 +753,7 @@ def validate_cmd(
         from astraea.validation.fix_loop import FixLoopEngine
 
         auto_fixer = AutoFixer(ct_ref=ct_ref, sdtm_ref=sdtm_ref)
-        fix_engine = FixLoopEngine(
-            engine=engine, auto_fixer=auto_fixer, max_iterations=3
-        )
+        fix_engine = FixLoopEngine(engine=engine, auto_fixer=auto_fixer, max_iterations=3)
         fix_result = fix_engine.run_fix_loop(
             domains_to_validate, output_dir=output_dir, study_id=study_id
         )
@@ -808,8 +788,7 @@ def validate_cmd(
 
     if not report.submission_ready:
         console.print(
-            f"\n[bold red]NOT READY:[/bold red] "
-            f"{report.effective_error_count} blocking error(s)"
+            f"\n[bold red]NOT READY:[/bold red] {report.effective_error_count} blocking error(s)"
         )
         raise typer.Exit(code=1)
     else:
@@ -854,9 +833,7 @@ def generate_define_cmd(
     # Load mapping specs
     console.print("[bold blue][1/3][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
-        search_dir.glob("*_mapping.json")
-    )
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
     specs: list[DomainMappingSpec] = []
     for spec_path in spec_files:
         try:
@@ -954,9 +931,7 @@ def generate_csdrg_cmd(
     # Load mapping specs
     console.print("[bold blue][1/2][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
-        search_dir.glob("*_mapping.json")
-    )
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
     specs: list[DomainMappingSpec] = []
     for spec_path in spec_files:
         try:
@@ -1007,8 +982,7 @@ def generate_csdrg_cmd(
 
     console.print(
         Panel(
-            f"[bold]File:[/bold] {result_path}\n"
-            f"[bold]Domains:[/bold] {len(specs)}",
+            f"[bold]File:[/bold] {result_path}\n[bold]Domains:[/bold] {len(specs)}",
             title="cSDRG Generated",
         )
     )
@@ -1086,9 +1060,7 @@ def auto_fix_cmd(
     # Step 2: Load mapping specs
     console.print("[bold blue][2/4][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
-        search_dir.glob("*_mapping.json")
-    )
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
     domain_specs: dict[str, DomainMappingSpec] = {}
     for spec_path in spec_files:
         try:
@@ -1105,27 +1077,20 @@ def auto_fix_cmd(
             domains[domain_code] = (domain_dfs[domain_code], domain_specs[domain_code])
 
     if not domains:
-        console.print(
-            "[bold red]Error:[/bold red] No domains with both .xpt and spec files found"
-        )
+        console.print("[bold red]Error:[/bold red] No domains with both .xpt and spec files found")
         raise typer.Exit(code=1)
 
     # Step 3: Run fix loop
     console.print(
-        f"[bold blue][3/4][/bold blue] Running auto-fix loop "
-        f"(max {max_iterations} iterations)..."
+        f"[bold blue][3/4][/bold blue] Running auto-fix loop (max {max_iterations} iterations)..."
     )
     sdtm_ref = load_sdtm_reference()
     ct_ref = load_ct_reference()
     engine = ValidationEngine(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
     auto_fixer = AutoFixer(ct_ref=ct_ref, sdtm_ref=sdtm_ref)
-    fix_engine = FixLoopEngine(
-        engine=engine, auto_fixer=auto_fixer, max_iterations=max_iterations
-    )
+    fix_engine = FixLoopEngine(engine=engine, auto_fixer=auto_fixer, max_iterations=max_iterations)
 
-    fix_result = fix_engine.run_fix_loop(
-        domains, output_dir=output_dir, study_id=study_id
-    )
+    fix_result = fix_engine.run_fix_loop(domains, output_dir=output_dir, study_id=study_id)
 
     # Step 4: Display results
     console.print("[bold blue][4/4][/bold blue] Results...")
@@ -1187,18 +1152,13 @@ def learn_ingest_cmd(
 
     if not session_db.exists():
         console.print("[yellow]No review session database found.[/yellow]")
-        console.print(
-            "Start a review first with: "
-            "[bold]astraea review-domain <spec.json>[/bold]"
-        )
+        console.print("Start a review first with: [bold]astraea review-domain <spec.json>[/bold]")
         return
 
     session_store = SessionStore(session_db)
     try:
         sessions = session_store.list_sessions()
-        completed_sessions = [
-            s for s in sessions if s["status"] == "completed"
-        ]
+        completed_sessions = [s for s in sessions if s["status"] == "completed"]
 
         if not completed_sessions:
             console.print("[yellow]No completed sessions found.[/yellow]")
@@ -1248,10 +1208,7 @@ def learn_stats_cmd(
 
     if not learning_db.exists():
         console.print("[yellow]No learning database found.[/yellow]")
-        console.print(
-            "Ingest review sessions first with: "
-            "[bold]astraea learn-ingest[/bold]"
-        )
+        console.print("Ingest review sessions first with: [bold]astraea learn-ingest[/bold]")
         return
 
     example_store = ExampleStore(learning_db)
@@ -1308,10 +1265,7 @@ def learn_optimize_cmd(
 
     if not learning_db.exists():
         console.print("[yellow]No learning database found.[/yellow]")
-        console.print(
-            "Ingest review sessions first with: "
-            "[bold]astraea learn-ingest[/bold]"
-        )
+        console.print("Ingest review sessions first with: [bold]astraea learn-ingest[/bold]")
         return
 
     if not _check_api_key():
@@ -1325,10 +1279,7 @@ def learn_optimize_cmd(
                 f"[yellow]Need at least 10 examples for optimization. "
                 f"Currently have {example_count}.[/yellow]"
             )
-            console.print(
-                "Ingest more review sessions with: "
-                "[bold]astraea learn-ingest[/bold]"
-            )
+            console.print("Ingest more review sessions with: [bold]astraea learn-ingest[/bold]")
             return
 
         console.print(
@@ -1345,14 +1296,10 @@ def learn_optimize_cmd(
         )
 
         if result_path is None:
-            console.print(
-                "[yellow]Insufficient examples for the requested domain/filter.[/yellow]"
-            )
+            console.print("[yellow]Insufficient examples for the requested domain/filter.[/yellow]")
             return
 
-        console.print(
-            f"\n[bold green]Compiled program saved to:[/bold green] {result_path}"
-        )
+        console.print(f"\n[bold green]Compiled program saved to:[/bold green] {result_path}")
     finally:
         example_store.close()
 
@@ -1369,9 +1316,7 @@ def generate_trial_design(
     ] = Path("output"),
     data_dir: Annotated[
         Path | None,
-        typer.Option(
-            "--data-dir", help="Raw data directory for SV domain visit extraction"
-        ),
+        typer.Option("--data-dir", help="Raw data directory for SV domain visit extraction"),
     ] = None,
     dm_path: Annotated[
         Path | None,
@@ -1408,9 +1353,7 @@ def generate_trial_design(
 
     # Validate config path
     if not config_path.exists():
-        console.print(
-            f"[bold red]Error:[/bold red] Config file not found: {config_path}"
-        )
+        console.print(f"[bold red]Error:[/bold red] Config file not found: {config_path}")
         raise typer.Exit(code=1)
 
     # Read and parse JSON config
@@ -1427,9 +1370,7 @@ def generate_trial_design(
         raise typer.Exit(code=1) from e
 
     try:
-        trial_design_config = TrialDesignConfig.model_validate(
-            raw_config["trial_design"]
-        )
+        trial_design_config = TrialDesignConfig.model_validate(raw_config["trial_design"])
     except (KeyError, Exception) as e:
         console.print(f"[bold red]Error in trial_design:[/bold red] {e}")
         raise typer.Exit(code=1) from e
@@ -1440,9 +1381,7 @@ def generate_trial_design(
     dm_df: pd.DataFrame | None = None
     if dm_path is not None:
         if not dm_path.exists():
-            console.print(
-                f"[bold red]Error:[/bold red] DM file not found: {dm_path}"
-            )
+            console.print(f"[bold red]Error:[/bold red] DM file not found: {dm_path}")
             raise typer.Exit(code=1)
 
         import pyreadstat
@@ -1455,18 +1394,14 @@ def generate_trial_design(
             dm_df, _ = read_sas_with_metadata(dm_path)
         else:
             console.print(
-                f"[bold red]Error:[/bold red] "
-                f"Unsupported DM file format: {dm_path.suffix}"
+                f"[bold red]Error:[/bold red] Unsupported DM file format: {dm_path.suffix}"
             )
             raise typer.Exit(code=1)
 
         console.print(f"  Loaded DM: {len(dm_df)} rows from {dm_path.name}")
 
     # Build domains
-    console.print(
-        f"[bold blue][1/3][/bold blue] Building trial design domains "
-        f"for {study_id}..."
-    )
+    console.print(f"[bold blue][1/3][/bold blue] Building trial design domains for {study_id}...")
 
     # TS domain
     ts_df = build_ts_domain(ts_config, dm_df=dm_df)
@@ -1493,15 +1428,10 @@ def generate_trial_design(
     # Optionally build SV domain from raw data
     if data_dir is not None:
         if not data_dir.is_dir():
-            console.print(
-                f"[bold red]Error:[/bold red] "
-                f"Data directory not found: {data_dir}"
-            )
+            console.print(f"[bold red]Error:[/bold red] Data directory not found: {data_dir}")
             raise typer.Exit(code=1)
 
-        console.print(
-            "[bold blue][2/3][/bold blue] Building SV domain from raw data..."
-        )
+        console.print("[bold blue][2/3][/bold blue] Building SV domain from raw data...")
 
         from astraea.io.sas_reader import read_sas_with_metadata
 
@@ -1512,23 +1442,16 @@ def generate_trial_design(
                 df, _ = read_sas_with_metadata(sas_file)
                 raw_dfs[sas_file.stem] = df
             except Exception as e:
-                console.print(
-                    f"  [yellow]Warning: Could not read "
-                    f"{sas_file.name}: {e}[/yellow]"
-                )
+                console.print(f"  [yellow]Warning: Could not read {sas_file.name}: {e}[/yellow]")
 
         if raw_dfs:
             visit_data = extract_visit_dates(raw_dfs)
             sv_df = build_sv_domain(visit_data, study_id)
             domains["sv"] = sv_df
         else:
-            console.print(
-                "  [yellow]No readable SAS files found for SV domain[/yellow]"
-            )
+            console.print("  [yellow]No readable SAS files found for SV domain[/yellow]")
     else:
-        console.print(
-            "[bold blue][2/3][/bold blue] Skipping SV domain (no --data-dir)"
-        )
+        console.print("[bold blue][2/3][/bold blue] Skipping SV domain (no --data-dir)")
 
     # Write XPT files
     console.print("[bold blue][3/3][/bold blue] Writing XPT files...")
@@ -1609,9 +1532,7 @@ def generate_trial_design(
 
         # Only write non-empty DataFrames
         if df.empty:
-            summary_table.add_row(
-                table_name, "0", "[dim]skipped (empty)[/dim]"
-            )
+            summary_table.add_row(table_name, "0", "[dim]skipped (empty)[/dim]")
             continue
 
         try:
@@ -1623,12 +1544,8 @@ def generate_trial_design(
             )
             summary_table.add_row(table_name, str(len(df)), str(xpt_path))
         except Exception as e:
-            console.print(
-                f"  [bold red]Error writing {table_name}:[/bold red] {e}"
-            )
-            summary_table.add_row(
-                table_name, str(len(df)), f"[red]FAILED: {e}[/red]"
-            )
+            console.print(f"  [bold red]Error writing {table_name}:[/bold red] {e}")
+            summary_table.add_row(table_name, str(len(df)), f"[red]FAILED: {e}[/red]")
 
     console.print()
     console.print(summary_table)
@@ -1651,9 +1568,7 @@ def _find_primary_sas(
     if source_file_override is not None:
         path = data_folder / source_file_override
         if not path.exists():
-            console.print(
-                f"[bold red]Error:[/bold red] Specified source file not found: {path}"
-            )
+            console.print(f"[bold red]Error:[/bold red] Specified source file not found: {path}")
             return None
         return path
 
@@ -1727,14 +1642,10 @@ def _try_load_learning_retriever(
 
             vector_store = LearningVectorStore(_learning_db_path)
             retriever = LearningRetriever(vector_store)
-            rich_console.print(
-                f"  [green]Learning DB loaded from {_learning_db_path}[/green]"
-            )
+            rich_console.print(f"  [green]Learning DB loaded from {_learning_db_path}[/green]")
             return retriever
         except Exception as e:
-            rich_console.print(
-                f"  [yellow]Warning: Could not load learning DB: {e}[/yellow]"
-            )
+            rich_console.print(f"  [yellow]Warning: Could not load learning DB: {e}[/yellow]")
 
     return None
 
@@ -2042,9 +1953,7 @@ def review_domain_cmd(
             try:
                 _session = store.load_session(session)
             except ValueError:
-                console.print(
-                    f"[bold red]Error:[/bold red] Session '{session}' not found"
-                )
+                console.print(f"[bold red]Error:[/bold red] Session '{session}' not found")
                 raise typer.Exit(code=1) from None
             session_id = session
         else:
@@ -2055,9 +1964,7 @@ def review_domain_cmd(
                 specs={domain: spec},
             )
             session_id = _session.session_id
-            console.print(
-                f"[green]Created review session:[/green] {session_id}"
-            )
+            console.print(f"[green]Created review session:[/green] {session_id}")
 
         # Run review
         reviewer = DomainReviewer(store, console)
@@ -2068,10 +1975,7 @@ def review_domain_cmd(
                 f"\n[yellow]Review interrupted.[/yellow] "
                 f"Session saved: [bold]{exc.session_id}[/bold]"
             )
-            console.print(
-                f"Resume with: [bold]astraea resume {exc.session_id} "
-                f"--db {db}[/bold]"
-            )
+            console.print(f"Resume with: [bold]astraea resume {exc.session_id} --db {db}[/bold]")
             return
 
         # Export reviewed spec
@@ -2082,9 +1986,7 @@ def review_domain_cmd(
         reviewed_spec = _apply_corrections(spec, domain_review.decisions)
         reviewed_path.write_text(reviewed_spec.model_dump_json(indent=2))
 
-        console.print(
-            f"\n[green]Reviewed spec saved to:[/green] {reviewed_path}"
-        )
+        console.print(f"\n[green]Reviewed spec saved to:[/green] {reviewed_path}")
     finally:
         store.close()
 
@@ -2115,10 +2017,7 @@ def resume_cmd(
 
     if not db.exists():
         console.print("[bold red]Error:[/bold red] No session database found.")
-        console.print(
-            "Start a review first with: "
-            "[bold]astraea review-domain <spec.json>[/bold]"
-        )
+        console.print("Start a review first with: [bold]astraea review-domain <spec.json>[/bold]")
         raise typer.Exit(code=1)
 
     store = SessionStore(db)
@@ -2126,25 +2025,17 @@ def resume_cmd(
         if session_id is None:
             # Find most recent in-progress session
             sessions = store.list_sessions()
-            in_progress = [
-                s for s in sessions if s["status"] == "in_progress"
-            ]
+            in_progress = [s for s in sessions if s["status"] == "in_progress"]
             if not in_progress:
-                console.print(
-                    "[yellow]No in-progress sessions found.[/yellow]"
-                )
+                console.print("[yellow]No in-progress sessions found.[/yellow]")
                 raise typer.Exit(code=0)
             session_id = in_progress[0]["session_id"]
-            console.print(
-                f"Resuming most recent session: [bold]{session_id}[/bold]"
-            )
+            console.print(f"Resuming most recent session: [bold]{session_id}[/bold]")
 
         try:
             session = store.load_session(session_id)
         except ValueError:
-            console.print(
-                f"[bold red]Error:[/bold red] Session '{session_id}' not found"
-            )
+            console.print(f"[bold red]Error:[/bold red] Session '{session_id}' not found")
             raise typer.Exit(code=1) from None
 
         # Find pending domains
@@ -2168,8 +2059,7 @@ def resume_cmd(
                     f"Session saved: [bold]{exc.session_id}[/bold]"
                 )
                 console.print(
-                    f"Resume with: [bold]astraea resume {exc.session_id} "
-                    f"--db {db}[/bold]"
+                    f"Resume with: [bold]astraea resume {exc.session_id} --db {db}[/bold]"
                 )
                 return
 
@@ -2179,14 +2069,10 @@ def resume_cmd(
 
         for domain in session.domains:
             domain_review = session.domain_reviews[domain]
-            reviewed_spec = _apply_corrections(
-                domain_review.original_spec, domain_review.decisions
-            )
+            reviewed_spec = _apply_corrections(domain_review.original_spec, domain_review.decisions)
             reviewed_path = output_dir / f"{domain}_reviewed.json"
             reviewed_path.write_text(reviewed_spec.model_dump_json(indent=2))
-            console.print(
-                f"[green]Exported:[/green] {reviewed_path}"
-            )
+            console.print(f"[green]Exported:[/green] {reviewed_path}")
 
         console.print("\n[bold green]Session complete.[/bold green]")
     finally:
@@ -2277,26 +2163,15 @@ def _apply_corrections(
         cross_domain_sources=spec.cross_domain_sources,
         variable_mappings=reviewed_mappings,
         total_variables=len(reviewed_mappings),
-        required_mapped=sum(
-            1 for m in reviewed_mappings
-            if m.core.value == "Req"
-        ),
-        expected_mapped=sum(
-            1 for m in reviewed_mappings
-            if m.core.value == "Exp"
-        ),
+        required_mapped=sum(1 for m in reviewed_mappings if m.core.value == "Req"),
+        expected_mapped=sum(1 for m in reviewed_mappings if m.core.value == "Exp"),
         high_confidence_count=sum(
-            1 for m in reviewed_mappings
-            if m.confidence_level.value == "HIGH"
+            1 for m in reviewed_mappings if m.confidence_level.value == "HIGH"
         ),
         medium_confidence_count=sum(
-            1 for m in reviewed_mappings
-            if m.confidence_level.value == "MEDIUM"
+            1 for m in reviewed_mappings if m.confidence_level.value == "MEDIUM"
         ),
-        low_confidence_count=sum(
-            1 for m in reviewed_mappings
-            if m.confidence_level.value == "LOW"
-        ),
+        low_confidence_count=sum(1 for m in reviewed_mappings if m.confidence_level.value == "LOW"),
         mapping_timestamp=spec.mapping_timestamp,
         model_used=spec.model_used,
         unmapped_source_variables=spec.unmapped_source_variables,

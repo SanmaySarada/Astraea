@@ -13,7 +13,6 @@ from astraea.parsing.form_dataset_matcher import (
     match_form_to_datasets,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -48,7 +47,7 @@ def _make_profile(
                 is_edc_column=False,
             )
         )
-    for var in (edc_vars or []):
+    for var in edc_vars or []:
         variables.append(
             VariableProfile(
                 name=var,
@@ -138,9 +137,7 @@ def unrelated_profile() -> DatasetProfile:
 class TestMatchFormToDatasets:
     """Tests for match_form_to_datasets()."""
 
-    def test_high_overlap_match(
-        self, ae_form: ECRFForm, ae_profile: DatasetProfile
-    ) -> None:
+    def test_high_overlap_match(self, ae_form: ECRFForm, ae_profile: DatasetProfile) -> None:
         """AE form should score high against ae dataset."""
         results = match_form_to_datasets(ae_form, [ae_profile])
         assert len(results) == 1
@@ -148,9 +145,7 @@ class TestMatchFormToDatasets:
         assert name == "ae.sas7bdat"
         assert score == pytest.approx(1.0)  # 3/3 fields match
 
-    def test_no_overlap(
-        self, ae_form: ECRFForm, unrelated_profile: DatasetProfile
-    ) -> None:
+    def test_no_overlap(self, ae_form: ECRFForm, unrelated_profile: DatasetProfile) -> None:
         """AE form should not match unrelated dataset."""
         results = match_form_to_datasets(ae_form, [unrelated_profile])
         assert len(results) == 0
@@ -243,9 +238,7 @@ class TestMatchAllForms:
         dm_profile: DatasetProfile,
     ) -> None:
         """Multiple forms should each match their corresponding dataset."""
-        result = match_all_forms(
-            [ae_form, dm_form], [ae_profile, dm_profile], threshold=0.2
-        )
+        result = match_all_forms([ae_form, dm_form], [ae_profile, dm_profile], threshold=0.2)
         assert len(result) == 2
         assert "Adverse Events" in result
         assert "Demographics" in result

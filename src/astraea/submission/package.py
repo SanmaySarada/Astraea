@@ -13,27 +13,12 @@ from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity
 
 # Domain-specific guidance for splitting oversized XPT files
 SPLIT_GUIDANCE: dict[str, str] = {
-    "lb": (
-        "Split LB by LBCAT into separate XPT files "
-        "(e.g., lb_chem.xpt, lb_hem.xpt, lb_ua.xpt)"
-    ),
-    "ae": (
-        "Split AE by AESEV or AESER into separate XPT files if needed"
-    ),
-    "cm": (
-        "Split CM by CMCAT into separate XPT files "
-        "(e.g., cm_prior.xpt, cm_concom.xpt)"
-    ),
-    "eg": (
-        "Split EG by EGTESTCD into separate XPT files "
-        "(e.g., eg_rhythm.xpt, eg_interval.xpt)"
-    ),
-    "vs": (
-        "Split VS by VSTESTCD grouping into separate XPT files"
-    ),
-    "fa": (
-        "Split FA by FATESTCD or parent domain into separate XPT files"
-    ),
+    "lb": ("Split LB by LBCAT into separate XPT files (e.g., lb_chem.xpt, lb_hem.xpt, lb_ua.xpt)"),
+    "ae": ("Split AE by AESEV or AESER into separate XPT files if needed"),
+    "cm": ("Split CM by CMCAT into separate XPT files (e.g., cm_prior.xpt, cm_concom.xpt)"),
+    "eg": ("Split EG by EGTESTCD into separate XPT files (e.g., eg_rhythm.xpt, eg_interval.xpt)"),
+    "vs": ("Split VS by VSTESTCD grouping into separate XPT files"),
+    "fa": ("Split FA by FATESTCD or parent domain into separate XPT files"),
 }
 
 _ONE_GB = 1024**3
@@ -92,8 +77,7 @@ def check_submission_size(
                 category=RuleCategory.FDA_TRC,
                 severity=RuleSeverity.ERROR,
                 message=(
-                    f"Total XPT size {_format_size(total_size)} "
-                    f"exceeds {limit_gb}GB FDA limit"
+                    f"Total XPT size {_format_size(total_size)} exceeds {limit_gb}GB FDA limit"
                 ),
                 fix_suggestion=(
                     "Reduce dataset sizes by splitting large domains "
@@ -121,17 +105,14 @@ def check_submission_size(
                     rule_description="Individual XPT file exceeds 1GB",
                     category=RuleCategory.FDA_TRC,
                     severity=RuleSeverity.WARNING,
-                    message=(
-                        f"{name} is {_format_size(size)} (exceeds 1GB)"
-                    ),
+                    message=(f"{name} is {_format_size(size)} (exceeds 1GB)"),
                     fix_suggestion=guidance,
                 )
             )
 
     # NOTICE with size breakdown always
     breakdown = ", ".join(
-        f"{info['name']}: {_format_size(int(info['size']))}"
-        for info in file_sizes
+        f"{info['name']}: {_format_size(int(info['size']))}" for info in file_sizes
     )
     results.append(
         RuleResult(
@@ -139,10 +120,7 @@ def check_submission_size(
             rule_description="Submission size summary",
             category=RuleCategory.FDA_TRC,
             severity=RuleSeverity.NOTICE,
-            message=(
-                f"Total: {_format_size(total_size)}, "
-                f"{len(xpt_files)} file(s). {breakdown}"
-            ),
+            message=(f"Total: {_format_size(total_size)}, {len(xpt_files)} file(s). {breakdown}"),
         )
     )
 
@@ -179,9 +157,7 @@ def validate_file_naming(
         ]
 
     # Check expected domain files
-    existing_xpts = {
-        f.name for f in output_dir.iterdir() if f.suffix == ".xpt"
-    }
+    existing_xpts = {f.name for f in output_dir.iterdir() if f.suffix == ".xpt"}
 
     for domain in expected_domains:
         expected_name = f"{domain.lower()}.xpt"
@@ -254,12 +230,14 @@ def assemble_package_manifest(
                 domain = ""
                 if f.suffix == ".xpt":
                     domain = f.stem.upper()
-                files.append({
-                    "path": str(f),
-                    "name": f.name,
-                    "size": size,
-                    "domain": domain,
-                })
+                files.append(
+                    {
+                        "path": str(f),
+                        "name": f.name,
+                        "size": size,
+                        "domain": domain,
+                    }
+                )
 
     has_define = (output_dir / "define.xml").exists() if output_dir.exists() else False
     has_csdrg = any(

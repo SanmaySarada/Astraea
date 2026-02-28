@@ -233,8 +233,7 @@ class TestCEMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ce_mapping_result.variable_mappings}
         missing = REQUIRED_CE_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required CE variables: {missing}. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Missing required CE variables: {missing}. Mapped variables: {sorted(mapped_vars)}"
         )
 
     def test_cedecod_mapped(self, ce_mapping_result: DomainMappingSpec) -> None:

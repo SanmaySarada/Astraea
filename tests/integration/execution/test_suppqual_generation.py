@@ -13,7 +13,6 @@ import pytest
 from astraea.execution.suppqual import generate_suppqual, validate_suppqual_integrity
 from astraea.models.suppqual import SuppVariable
 
-
 # ---------------------------------------------------------------------------
 # Fixtures: LB parent data and SUPPLB variables
 # ---------------------------------------------------------------------------
@@ -40,35 +39,77 @@ def lb_parent_df() -> pd.DataFrame:
             ],
             "LBSEQ": [1, 2, 3, 4, 1, 2, 3, 1, 2, 3],
             "LBTESTCD": [
-                "ALT", "AST", "BILI", "CREAT",
-                "ALT", "AST", "BILI",
-                "ALT", "AST", "BILI",
+                "ALT",
+                "AST",
+                "BILI",
+                "CREAT",
+                "ALT",
+                "AST",
+                "BILI",
+                "ALT",
+                "AST",
+                "BILI",
             ],
             "LBORRES": [
-                "25", "30", "0.8", "1.1",
-                "40", "35", "1.2",
-                "22", "28", "0.7",
+                "25",
+                "30",
+                "0.8",
+                "1.1",
+                "40",
+                "35",
+                "1.2",
+                "22",
+                "28",
+                "0.7",
             ],
             "LBORRESU": [
-                "U/L", "U/L", "mg/dL", "mg/dL",
-                "U/L", "U/L", "mg/dL",
-                "U/L", "U/L", "mg/dL",
+                "U/L",
+                "U/L",
+                "mg/dL",
+                "mg/dL",
+                "U/L",
+                "U/L",
+                "mg/dL",
+                "U/L",
+                "U/L",
+                "mg/dL",
             ],
             # Supplemental candidate columns
             "LBFAST": [
-                "Y", "Y", "N", "N",
-                "Y", "Y", "N",
-                "Y", "N", "N",
+                "Y",
+                "Y",
+                "N",
+                "N",
+                "Y",
+                "Y",
+                "N",
+                "Y",
+                "N",
+                "N",
             ],
             "LBMETHOD": [
-                "Enzymatic", "Enzymatic", "Turbidimetric", "Enzymatic",
-                "Enzymatic", "Enzymatic", "Turbidimetric",
-                "Enzymatic", "Enzymatic", "Turbidimetric",
+                "Enzymatic",
+                "Enzymatic",
+                "Turbidimetric",
+                "Enzymatic",
+                "Enzymatic",
+                "Enzymatic",
+                "Turbidimetric",
+                "Enzymatic",
+                "Enzymatic",
+                "Turbidimetric",
             ],
             "LBTOX": [
-                None, "Grade 1", None, "Grade 2",
-                "Grade 1", None, None,
-                None, None, "Grade 1",
+                None,
+                "Grade 1",
+                None,
+                "Grade 2",
+                "Grade 1",
+                None,
+                None,
+                None,
+                None,
+                "Grade 1",
             ],
         }
     )
@@ -117,21 +158,45 @@ def eg_parent_df() -> pd.DataFrame:
             ],
             "EGSEQ": [1, 2, 3, 4, 1, 2, 3, 4],
             "EGTESTCD": [
-                "INTP", "PRMEAN", "QRSDUR", "QTMEAN",
-                "INTP", "PRMEAN", "QRSDUR", "QTMEAN",
+                "INTP",
+                "PRMEAN",
+                "QRSDUR",
+                "QTMEAN",
+                "INTP",
+                "PRMEAN",
+                "QRSDUR",
+                "QTMEAN",
             ],
             "EGORRES": [
-                "NORMAL", "162", "88", "402",
-                "ABNORMAL", "180", "96", "440",
+                "NORMAL",
+                "162",
+                "88",
+                "402",
+                "ABNORMAL",
+                "180",
+                "96",
+                "440",
             ],
             # Supplemental candidate columns
             "EGCLSIG": [
-                "N", "N", None, None,
-                "Y", "N", None, None,
+                "N",
+                "N",
+                None,
+                None,
+                "Y",
+                "N",
+                None,
+                None,
             ],
             "EGABS": [
-                None, None, None, None,
-                "Prolonged PR", None, None, None,
+                None,
+                None,
+                None,
+                None,
+                "Prolonged PR",
+                None,
+                None,
+                None,
             ],
         }
     )
@@ -171,7 +236,10 @@ class TestSUPPLBGeneration:
     ) -> None:
         """SUPPLB has correct RDOMAIN, IDVAR, and QNAM values."""
         supplb = generate_suppqual(
-            lb_parent_df, "LB", "PHA022121-C301", supplb_variables,
+            lb_parent_df,
+            "LB",
+            "PHA022121-C301",
+            supplb_variables,
         )
 
         assert not supplb.empty
@@ -186,7 +254,10 @@ class TestSUPPLBGeneration:
     ) -> None:
         """Null LBTOX values do NOT produce SUPPQUAL records."""
         supplb = generate_suppqual(
-            lb_parent_df, "LB", "PHA022121-C301", supplb_variables,
+            lb_parent_df,
+            "LB",
+            "PHA022121-C301",
+            supplb_variables,
         )
 
         # LBTOX has 4 non-null values out of 10 rows
@@ -200,7 +271,10 @@ class TestSUPPLBGeneration:
     ) -> None:
         """validate_suppqual_integrity returns 0 errors for correctly generated SUPPLB."""
         supplb = generate_suppqual(
-            lb_parent_df, "LB", "PHA022121-C301", supplb_variables,
+            lb_parent_df,
+            "LB",
+            "PHA022121-C301",
+            supplb_variables,
         )
 
         errors = validate_suppqual_integrity(supplb, lb_parent_df, "LB")
@@ -213,7 +287,10 @@ class TestSUPPLBGeneration:
     ) -> None:
         """Row count = non-null LBFAST records + non-null LBTOX records."""
         supplb = generate_suppqual(
-            lb_parent_df, "LB", "PHA022121-C301", supplb_variables,
+            lb_parent_df,
+            "LB",
+            "PHA022121-C301",
+            supplb_variables,
         )
 
         # LBFAST: all 10 rows are non-null
@@ -237,7 +314,10 @@ class TestSUPPEGGeneration:
     ) -> None:
         """SUPPEG has correct RDOMAIN and IDVAR."""
         suppeg = generate_suppqual(
-            eg_parent_df, "EG", "PHA022121-C301", suppeg_variables,
+            eg_parent_df,
+            "EG",
+            "PHA022121-C301",
+            suppeg_variables,
         )
 
         assert not suppeg.empty
@@ -251,7 +331,10 @@ class TestSUPPEGGeneration:
     ) -> None:
         """Mostly-null EGABS produces very few SUPPEG records for that QNAM."""
         suppeg = generate_suppqual(
-            eg_parent_df, "EG", "PHA022121-C301", suppeg_variables,
+            eg_parent_df,
+            "EG",
+            "PHA022121-C301",
+            suppeg_variables,
         )
 
         # EGABS: only 1 non-null value ("Prolonged PR" for subject 002, seq 1)
@@ -266,7 +349,10 @@ class TestSUPPEGGeneration:
     ) -> None:
         """validate_suppqual_integrity returns 0 errors for SUPPEG."""
         suppeg = generate_suppqual(
-            eg_parent_df, "EG", "PHA022121-C301", suppeg_variables,
+            eg_parent_df,
+            "EG",
+            "PHA022121-C301",
+            suppeg_variables,
         )
 
         errors = validate_suppqual_integrity(suppeg, eg_parent_df, "EG")

@@ -13,18 +13,18 @@ from loguru import logger
 
 # Common non-ASCII characters found in clinical data and their ASCII replacements.
 _NON_ASCII_REPLACEMENTS: dict[str, str] = {
-    "\u2018": "'",    # left single curly quote
-    "\u2019": "'",    # right single curly quote
-    "\u201c": '"',    # left double curly quote
-    "\u201d": '"',    # right double curly quote
-    "\u2013": "-",    # en-dash
-    "\u2014": "-",    # em-dash
+    "\u2018": "'",  # left single curly quote
+    "\u2019": "'",  # right single curly quote
+    "\u201c": '"',  # left double curly quote
+    "\u201d": '"',  # right double curly quote
+    "\u2013": "-",  # en-dash
+    "\u2014": "-",  # em-dash
     "\u2026": "...",  # ellipsis
     "\u00b0": "deg",  # degree sign
-    "\u00b5": "u",    # micro sign (mu)
-    "\u00b1": "+-",   # plus-minus
-    "\u2264": "<=",   # less-than-or-equal
-    "\u2265": ">=",   # greater-than-or-equal
+    "\u00b5": "u",  # micro sign (mu)
+    "\u00b1": "+-",  # plus-minus
+    "\u2264": "<=",  # less-than-or-equal
+    "\u2265": ">=",  # greater-than-or-equal
 }
 
 _MAX_ISSUES = 100
@@ -53,12 +53,14 @@ def validate_ascii(df: pd.DataFrame) -> list[dict[str, str | int]]:
             str_val = str(val)
             if not str_val.isascii():
                 non_ascii = "".join(c for c in str_val if ord(c) > 127)
-                issues.append({
-                    "column": col,
-                    "row": row_idx,
-                    "value": str_val,
-                    "non_ascii_chars": non_ascii,
-                })
+                issues.append(
+                    {
+                        "column": col,
+                        "row": row_idx,
+                        "value": str_val,
+                        "non_ascii_chars": non_ascii,
+                    }
+                )
         if len(issues) >= _MAX_ISSUES:
             break
 
@@ -95,9 +97,7 @@ def fix_common_non_ascii(df: pd.DataFrame) -> pd.DataFrame:
             mask = result[col].astype(str).str.contains(old_char, na=False)
             count = mask.sum()
             if count > 0:
-                result[col] = result[col].astype(str).str.replace(
-                    old_char, new_char, regex=False
-                )
+                result[col] = result[col].astype(str).str.replace(old_char, new_char, regex=False)
                 col_replacements += count
         if col_replacements > 0:
             logger.info(

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import pytest
 
+from astraea.mapping.validation import check_required_coverage, validate_and_enrich
 from astraea.models.mapping import (
     ConfidenceLevel,
     DomainMappingProposal,
@@ -16,7 +17,6 @@ from astraea.models.mapping import (
     VariableMappingProposal,
 )
 from astraea.models.sdtm import CoreDesignation
-from astraea.mapping.validation import check_required_coverage, validate_and_enrich
 from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
 
@@ -49,31 +49,31 @@ def _make_proposal(
 class TestValidateAndEnrich:
     """Tests for validate_and_enrich function."""
 
-    def test_valid_dm_proposal(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_valid_dm_proposal(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """A valid DM proposal enriches correctly with labels and core."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="STUDYID",
-                source_dataset=None,
-                source_variable=None,
-                mapping_pattern=MappingPattern.ASSIGN,
-                mapping_logic="Assign constant study ID",
-                assigned_value="PHA022121-C301",
-                confidence=0.99,
-                rationale="Standard constant assignment",
-            ),
-            VariableMappingProposal(
-                sdtm_variable="AGE",
-                source_dataset="dm.sas7bdat",
-                source_variable="AGE",
-                mapping_pattern=MappingPattern.DIRECT,
-                mapping_logic="Direct carry from source AGE",
-                confidence=0.95,
-                rationale="Same variable name and content",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="STUDYID",
+                    source_dataset=None,
+                    source_variable=None,
+                    mapping_pattern=MappingPattern.ASSIGN,
+                    mapping_logic="Assign constant study ID",
+                    assigned_value="PHA022121-C301",
+                    confidence=0.99,
+                    rationale="Standard constant assignment",
+                ),
+                VariableMappingProposal(
+                    sdtm_variable="AGE",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="AGE",
+                    mapping_pattern=MappingPattern.DIRECT,
+                    mapping_logic="Direct carry from source AGE",
+                    confidence=0.95,
+                    rationale="Same variable name and content",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -96,23 +96,23 @@ class TestValidateAndEnrich:
         assert age.sdtm_data_type == "Num"
         assert age.core == CoreDesignation.EXP
 
-    def test_ct_validation_valid_term(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_ct_validation_valid_term(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Valid CT term on non-extensible codelist passes without issue."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="SEX",
-                source_dataset="dm.sas7bdat",
-                source_variable="SEX_STD",
-                mapping_pattern=MappingPattern.RENAME,
-                mapping_logic="Rename SEX_STD to SEX",
-                codelist_code="C66731",
-                assigned_value="F",
-                confidence=0.90,
-                rationale="SEX_STD contains CT submission values",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="SEX",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SEX_STD",
+                    mapping_pattern=MappingPattern.RENAME,
+                    mapping_logic="Rename SEX_STD to SEX",
+                    codelist_code="C66731",
+                    assigned_value="F",
+                    confidence=0.90,
+                    rationale="SEX_STD contains CT submission values",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -128,19 +128,21 @@ class TestValidateAndEnrich:
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """Invalid CT term on non-extensible codelist flags issue, caps confidence."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="SEX",
-                source_dataset="dm.sas7bdat",
-                source_variable="SEX",
-                mapping_pattern=MappingPattern.RENAME,
-                mapping_logic="Map display value",
-                codelist_code="C66731",
-                assigned_value="Female",  # Not a valid submission value
-                confidence=0.90,
-                rationale="Using display value incorrectly",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="SEX",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SEX",
+                    mapping_pattern=MappingPattern.RENAME,
+                    mapping_logic="Map display value",
+                    codelist_code="C66731",
+                    assigned_value="Female",  # Not a valid submission value
+                    confidence=0.90,
+                    rationale="Using display value incorrectly",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -152,22 +154,22 @@ class TestValidateAndEnrich:
         # Confidence should be capped at 0.4
         assert mappings[0].confidence <= 0.4
 
-    def test_ct_codelist_not_found(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_ct_codelist_not_found(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Non-existent codelist code flags issue and caps confidence."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="SEX",
-                source_dataset="dm.sas7bdat",
-                source_variable="SEX_STD",
-                mapping_pattern=MappingPattern.RENAME,
-                mapping_logic="Rename with bad codelist",
-                codelist_code="C99999",  # Does not exist
-                confidence=0.85,
-                rationale="Testing missing codelist",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="SEX",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SEX_STD",
+                    mapping_pattern=MappingPattern.RENAME,
+                    mapping_logic="Rename with bad codelist",
+                    codelist_code="C99999",  # Does not exist
+                    confidence=0.85,
+                    rationale="Testing missing codelist",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -183,18 +185,20 @@ class TestValidateAndEnrich:
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """Successful CT validation on lookup_recode boosts confidence by 0.05."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="ETHNIC",
-                source_dataset="dm.sas7bdat",
-                source_variable="ETHNIC_STD",
-                mapping_pattern=MappingPattern.LOOKUP_RECODE,
-                mapping_logic="Map through ethnicity codelist",
-                codelist_code="C66790",
-                confidence=0.85,
-                rationale="ETHNIC_STD contains coded values",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="ETHNIC",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="ETHNIC_STD",
+                    mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                    mapping_logic="Map through ethnicity codelist",
+                    codelist_code="C66790",
+                    confidence=0.85,
+                    rationale="ETHNIC_STD contains coded values",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -209,17 +213,19 @@ class TestValidateAndEnrich:
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """Variable not in SDTM-IG gets confidence capped at 0.3."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="FAKEVAR",
-                source_dataset="dm.sas7bdat",
-                source_variable="SOMETHING",
-                mapping_pattern=MappingPattern.DIRECT,
-                mapping_logic="Non-existent variable",
-                confidence=0.90,
-                rationale="Testing unknown variable",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="FAKEVAR",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SOMETHING",
+                    mapping_pattern=MappingPattern.DIRECT,
+                    mapping_logic="Non-existent variable",
+                    confidence=0.90,
+                    rationale="Testing unknown variable",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -231,23 +237,24 @@ class TestValidateAndEnrich:
         assert mappings[0].confidence <= 0.3
         assert mappings[0].confidence_level == ConfidenceLevel.LOW
 
-
     def test_order_enrichment_from_domain_spec(
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """Enrichment populates order from VariableSpec.order."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="STUDYID",
-                source_dataset=None,
-                source_variable=None,
-                mapping_pattern=MappingPattern.ASSIGN,
-                mapping_logic="Assign constant study ID",
-                assigned_value="PHA022121-C301",
-                confidence=0.99,
-                rationale="Standard constant assignment",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="STUDYID",
+                    source_dataset=None,
+                    source_variable=None,
+                    mapping_pattern=MappingPattern.ASSIGN,
+                    mapping_logic="Assign constant study ID",
+                    assigned_value="PHA022121-C301",
+                    confidence=0.99,
+                    rationale="Standard constant assignment",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -258,26 +265,26 @@ class TestValidateAndEnrich:
         assert mappings[0].order > 0
 
         # Verify it matches the actual spec order
-        studyid_spec = next(
-            v for v in domain_spec.variables if v.name == "STUDYID"
-        )
+        studyid_spec = next(v for v in domain_spec.variables if v.name == "STUDYID")
         assert mappings[0].order == studyid_spec.order
 
     def test_order_defaults_to_zero_for_unknown_variable(
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """Unknown variable (not in domain spec) gets order=0."""
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="FAKEVAR",
-                source_dataset="dm.sas7bdat",
-                source_variable="SOMETHING",
-                mapping_pattern=MappingPattern.DIRECT,
-                mapping_logic="Non-existent variable",
-                confidence=0.90,
-                rationale="Testing unknown variable",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="FAKEVAR",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SOMETHING",
+                    mapping_pattern=MappingPattern.DIRECT,
+                    mapping_logic="Non-existent variable",
+                    confidence=0.90,
+                    rationale="Testing unknown variable",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -290,19 +297,21 @@ class TestValidateAndEnrich:
     ) -> None:
         """LOOKUP_RECODE with non-extensible codelist (no assigned_value) produces warning."""
         # C66731 is Sex -- non-extensible
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="SEX",
-                source_dataset="dm.sas7bdat",
-                source_variable="SEX_RAW",
-                mapping_pattern=MappingPattern.LOOKUP_RECODE,
-                mapping_logic="Recode raw sex values via CT",
-                codelist_code="C66731",
-                assigned_value=None,
-                confidence=0.85,
-                rationale="Lookup recode for sex",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="SEX",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SEX_RAW",
+                    mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                    mapping_logic="Recode raw sex values via CT",
+                    codelist_code="C66731",
+                    assigned_value=None,
+                    confidence=0.85,
+                    rationale="Lookup recode for sex",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -311,8 +320,7 @@ class TestValidateAndEnrich:
 
         # Should have warning about non-extensible codelist with lookup_recode
         assert any(
-            "non-extensible" in i and "lookup_recode" in i and "runtime" in i
-            for i in issues
+            "non-extensible" in i and "lookup_recode" in i and "runtime" in i for i in issues
         ), f"Expected non-extensible lookup_recode warning, got: {issues}"
 
         # Confidence should NOT be penalized (still gets +0.05 boost)
@@ -323,19 +331,21 @@ class TestValidateAndEnrich:
     ) -> None:
         """LOOKUP_RECODE with extensible codelist should NOT produce the non-extensible warning."""
         # C74457 is Race -- extensible
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="RACE",
-                source_dataset="dm.sas7bdat",
-                source_variable="RACE_RAW",
-                mapping_pattern=MappingPattern.LOOKUP_RECODE,
-                mapping_logic="Recode raw race values via CT",
-                codelist_code="C74457",
-                assigned_value=None,
-                confidence=0.85,
-                rationale="Lookup recode for race",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="RACE",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="RACE_RAW",
+                    mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                    mapping_logic="Recode raw race values via CT",
+                    codelist_code="C74457",
+                    assigned_value=None,
+                    confidence=0.85,
+                    rationale="Lookup recode for race",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -343,29 +353,30 @@ class TestValidateAndEnrich:
         mappings, issues = validate_and_enrich(proposal, domain_spec, ct_ref)
 
         # Should NOT have the non-extensible warning
-        assert not any(
-            "non-extensible" in i and "lookup_recode" in i
-            for i in issues
-        ), f"Should not warn for extensible codelist, got: {issues}"
+        assert not any("non-extensible" in i and "lookup_recode" in i for i in issues), (
+            f"Should not warn for extensible codelist, got: {issues}"
+        )
 
     def test_lookup_recode_nonextensible_with_assigned_value_uses_existing_check(
         self, sdtm_ref: SDTMReference, ct_ref: CTReference
     ) -> None:
         """LOOKUP_RECODE with non-extensible codelist AND assigned_value uses existing check."""
         # C66731 is Sex -- non-extensible; "Female" is NOT a valid submission value
-        proposal = _make_proposal([
-            VariableMappingProposal(
-                sdtm_variable="SEX",
-                source_dataset="dm.sas7bdat",
-                source_variable="SEX_RAW",
-                mapping_pattern=MappingPattern.LOOKUP_RECODE,
-                mapping_logic="Recode raw sex values via CT",
-                codelist_code="C66731",
-                assigned_value="Female",  # Invalid submission value
-                confidence=0.85,
-                rationale="Lookup recode for sex",
-            ),
-        ])
+        proposal = _make_proposal(
+            [
+                VariableMappingProposal(
+                    sdtm_variable="SEX",
+                    source_dataset="dm.sas7bdat",
+                    source_variable="SEX_RAW",
+                    mapping_pattern=MappingPattern.LOOKUP_RECODE,
+                    mapping_logic="Recode raw sex values via CT",
+                    codelist_code="C66731",
+                    assigned_value="Female",  # Invalid submission value
+                    confidence=0.85,
+                    rationale="Lookup recode for sex",
+                ),
+            ]
+        )
 
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
@@ -375,10 +386,7 @@ class TestValidateAndEnrich:
         # Should have the existing "value not in codelist" error, NOT the new warning
         assert any("Female" in i and "not in non-extensible" in i for i in issues)
         # Should NOT have the new lookup_recode warning (assigned_value is present)
-        assert not any(
-            "runtime" in i and "lookup_recode" in i
-            for i in issues
-        )
+        assert not any("runtime" in i and "lookup_recode" in i for i in issues)
 
 
 class TestCheckRequiredCoverage:
@@ -396,17 +404,13 @@ class TestCheckRequiredCoverage:
         assert "USUBJID" in missing
         assert "DOMAIN" in missing
 
-    def test_all_required_present(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_all_required_present(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """All Required variables present returns empty list."""
         domain_spec = sdtm_ref.get_domain_spec("DM")
         assert domain_spec is not None
 
         # Create mappings for all Required variables
-        required_vars = [
-            v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ
-        ]
+        required_vars = [v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ]
         mappings = [
             VariableMapping(
                 sdtm_variable=name,

@@ -18,9 +18,7 @@ Time imputation flags (--TMF):
 from __future__ import annotations
 
 
-def get_date_imputation_flag(
-    original_dtc: str, imputed_dtc: str
-) -> str | None:
+def get_date_imputation_flag(original_dtc: str, imputed_dtc: str) -> str | None:
     """Determine the date imputation flag (--DTF) by comparing original and imputed DTC.
 
     Compares the date portion of the original partial DTC against a full date
@@ -50,9 +48,7 @@ def get_date_imputation_flag(
     return "Y"
 
 
-def get_time_imputation_flag(
-    original_dtc: str, imputed_dtc: str
-) -> str | None:
+def get_time_imputation_flag(original_dtc: str, imputed_dtc: str) -> str | None:
     """Determine the time imputation flag (--TMF) by comparing original and imputed DTC.
 
     Compares the time portion of the original partial DTC against a full datetime

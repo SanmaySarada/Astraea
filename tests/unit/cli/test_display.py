@@ -100,9 +100,7 @@ def sample_spec() -> DomainMappingSpec:
 class TestDisplayMappingSpec:
     """Tests for display_mapping_spec Rich output."""
 
-    def test_display_mapping_spec_no_error(
-        self, sample_spec: DomainMappingSpec
-    ) -> None:
+    def test_display_mapping_spec_no_error(self, sample_spec: DomainMappingSpec) -> None:
         """display_mapping_spec runs without exception and produces output."""
         buf = StringIO()
         cons = Console(file=buf, force_terminal=True, no_color=True, width=120)
@@ -110,9 +108,7 @@ class TestDisplayMappingSpec:
         output = buf.getvalue()
         assert len(output) > 0
 
-    def test_display_mapping_spec_contains_domain(
-        self, sample_spec: DomainMappingSpec
-    ) -> None:
+    def test_display_mapping_spec_contains_domain(self, sample_spec: DomainMappingSpec) -> None:
         """Output contains the domain name."""
         buf = StringIO()
         cons = Console(file=buf, force_terminal=True, no_color=True, width=120)
@@ -121,9 +117,7 @@ class TestDisplayMappingSpec:
         assert "DM" in output
         assert "Demographics" in output
 
-    def test_display_mapping_spec_contains_variables(
-        self, sample_spec: DomainMappingSpec
-    ) -> None:
+    def test_display_mapping_spec_contains_variables(self, sample_spec: DomainMappingSpec) -> None:
         """Output contains SDTM variable names from the fixture."""
         buf = StringIO()
         cons = Console(file=buf, force_terminal=True, no_color=True, width=120)
@@ -144,9 +138,7 @@ class TestDisplayMappingSpec:
         assert "HIGH: 2" in output
         assert "LOW: 1" in output
 
-    def test_display_mapping_spec_contains_unmapped(
-        self, sample_spec: DomainMappingSpec
-    ) -> None:
+    def test_display_mapping_spec_contains_unmapped(self, sample_spec: DomainMappingSpec) -> None:
         """Output contains unmapped and SUPPQUAL candidate information."""
         buf = StringIO()
         cons = Console(file=buf, force_terminal=True, no_color=True, width=120)

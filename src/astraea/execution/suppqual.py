@@ -66,9 +66,7 @@ def generate_suppqual(
         return pd.DataFrame(columns=supp_columns)
 
     if seq_var not in parent_df.columns:
-        logger.error(
-            "Parent DataFrame missing {} column", seq_var
-        )
+        logger.error("Parent DataFrame missing {} column", seq_var)
         return pd.DataFrame(columns=supp_columns)
 
     records: list[dict[str, str]] = []
@@ -157,39 +155,28 @@ def validate_suppqual_integrity(
         wrong_rdomain = supp_df[supp_df["RDOMAIN"] != domain_upper]
         if not wrong_rdomain.empty:
             bad_values = wrong_rdomain["RDOMAIN"].unique().tolist()
-            errors.append(
-                f"RDOMAIN mismatch: expected '{domain_upper}', "
-                f"found {bad_values}"
-            )
+            errors.append(f"RDOMAIN mismatch: expected '{domain_upper}', found {bad_values}")
 
     # Check 2: IDVAR matches {domain}SEQ
     if "IDVAR" in supp_df.columns:
         wrong_idvar = supp_df[supp_df["IDVAR"] != seq_var]
         if not wrong_idvar.empty:
             bad_values = wrong_idvar["IDVAR"].unique().tolist()
-            errors.append(
-                f"IDVAR mismatch: expected '{seq_var}', found {bad_values}"
-            )
+            errors.append(f"IDVAR mismatch: expected '{seq_var}', found {bad_values}")
 
     # Check 3: Every IDVARVAL exists in parent SEQ
     if "IDVARVAL" in supp_df.columns and seq_var in parent_df.columns:
-        parent_seqs = set(
-            str(int(v))
-            for v in parent_df[seq_var].dropna()
-        )
+        parent_seqs = set(str(int(v)) for v in parent_df[seq_var].dropna())
         supp_idvarvals = set(supp_df["IDVARVAL"].dropna().unique())
         orphans = supp_idvarvals - parent_seqs
         for orphan in sorted(orphans):
             errors.append(
-                f"Orphaned SUPPQUAL record: IDVARVAL='{orphan}' "
-                f"not found in parent {seq_var}"
+                f"Orphaned SUPPQUAL record: IDVARVAL='{orphan}' not found in parent {seq_var}"
             )
 
     # Check 4: No duplicate QNAM within same (USUBJID, IDVARVAL)
     if all(c in supp_df.columns for c in ("USUBJID", "IDVARVAL", "QNAM")):
-        dups = supp_df.groupby(
-            ["USUBJID", "IDVARVAL", "QNAM"]
-        ).size()
+        dups = supp_df.groupby(["USUBJID", "IDVARVAL", "QNAM"]).size()
         dup_entries = dups[dups > 1]
         for (usubjid, idvarval, qnam), count in dup_entries.items():
             errors.append(

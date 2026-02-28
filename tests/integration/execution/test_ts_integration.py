@@ -14,12 +14,10 @@ import pandas as pd
 import pytest
 
 from astraea.execution.trial_summary import (
-    FDA_REQUIRED_PARAMS,
     build_ts_domain,
     validate_ts_completeness,
 )
 from astraea.models.trial_design import TSConfig
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -80,18 +78,14 @@ def ts_config() -> TSConfig:
 
 
 class TestTSWithDM:
-    def test_ts_with_dm_derives_sstdtc(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_with_dm_derives_sstdtc(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """SSTDTC should be derived as min(RFSTDTC) from DM."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         sstdtc_row = ts[ts["TSPARMCD"] == "SSTDTC"]
         assert len(sstdtc_row) == 1
         assert sstdtc_row["TSVAL"].iloc[0] == "2021-06-15"
 
-    def test_ts_with_dm_derives_sendtc(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_with_dm_derives_sendtc(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """SENDTC should be derived as max(RFENDTC) from DM."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         sendtc_row = ts[ts["TSPARMCD"] == "SENDTC"]
@@ -99,9 +93,7 @@ class TestTSWithDM:
         # max of non-null RFENDTC values
         assert sendtc_row["TSVAL"].iloc[0] == "2022-10-05"
 
-    def test_ts_all_mandatory_present(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_all_mandatory_present(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """validate_ts_completeness should return 0 errors."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         issues = validate_ts_completeness(ts)
@@ -113,9 +105,7 @@ class TestTSWithDM:
         assert "SSTDTC" not in ts["TSPARMCD"].values
         assert "SENDTC" not in ts["TSPARMCD"].values
 
-    def test_ts_xpt_roundtrip(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_xpt_roundtrip(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """Write TS to XPT, read back, verify all parameters survive."""
         from astraea.io.xpt_writer import write_xpt_v5
 
@@ -151,24 +141,18 @@ class TestTSWithDM:
             assert len(ts_read) == len(ts)
             assert set(ts_read["TSPARMCD"]) == set(ts["TSPARMCD"])
 
-    def test_ts_row_count(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_row_count(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """TS should have at least 10 rows (8 core + SSTDTC + SENDTC + optional)."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         # 8 core + PLESSION + NARMS + SSTDTC + SENDTC = 12
         assert len(ts) >= 10
 
-    def test_ts_studyid_consistent(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_studyid_consistent(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """All rows should have the same STUDYID."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         assert (ts["STUDYID"] == "PHA022121-C301").all()
 
-    def test_ts_tsseq_unique(
-        self, ts_config: TSConfig, dm_df: pd.DataFrame
-    ) -> None:
+    def test_ts_tsseq_unique(self, ts_config: TSConfig, dm_df: pd.DataFrame) -> None:
         """TSSEQ values should be unique integers."""
         ts = build_ts_domain(ts_config, dm_df=dm_df)
         tsseq_values = ts["TSSEQ"].tolist()

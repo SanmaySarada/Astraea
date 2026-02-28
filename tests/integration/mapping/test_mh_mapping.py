@@ -215,8 +215,7 @@ class TestMHMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in mh_mapping_result.variable_mappings}
         missing = REQUIRED_MH_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required MH variables: {missing}. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Missing required MH variables: {missing}. Mapped variables: {sorted(mapped_vars)}"
         )
 
     def test_mhdecod_mapped(self, mh_mapping_result: DomainMappingSpec) -> None:

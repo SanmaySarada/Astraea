@@ -151,9 +151,7 @@ def _add_study(root: etree._Element, study_id: str, study_name: str) -> etree._E
     return study
 
 
-def _add_metadata_version(
-    study: etree._Element, study_id: str, ig_version: str
-) -> etree._Element:
+def _add_metadata_version(study: etree._Element, study_id: str, ig_version: str) -> etree._Element:
     """Add MetaDataVersion element with define.xml attributes."""
     mdv = etree.SubElement(study, f"{{{ODM_NS}}}MetaDataVersion")
     mdv.set("OID", f"MDV.{study_id}")

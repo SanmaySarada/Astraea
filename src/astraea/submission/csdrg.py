@@ -250,15 +250,13 @@ def generate_csdrg(
     sorted_results = sorted(
         validation_report.results,
         key=lambda r: (
-            0 if r.severity == RuleSeverity.ERROR else (
-                1 if r.severity == RuleSeverity.WARNING else 2
-            ),
+            0
+            if r.severity == RuleSeverity.ERROR
+            else (1 if r.severity == RuleSeverity.WARNING else 2),
             -r.affected_count,
         ),
     )
-    top_issues = [
-        r for r in sorted_results if not r.known_false_positive
-    ][:5]
+    top_issues = [r for r in sorted_results if not r.known_false_positive][:5]
     top_issue_rows = [
         {
             "sev": r.severity.display_name,

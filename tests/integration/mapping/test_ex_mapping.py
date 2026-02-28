@@ -246,8 +246,7 @@ class TestEXMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in ex_mapping_result.variable_mappings}
         missing = REQUIRED_EX_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required EX variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required EX variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_extrt_has_source(self, ex_mapping_result: DomainMappingSpec) -> None:
@@ -283,25 +282,17 @@ class TestEXMappingEndToEnd:
 class TestEXCTValidation:
     """Validate controlled terminology references in EX mapping output."""
 
-    def test_dose_form_references_codelist(
-        self, ex_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_dose_form_references_codelist(self, ex_mapping_result: DomainMappingSpec) -> None:
         """EXDOSFRM mapping should reference codelist C66726 if present."""
-        exdosfrm = [
-            m for m in ex_mapping_result.variable_mappings if m.sdtm_variable == "EXDOSFRM"
-        ]
+        exdosfrm = [m for m in ex_mapping_result.variable_mappings if m.sdtm_variable == "EXDOSFRM"]
         if exdosfrm and exdosfrm[0].codelist_code is not None:
             assert exdosfrm[0].codelist_code == "C66726", (
                 f"EXDOSFRM codelist should be C66726, got {exdosfrm[0].codelist_code}"
             )
 
-    def test_route_references_codelist(
-        self, ex_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_route_references_codelist(self, ex_mapping_result: DomainMappingSpec) -> None:
         """EXROUTE mapping should reference codelist C66729 if present."""
-        exroute = [
-            m for m in ex_mapping_result.variable_mappings if m.sdtm_variable == "EXROUTE"
-        ]
+        exroute = [m for m in ex_mapping_result.variable_mappings if m.sdtm_variable == "EXROUTE"]
         if exroute and exroute[0].codelist_code is not None:
             assert exroute[0].codelist_code == "C66729", (
                 f"EXROUTE codelist should be C66729, got {exroute[0].codelist_code}"

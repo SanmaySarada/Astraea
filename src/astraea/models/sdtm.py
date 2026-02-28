@@ -7,13 +7,13 @@ enumerations. Used for lookup during mapping, not for storing mapped data.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
-class DomainClass(str, Enum):
+class DomainClass(StrEnum):
     """SDTM domain classification per SDTM-IG v3.4."""
 
     INTERVENTIONS = "Interventions"
@@ -25,7 +25,7 @@ class DomainClass(str, Enum):
     ASSOCIATED_PERSONS = "Associated Persons"
 
 
-class CoreDesignation(str, Enum):
+class CoreDesignation(StrEnum):
     """SDTM variable core designation.
 
     REQ = Required (must be present in dataset)
@@ -46,13 +46,11 @@ class VariableSpec(BaseModel):
     """
 
     name: str = Field(..., description="SDTM variable name (e.g., 'AETERM')")
-    label: str = Field(..., description="Variable label (e.g., 'Reported Term for the Adverse Event')")
-    data_type: Literal["Char", "Num"] = Field(
-        ..., description="SDTM data type: Char or Num"
+    label: str = Field(
+        ..., description="Variable label (e.g., 'Reported Term for the Adverse Event')"
     )
-    core: CoreDesignation = Field(
-        ..., description="Core designation: Req, Exp, or Perm"
-    )
+    data_type: Literal["Char", "Num"] = Field(..., description="SDTM data type: Char or Num")
+    core: CoreDesignation = Field(..., description="Core designation: Req, Exp, or Perm")
     cdisc_notes: str = Field(default="", description="CDISC implementation notes")
     codelist_code: str | None = Field(
         default=None, description="NCI codelist code (e.g., 'C66729') if applicable"
@@ -68,7 +66,10 @@ class DomainSpec(BaseModel):
     """
 
     domain: str = Field(
-        ..., min_length=1, max_length=8, description="Domain abbreviation (e.g., 'AE', 'DM', 'SUPPQUAL')"
+        ...,
+        min_length=1,
+        max_length=8,
+        description="Domain abbreviation (e.g., 'AE', 'DM', 'SUPPQUAL')",
     )
     description: str = Field(..., description="Domain description (e.g., 'Adverse Events')")
     domain_class: DomainClass = Field(..., description="Domain classification")
@@ -80,7 +81,9 @@ class DomainSpec(BaseModel):
     )
     key_variables: list[str] | None = Field(
         default=None,
-        description="Natural key variables for uniqueness validation (e.g., ['STUDYID', 'USUBJID'] for DM)",
+        description=(
+            "Natural key variables for uniqueness validation (e.g., ['STUDYID', 'USUBJID'] for DM)"
+        ),
     )
 
 

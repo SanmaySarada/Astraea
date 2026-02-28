@@ -7,7 +7,6 @@ import pytest
 
 from astraea.execution.subject_visits import build_sv_domain, extract_visit_dates
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -51,8 +50,12 @@ def basic_raw_dfs() -> dict[str, pd.DataFrame]:
             ["S001", "S002"],
             visits,
             dates=[
-                "2022-01-10", "2022-02-07", "2022-03-07",
-                "2022-01-15", "2022-02-12", "2022-03-12",
+                "2022-01-10",
+                "2022-02-07",
+                "2022-03-07",
+                "2022-01-15",
+                "2022-02-12",
+                "2022-03-12",
             ],
         )
     }
@@ -79,8 +82,12 @@ class TestExtractVisitDates:
         result = extract_visit_dates(basic_raw_dfs)
         assert len(result) == 6  # 2 subjects x 3 visits
         assert list(result.columns) == [
-            "subject_id", "visit_name", "visit_folder",
-            "visit_seq", "earliest_date", "latest_date",
+            "subject_id",
+            "visit_name",
+            "visit_folder",
+            "visit_seq",
+            "earliest_date",
+            "latest_date",
         ]
 
     def test_extract_visit_dates_multi_source(
@@ -94,9 +101,7 @@ class TestExtractVisitDates:
 
     def test_extract_visit_dates_no_visit_cols(self) -> None:
         """DataFrame without InstanceName should produce empty result."""
-        df_no_visits = pd.DataFrame(
-            {"Subject": ["S001"], "AETERM": ["Headache"]}
-        )
+        df_no_visits = pd.DataFrame({"Subject": ["S001"], "AETERM": ["Headache"]})
         result = extract_visit_dates({"ae": df_no_visits})
         assert result.empty
         assert "subject_id" in result.columns
@@ -113,7 +118,16 @@ class TestBuildSVDomain:
         sv = build_sv_domain(visit_data, "STUDY01")
 
         assert len(sv) == 6
-        required_cols = {"STUDYID", "DOMAIN", "USUBJID", "SVSEQ", "VISITNUM", "VISIT", "SVSTDTC", "SVENDTC"}
+        required_cols = {
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "SVSEQ",
+            "VISITNUM",
+            "VISIT",
+            "SVSTDTC",
+            "SVENDTC",
+        }
         assert required_cols.issubset(set(sv.columns))
         assert (sv["DOMAIN"] == "SV").all()
         assert (sv["STUDYID"] == "STUDY01").all()
@@ -166,7 +180,14 @@ class TestBuildSVDomain:
 
     def test_build_sv_empty_input(self) -> None:
         empty = pd.DataFrame(
-            columns=["subject_id", "visit_name", "visit_folder", "visit_seq", "earliest_date", "latest_date"]
+            columns=[
+                "subject_id",
+                "visit_name",
+                "visit_folder",
+                "visit_seq",
+                "earliest_date",
+                "latest_date",
+            ]
         )
         sv = build_sv_domain(empty, "STUDY01")
         assert sv.empty

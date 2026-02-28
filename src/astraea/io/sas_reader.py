@@ -52,10 +52,7 @@ def read_sas_with_metadata(
     for col_name in meta.column_names:
         sas_format = meta.original_variable_types.get(col_name)
         # pyreadstat: "$" prefix = character, None or other = numeric
-        if sas_format is not None and sas_format.startswith("$"):
-            dtype = "character"
-        else:
-            dtype = "numeric"
+        dtype = "character" if sas_format is not None and sas_format.startswith("$") else "numeric"
 
         label = meta.column_names_to_labels.get(col_name) or ""
 

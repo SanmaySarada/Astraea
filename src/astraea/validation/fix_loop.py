@@ -36,19 +36,13 @@ class IterationResult(BaseModel):
     """
 
     iteration: int = Field(..., description="1-indexed iteration number")
-    issues_found: int = Field(
-        ..., description="Total issues found in this iteration's validation"
-    )
-    auto_fixed: int = Field(
-        ..., description="Number of issues auto-fixed in this iteration"
-    )
+    issues_found: int = Field(..., description="Total issues found in this iteration's validation")
+    auto_fixed: int = Field(..., description="Number of issues auto-fixed in this iteration")
     remaining_auto_fixable: int = Field(
         ...,
         description="Auto-fixable issues not yet addressed (should decrease)",
     )
-    needs_human: int = Field(
-        ..., description="Issues requiring human intervention"
-    )
+    needs_human: int = Field(..., description="Issues requiring human intervention")
     fix_actions: list[FixAction] = Field(
         default_factory=list, description="Fixes applied in this iteration"
     )
@@ -61,19 +55,13 @@ class FixLoopResult(BaseModel):
     and the final validation report after all iterations complete.
     """
 
-    iterations_run: int = Field(
-        ..., description="How many iterations were executed"
-    )
-    max_iterations: int = Field(
-        default=3, description="Configured max iterations"
-    )
+    iterations_run: int = Field(..., description="How many iterations were executed")
+    max_iterations: int = Field(default=3, description="Configured max iterations")
     converged: bool = Field(
         ...,
         description="True if loop stopped because no more auto-fixable issues",
     )
-    total_fixed: int = Field(
-        ..., description="Total fixes across all iterations"
-    )
+    total_fixed: int = Field(..., description="Total fixes across all iterations")
     remaining_issues: list[RuleResult] = Field(
         default_factory=list,
         description="Issues that still exist after all iterations",
@@ -165,18 +153,12 @@ class FixLoopEngine:
             results = self._engine.validate_all(domains)
 
             # Step 2: Classify all issues
-            classifications = [
-                self._auto_fixer.classify_issue(r) for r in results
-            ]
+            classifications = [self._auto_fixer.classify_issue(r) for r in results]
             auto_fixable = [
-                c
-                for c in classifications
-                if c.classification == FixClassification.AUTO_FIXABLE
+                c for c in classifications if c.classification == FixClassification.AUTO_FIXABLE
             ]
             needs_human = [
-                c
-                for c in classifications
-                if c.classification == FixClassification.NEEDS_HUMAN
+                c for c in classifications if c.classification == FixClassification.NEEDS_HUMAN
             ]
             last_needs_human = needs_human
 
@@ -202,11 +184,7 @@ class FixLoopEngine:
             # Step 4: Apply fixes per domain
             iteration_fix_actions: list[FixAction] = []
             for domain_code, (df, spec) in domains.items():
-                domain_issues = [
-                    c.result
-                    for c in auto_fixable
-                    if c.result.domain == domain_code
-                ]
+                domain_issues = [c.result for c in auto_fixable if c.result.domain == domain_code]
                 if not domain_issues:
                     continue
                 fixed_df, fixed_spec, fix_actions = self._auto_fixer.apply_fixes(
@@ -223,8 +201,7 @@ class FixLoopEngine:
                     iteration=iteration,
                     issues_found=len(results),
                     auto_fixed=len(iteration_fix_actions),
-                    remaining_auto_fixable=len(auto_fixable)
-                    - len(iteration_fix_actions),
+                    remaining_auto_fixable=len(auto_fixable) - len(iteration_fix_actions),
                     needs_human=len(needs_human),
                     fix_actions=iteration_fix_actions,
                 )
@@ -240,9 +217,7 @@ class FixLoopEngine:
         # Step 5: Final validation pass
         logger.info("Running final validation pass after fix loop")
         final_results = self._engine.validate_all(domains)
-        final_report = ValidationReport.from_results(
-            study_id, final_results, list(domains.keys())
-        )
+        final_report = ValidationReport.from_results(study_id, final_results, list(domains.keys()))
 
         # Step 6: Write fixed DataFrames to XPT if output_dir given
         if output_dir is not None:
@@ -313,9 +288,7 @@ def _write_fixed_datasets(
                 xpt_path,
             )
         except Exception as exc:
-            logger.error(
-                "Failed to write XPT for domain {}: {}", domain_code, exc
-            )
+            logger.error("Failed to write XPT for domain {}: {}", domain_code, exc)
 
 
 def _write_audit_trail(

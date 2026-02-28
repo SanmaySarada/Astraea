@@ -12,15 +12,12 @@ import pytest
 
 from astraea.classification.heuristic import (
     FILENAME_PATTERNS,
-    MERGE_PREFIXES,
     compute_heuristic_scores,
     detect_merge_groups,
     score_by_filename,
     score_by_variables,
 )
-from astraea.models.classification import HeuristicScore
 from astraea.models.profiling import DatasetProfile, VariableProfile
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -149,9 +146,29 @@ class TestScoreByFilename:
     def test_all_standard_domains_have_patterns(self) -> None:
         """Verify all 23 domains have filename patterns."""
         expected_domains = {
-            "AE", "CM", "DM", "DS", "DV", "EG", "EX", "IE",
-            "LB", "MH", "PE", "VS", "CE", "DA", "SV",
-            "QS", "SC", "FA", "TA", "TE", "TV", "TI", "TS",
+            "AE",
+            "CM",
+            "DM",
+            "DS",
+            "DV",
+            "EG",
+            "EX",
+            "IE",
+            "LB",
+            "MH",
+            "PE",
+            "VS",
+            "CE",
+            "DA",
+            "SV",
+            "QS",
+            "SC",
+            "FA",
+            "TA",
+            "TE",
+            "TV",
+            "TI",
+            "TS",
         }
         assert set(FILENAME_PATTERNS.keys()) == expected_domains
 
@@ -170,9 +187,7 @@ class TestScoreByFilename:
             ("ts.sas7bdat", "TS"),
         ],
     )
-    def test_new_domain_exact_matches(
-        self, filename: str, expected_domain: str
-    ) -> None:
+    def test_new_domain_exact_matches(self, filename: str, expected_domain: str) -> None:
         """New domain patterns should produce exact matches (score 1.0)."""
         scores = score_by_filename(filename)
         match = next(s for s in scores if s.domain == expected_domain)
@@ -187,9 +202,7 @@ class TestScoreByFilename:
             ("cm1.sas7bdat", "CM"),
         ],
     )
-    def test_numbered_variant_matching(
-        self, filename: str, expected_domain: str
-    ) -> None:
+    def test_numbered_variant_matching(self, filename: str, expected_domain: str) -> None:
         """Numbered variants like ds2, eg3 should match their base domain."""
         scores = score_by_filename(filename)
         match = next(s for s in scores if s.domain == expected_domain)
@@ -203,9 +216,7 @@ class TestScoreByFilename:
             ("testing.sas7bdat", "TE"),
         ],
     )
-    def test_no_false_positives(
-        self, filename: str, forbidden_domain: str
-    ) -> None:
+    def test_no_false_positives(self, filename: str, forbidden_domain: str) -> None:
         """Should NOT produce false positive matches for similar names."""
         scores = score_by_filename(filename)
         domains = {s.domain for s in scores}
@@ -224,15 +235,25 @@ class TestScoreByVariables:
         """Dataset with AE-specific variables should score high for AE."""
         profile = _make_profile(
             "something.sas7bdat",
-            ["STUDYID", "USUBJID", "AETERM", "AESTDTC", "AEENDTC", "AESEQ",
-             "AEDECOD", "AEBODSYS"],
+            ["STUDYID", "USUBJID", "AETERM", "AESTDTC", "AEENDTC", "AESEQ", "AEDECOD", "AEBODSYS"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM",
-                    "AEDECOD", "AEBODSYS", "AESTDTC", "AEENDTC", "AESER"],
-            "DM": ["STUDYID", "DOMAIN", "USUBJID", "SUBJID", "RFSTDTC",
-                    "SEX", "AGE", "RACE"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": [
+                    "STUDYID",
+                    "DOMAIN",
+                    "USUBJID",
+                    "AESEQ",
+                    "AETERM",
+                    "AEDECOD",
+                    "AEBODSYS",
+                    "AESTDTC",
+                    "AEENDTC",
+                    "AESER",
+                ],
+                "DM": ["STUDYID", "DOMAIN", "USUBJID", "SUBJID", "RFSTDTC", "SEX", "AGE", "RACE"],
+            }
+        )
         scores = score_by_variables(profile, ref)
         assert len(scores) >= 1
         ae_score = next(s for s in scores if s.domain == "AE")
@@ -244,10 +265,20 @@ class TestScoreByVariables:
             "custom.sas7bdat",
             ["FOO", "BAR", "BAZ", "QWERTY"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM",
-                    "AEDECOD", "AEBODSYS", "AESTDTC"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": [
+                    "STUDYID",
+                    "DOMAIN",
+                    "USUBJID",
+                    "AESEQ",
+                    "AETERM",
+                    "AEDECOD",
+                    "AEBODSYS",
+                    "AESTDTC",
+                ],
+            }
+        )
         scores = score_by_variables(profile, ref)
         # Should be empty since no meaningful overlap
         assert len(scores) == 0
@@ -258,10 +289,12 @@ class TestScoreByVariables:
             "something.sas7bdat",
             ["STUDYID", "DOMAIN", "USUBJID"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM"],
-            "DM": ["STUDYID", "DOMAIN", "USUBJID", "SUBJID", "SEX"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM"],
+                "DM": ["STUDYID", "DOMAIN", "USUBJID", "SUBJID", "SEX"],
+            }
+        )
         scores = score_by_variables(profile, ref)
         # Common identifiers excluded, so no meaningful domain-specific overlap
         assert len(scores) == 0
@@ -273,10 +306,11 @@ class TestScoreByVariables:
             ["STUDYID", "USUBJID", "AETERM", "projectid", "instanceId"],
             edc_columns=["projectid", "instanceId"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM",
-                    "AEDECOD"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": ["STUDYID", "DOMAIN", "USUBJID", "AESEQ", "AETERM", "AEDECOD"],
+            }
+        )
         scores = score_by_variables(profile, ref)
         # AETERM should still match
         assert len(scores) >= 1
@@ -287,12 +321,12 @@ class TestScoreByVariables:
             "mixed.sas7bdat",
             ["AETERM", "AEDECOD", "CMTRT", "CMDECOD"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD",
-                    "AEBODSYS"],
-            "CM": ["STUDYID", "DOMAIN", "USUBJID", "CMTRT", "CMDECOD",
-                    "CMCAT"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD", "AEBODSYS"],
+                "CM": ["STUDYID", "DOMAIN", "USUBJID", "CMTRT", "CMDECOD", "CMCAT"],
+            }
+        )
         scores = score_by_variables(profile, ref)
         for i in range(len(scores) - 1):
             assert scores[i].score >= scores[i + 1].score
@@ -303,10 +337,11 @@ class TestScoreByVariables:
             "ae_data.sas7bdat",
             ["AETERM", "AEDECOD"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD",
-                    "AEBODSYS"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD", "AEBODSYS"],
+            }
+        )
         scores = score_by_variables(profile, ref)
         assert len(scores) >= 1
         assert "variable overlap:" in scores[0].signals[0]
@@ -332,10 +367,11 @@ class TestComputeHeuristicScores:
             "ae.sas7bdat",
             ["AETERM", "AEDECOD", "AEBODSYS"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD",
-                    "AEBODSYS"],
-        })
+        ref = _make_mock_ref(
+            {
+                "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD", "AEBODSYS"],
+            }
+        )
         scores = compute_heuristic_scores("ae.sas7bdat", profile, ref)
         ae_score = next(s for s in scores if s.domain == "AE")
         # Filename gives 1.0, variable gives some score; max is 1.0
@@ -357,13 +393,23 @@ class TestComputeHeuristicScores:
             "weird_data.sas7bdat",
             ["XYZVAR1", "XYZVAR2"],
         )
-        ref = _make_mock_ref({
-            "AE": ["STUDYID", "DOMAIN", "USUBJID", "AETERM", "AEDECOD",
-                    "AEBODSYS", "AESTDTC", "AEENDTC", "AESER", "AEREL"],
-        })
-        scores = compute_heuristic_scores(
-            "weird_data.sas7bdat", profile, ref
+        ref = _make_mock_ref(
+            {
+                "AE": [
+                    "STUDYID",
+                    "DOMAIN",
+                    "USUBJID",
+                    "AETERM",
+                    "AEDECOD",
+                    "AEBODSYS",
+                    "AESTDTC",
+                    "AEENDTC",
+                    "AESER",
+                    "AEREL",
+                ],
+            }
         )
+        scores = compute_heuristic_scores("weird_data.sas7bdat", profile, ref)
         assert scores[0].domain == "UNCLASSIFIED"
 
     def test_variable_score_wins_when_higher(self) -> None:
@@ -372,14 +418,35 @@ class TestComputeHeuristicScores:
         # But if variable overlap gives 0.9, that should win
         profile = _make_profile(
             "lb_custom.sas7bdat",
-            ["LBTESTCD", "LBTEST", "LBORRES", "LBORRESU", "LBSTRESC",
-             "LBSTRESN", "LBSTRESU", "LBCAT"],
+            [
+                "LBTESTCD",
+                "LBTEST",
+                "LBORRES",
+                "LBORRESU",
+                "LBSTRESC",
+                "LBSTRESN",
+                "LBSTRESU",
+                "LBCAT",
+            ],
         )
-        ref = _make_mock_ref({
-            "LB": ["STUDYID", "DOMAIN", "USUBJID", "LBSEQ", "LBTESTCD",
-                    "LBTEST", "LBCAT", "LBORRES", "LBORRESU", "LBSTRESC",
-                    "LBSTRESN", "LBSTRESU"],
-        })
+        ref = _make_mock_ref(
+            {
+                "LB": [
+                    "STUDYID",
+                    "DOMAIN",
+                    "USUBJID",
+                    "LBSEQ",
+                    "LBTESTCD",
+                    "LBTEST",
+                    "LBCAT",
+                    "LBORRES",
+                    "LBORRESU",
+                    "LBSTRESC",
+                    "LBSTRESN",
+                    "LBSTRESU",
+                ],
+            }
+        )
         scores = compute_heuristic_scores("lb_custom.sas7bdat", profile, ref)
         lb_score = next(s for s in scores if s.domain == "LB")
         # Variable overlap should give higher score than filename's 0.7
@@ -396,13 +463,16 @@ class TestDetectMergeGroups:
 
     def test_lb_merge_group(self) -> None:
         """Multiple lb_ files should group into LB domain."""
-        names = ["lb_biochem.sas7bdat", "lb_hem.sas7bdat", "lb_urin.sas7bdat",
-                 "ae.sas7bdat", "dm.sas7bdat"]
+        names = [
+            "lb_biochem.sas7bdat",
+            "lb_hem.sas7bdat",
+            "lb_urin.sas7bdat",
+            "ae.sas7bdat",
+            "dm.sas7bdat",
+        ]
         groups = detect_merge_groups(names)
         assert "LB" in groups
-        assert set(groups["LB"]) == {
-            "lb_biochem.sas7bdat", "lb_hem.sas7bdat", "lb_urin.sas7bdat"
-        }
+        assert set(groups["LB"]) == {"lb_biochem.sas7bdat", "lb_hem.sas7bdat", "lb_urin.sas7bdat"}
 
     def test_no_merges_for_single_files(self) -> None:
         """Single files per domain should not produce merge groups."""
@@ -427,8 +497,10 @@ class TestDetectMergeGroups:
     def test_mixed_groups(self) -> None:
         """Should detect multiple merge groups simultaneously."""
         names = [
-            "lb_biochem.sas7bdat", "lb_hem.sas7bdat",
-            "eg_resting.sas7bdat", "eg_exercise.sas7bdat",
+            "lb_biochem.sas7bdat",
+            "lb_hem.sas7bdat",
+            "eg_resting.sas7bdat",
+            "eg_exercise.sas7bdat",
             "ae.sas7bdat",
         ]
         groups = detect_merge_groups(names)

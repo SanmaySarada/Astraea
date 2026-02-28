@@ -79,9 +79,7 @@ def _make_dummy_sas(tmp_path: Path, name: str = "test.sas7bdat") -> Path:
 
 def _mock_read_sas(*_args, **_kwargs):
     """Return a minimal DataFrame as if read from a SAS file."""
-    df = pd.DataFrame(
-        {"Subject": ["001"], "SiteNumber": ["01"], "LBTEST": ["WBC"]}
-    )
+    df = pd.DataFrame({"Subject": ["001"], "SiteNumber": ["01"], "LBTEST": ["WBC"]})
     meta = MagicMock()
     return df, meta
 
@@ -89,9 +87,7 @@ def _mock_read_sas(*_args, **_kwargs):
 @patch(_PATCH_LOAD_SDTM)
 @patch(_PATCH_LOAD_CT)
 @patch(_PATCH_READ_SAS, side_effect=_mock_read_sas)
-def test_execute_domain_lb_uses_findings_executor(
-    mock_read_sas, mock_ct, mock_sdtm, tmp_path
-):
+def test_execute_domain_lb_uses_findings_executor(mock_read_sas, mock_ct, mock_sdtm, tmp_path):
     """LB domain should be routed through FindingsExecutor.execute_lb."""
     spec_path = _make_spec_json("LB", tmp_path)
     _make_dummy_sas(tmp_path)
@@ -101,10 +97,13 @@ def test_execute_domain_lb_uses_findings_executor(
         {"STUDYID": ["TEST001"], "DOMAIN": ["LB"], "USUBJID": ["TEST001-001-001"]}
     )
 
-    with patch(
-        "astraea.execution.findings.FindingsExecutor.execute_lb",
-        return_value=(main_df, None),
-    ) as mock_execute_lb, patch(_PATCH_WRITE_XPT):
+    with (
+        patch(
+            "astraea.execution.findings.FindingsExecutor.execute_lb",
+            return_value=(main_df, None),
+        ) as mock_execute_lb,
+        patch(_PATCH_WRITE_XPT),
+    ):
         result = runner.invoke(
             app,
             [
@@ -122,9 +121,7 @@ def test_execute_domain_lb_uses_findings_executor(
 @patch(_PATCH_LOAD_SDTM)
 @patch(_PATCH_LOAD_CT)
 @patch(_PATCH_READ_SAS, side_effect=_mock_read_sas)
-def test_execute_domain_eg_uses_findings_executor(
-    mock_read_sas, mock_ct, mock_sdtm, tmp_path
-):
+def test_execute_domain_eg_uses_findings_executor(mock_read_sas, mock_ct, mock_sdtm, tmp_path):
     """EG domain should be routed through FindingsExecutor.execute_eg."""
     spec_path = _make_spec_json("EG", tmp_path)
     _make_dummy_sas(tmp_path)
@@ -134,10 +131,13 @@ def test_execute_domain_eg_uses_findings_executor(
         {"STUDYID": ["TEST001"], "DOMAIN": ["EG"], "USUBJID": ["TEST001-001-001"]}
     )
 
-    with patch(
-        "astraea.execution.findings.FindingsExecutor.execute_eg",
-        return_value=(main_df, None),
-    ) as mock_execute_eg, patch(_PATCH_WRITE_XPT):
+    with (
+        patch(
+            "astraea.execution.findings.FindingsExecutor.execute_eg",
+            return_value=(main_df, None),
+        ) as mock_execute_eg,
+        patch(_PATCH_WRITE_XPT),
+    ):
         result = runner.invoke(
             app,
             [
@@ -155,17 +155,13 @@ def test_execute_domain_eg_uses_findings_executor(
 @patch(_PATCH_LOAD_SDTM)
 @patch(_PATCH_LOAD_CT)
 @patch(_PATCH_READ_SAS, side_effect=_mock_read_sas)
-def test_execute_domain_dm_uses_generic_executor(
-    mock_read_sas, mock_ct, mock_sdtm, tmp_path
-):
+def test_execute_domain_dm_uses_generic_executor(mock_read_sas, mock_ct, mock_sdtm, tmp_path):
     """DM domain should use generic DatasetExecutor, NOT FindingsExecutor."""
     spec_path = _make_spec_json("DM", tmp_path)
     _make_dummy_sas(tmp_path)
     output_dir = tmp_path / "output"
 
-    with patch(
-        "astraea.execution.executor.DatasetExecutor.execute_to_xpt"
-    ) as mock_exec_xpt:
+    with patch("astraea.execution.executor.DatasetExecutor.execute_to_xpt") as mock_exec_xpt:
         mock_exec_xpt.return_value = Path(output_dir / "dm.xpt")
         result = runner.invoke(
             app,
@@ -184,9 +180,7 @@ def test_execute_domain_dm_uses_generic_executor(
 @patch(_PATCH_LOAD_SDTM)
 @patch(_PATCH_LOAD_CT)
 @patch(_PATCH_READ_SAS, side_effect=_mock_read_sas)
-def test_execute_domain_lb_with_suppqual(
-    mock_read_sas, mock_ct, mock_sdtm, tmp_path
-):
+def test_execute_domain_lb_with_suppqual(mock_read_sas, mock_ct, mock_sdtm, tmp_path):
     """When FindingsExecutor returns SUPPQUAL data, two XPT files should be written."""
     spec_path = _make_spec_json("LB", tmp_path)
     _make_dummy_sas(tmp_path)
@@ -215,10 +209,13 @@ def test_execute_domain_lb_with_suppqual(
     def mock_write_xpt(df, path, **kwargs):
         write_calls.append(str(path))
 
-    with patch(
-        "astraea.execution.findings.FindingsExecutor.execute_lb",
-        return_value=(main_df, supp_df),
-    ), patch(_PATCH_WRITE_XPT, side_effect=mock_write_xpt):
+    with (
+        patch(
+            "astraea.execution.findings.FindingsExecutor.execute_lb",
+            return_value=(main_df, supp_df),
+        ),
+        patch(_PATCH_WRITE_XPT, side_effect=mock_write_xpt),
+    ):
         result = runner.invoke(
             app,
             [
@@ -239,9 +236,7 @@ def test_execute_domain_lb_with_suppqual(
 @patch(_PATCH_LOAD_SDTM)
 @patch(_PATCH_LOAD_CT)
 @patch(_PATCH_READ_SAS, side_effect=_mock_read_sas)
-def test_execute_domain_lb_no_suppqual(
-    mock_read_sas, mock_ct, mock_sdtm, tmp_path
-):
+def test_execute_domain_lb_no_suppqual(mock_read_sas, mock_ct, mock_sdtm, tmp_path):
     """When FindingsExecutor returns None for SUPPQUAL, only main XPT is written."""
     spec_path = _make_spec_json("LB", tmp_path)
     _make_dummy_sas(tmp_path)
@@ -256,10 +251,13 @@ def test_execute_domain_lb_no_suppqual(
     def mock_write_xpt(df, path, **kwargs):
         write_calls.append(str(path))
 
-    with patch(
-        "astraea.execution.findings.FindingsExecutor.execute_lb",
-        return_value=(main_df, None),
-    ), patch(_PATCH_WRITE_XPT, side_effect=mock_write_xpt):
+    with (
+        patch(
+            "astraea.execution.findings.FindingsExecutor.execute_lb",
+            return_value=(main_df, None),
+        ),
+        patch(_PATCH_WRITE_XPT, side_effect=mock_write_xpt),
+    ):
         result = runner.invoke(
             app,
             [

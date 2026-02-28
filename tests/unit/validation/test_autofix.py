@@ -130,9 +130,7 @@ def _make_result(
 class TestClassifyIssues:
     """Test classify_issue() for all known rule IDs."""
 
-    def test_classify_ct_case_mismatch_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_ct_case_mismatch_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-T001 with case-mismatch values should be AUTO_FIXABLE."""
         # SEX codelist C66731 has 'M' and 'F' as submission values
         result = _make_result(
@@ -143,9 +141,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_ct_wrong_value_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_ct_wrong_value_as_needs_human(self, fixer: AutoFixer) -> None:
         """ASTR-T001 with genuinely wrong value should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="ASTR-T001",
@@ -155,9 +151,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_domain_missing_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_domain_missing_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-T002 should always be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-T002",
@@ -167,9 +161,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_required_studyid_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_required_studyid_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-P001 for STUDYID should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-P001",
@@ -180,9 +172,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_required_domain_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_required_domain_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-P001 for DOMAIN should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-P001",
@@ -193,9 +183,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_required_other_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_required_other_as_needs_human(self, fixer: AutoFixer) -> None:
         """ASTR-P001 for AETERM should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="ASTR-P001",
@@ -206,9 +194,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_name_length_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_name_length_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-L001 should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-L001",
@@ -219,9 +205,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_label_length_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_label_length_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-L002 should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-L002",
@@ -232,9 +216,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_char_length_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_char_length_as_needs_human(self, fixer: AutoFixer) -> None:
         """ASTR-L003 should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="ASTR-L003",
@@ -245,9 +227,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_ascii_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_ascii_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-F002 should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-F002",
@@ -259,9 +239,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_date_format_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_date_format_as_needs_human(self, fixer: AutoFixer) -> None:
         """ASTR-F001 should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="ASTR-F001",
@@ -272,9 +250,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_fda_business_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_fda_business_as_needs_human(self, fixer: AutoFixer) -> None:
         """FDAB057 should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="FDAB057",
@@ -284,9 +260,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_cross_domain_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_cross_domain_as_needs_human(self, fixer: AutoFixer) -> None:
         """ASTR-C001 should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="ASTR-C001",
@@ -296,9 +270,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.NEEDS_HUMAN
 
-    def test_classify_file_naming_as_auto_fixable(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_file_naming_as_auto_fixable(self, fixer: AutoFixer) -> None:
         """ASTR-F003 should be AUTO_FIXABLE."""
         result = _make_result(
             rule_id="ASTR-F003",
@@ -308,9 +280,7 @@ class TestClassifyIssues:
         classification = fixer.classify_issue(result)
         assert classification.classification == FixClassification.AUTO_FIXABLE
 
-    def test_classify_unknown_rule_as_needs_human(
-        self, fixer: AutoFixer
-    ) -> None:
+    def test_classify_unknown_rule_as_needs_human(self, fixer: AutoFixer) -> None:
         """Unknown rule IDs should be NEEDS_HUMAN."""
         result = _make_result(
             rule_id="CUSTOM-999",
@@ -328,15 +298,15 @@ class TestClassifyIssues:
 class TestFixCTCaseNormalization:
     """Test CT case normalization fix."""
 
-    def test_fix_ct_case_normalization(
-        self, fixer: AutoFixer, ct_ref: CTReference
-    ) -> None:
+    def test_fix_ct_case_normalization(self, fixer: AutoFixer, ct_ref: CTReference) -> None:
         """Fix case-mismatched CT values to correct case."""
         # SEX codelist C66731 has 'M' and 'F' as submission values
-        df = pd.DataFrame({
-            "SEX": ["m", "F", "f", "M"],
-            "USUBJID": ["S1", "S2", "S3", "S4"],
-        })
+        df = pd.DataFrame(
+            {
+                "SEX": ["m", "F", "f", "M"],
+                "USUBJID": ["S1", "S2", "S3", "S4"],
+            }
+        )
         spec = _make_spec(
             domain="DM",
             mappings=[_make_vm("SEX", codelist_code="C66731")],
@@ -381,10 +351,12 @@ class TestFixDomainColumn:
 
     def test_fix_domain_column_wrong_value(self, fixer: AutoFixer) -> None:
         """Correct wrong DOMAIN column values."""
-        df = pd.DataFrame({
-            "DOMAIN": ["XX", "XX", "AE"],
-            "USUBJID": ["S1", "S2", "S3"],
-        })
+        df = pd.DataFrame(
+            {
+                "DOMAIN": ["XX", "XX", "AE"],
+                "USUBJID": ["S1", "S2", "S3"],
+            }
+        )
         result = _make_result(
             rule_id="ASTR-T002",
             variable="DOMAIN",
@@ -441,10 +413,12 @@ class TestFixVariableNameTruncation:
 
     def test_fix_variable_name_collision(self, fixer: AutoFixer) -> None:
         """Handle collision when truncated name already exists."""
-        df = pd.DataFrame({
-            "LONGVARN": [1, 2],
-            "LONGVARNAME": [3, 4],
-        })
+        df = pd.DataFrame(
+            {
+                "LONGVARN": [1, 2],
+                "LONGVARNAME": [3, 4],
+            }
+        )
         result = _make_result(
             rule_id="ASTR-L001",
             variable="LONGVARNAME",
@@ -490,9 +464,11 @@ class TestFixAscii:
 
     def test_fix_ascii_characters(self, fixer: AutoFixer) -> None:
         """Replace non-ASCII characters with ASCII equivalents."""
-        df = pd.DataFrame({
-            "AETERM": ["Headache", "Nausea\u2019s", "Fever"],
-        })
+        df = pd.DataFrame(
+            {
+                "AETERM": ["Headache", "Nausea\u2019s", "Fever"],
+            }
+        )
         result = _make_result(
             rule_id="ASTR-F002",
             variable="AETERM",
@@ -572,10 +548,12 @@ class TestApplyFixes:
 
     def test_apply_fixes_multiple_fixes(self, fixer: AutoFixer) -> None:
         """Multiple auto-fixable issues produce multiple fix actions."""
-        df = pd.DataFrame({
-            "USUBJID": ["S1", "S2"],
-            "AETERM": ["Headache\u2019s", "Nausea"],
-        })
+        df = pd.DataFrame(
+            {
+                "USUBJID": ["S1", "S2"],
+                "AETERM": ["Headache\u2019s", "Nausea"],
+            }
+        )
         spec = _make_spec(domain="AE")
         issues = [
             _make_result(

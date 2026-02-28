@@ -9,8 +9,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from astraea.models.mapping import DomainMappingSpec, MappingPattern, VariableMapping
-from astraea.models.sdtm import CoreDesignation
+from astraea.models.mapping import DomainMappingSpec
 from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
 from astraea.validation.rules.base import RuleCategory, RuleSeverity
@@ -62,9 +61,7 @@ class TestRequiredVariableRule:
         assert rule.category == RuleCategory.PRESENCE
         assert rule.severity == RuleSeverity.ERROR
 
-    def test_all_required_present(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_all_required_present(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """All required variables present should produce no findings."""
         required = sdtm_ref.get_required_variables("DM")
         assert len(required) > 0, "DM should have required variables"
@@ -76,9 +73,7 @@ class TestRequiredVariableRule:
         results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_missing_required_variable(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_missing_required_variable(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Missing required variable should produce ERROR."""
         required = sdtm_ref.get_required_variables("DM")
         assert len(required) > 1
@@ -97,9 +92,7 @@ class TestRequiredVariableRule:
         assert missing_result[0].severity == RuleSeverity.ERROR
         assert missing_result[0].p21_equivalent == "SD0083"
 
-    def test_unknown_domain_no_findings(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_unknown_domain_no_findings(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Unknown domain should produce no findings (no spec to check against)."""
         df = pd.DataFrame({"A": [1]})
         spec = _make_spec("ZZ")
@@ -172,9 +165,7 @@ class TestNoRecordsRule:
         assert rule.rule_id == "ASTR-P003"
         assert rule.severity == RuleSeverity.WARNING
 
-    def test_empty_dataframe_warning(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_empty_dataframe_warning(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Empty DataFrame should produce WARNING."""
         df = pd.DataFrame({"STUDYID": pd.Series([], dtype=str)})
         spec = _make_spec("AE")
@@ -213,9 +204,7 @@ class TestUSUBJIDPresentRule:
         results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_usubjid_missing_column(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_usubjid_missing_column(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Missing USUBJID column should produce ERROR."""
         df = pd.DataFrame({"STUDYID": ["TEST"]})
         spec = _make_spec("DM")
@@ -226,9 +215,7 @@ class TestUSUBJIDPresentRule:
         assert results[0].variable == "USUBJID"
         assert "missing" in results[0].message
 
-    def test_usubjid_with_nulls(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_usubjid_with_nulls(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """USUBJID with null values should produce ERROR."""
         df = pd.DataFrame({"USUBJID": ["SUBJ-001", None, "SUBJ-003", None]})
         spec = _make_spec("DM")

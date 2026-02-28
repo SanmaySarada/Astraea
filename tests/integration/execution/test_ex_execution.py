@@ -233,9 +233,17 @@ class TestEXEndToEnd:
         """Output should have exactly the 11 mapped columns."""
         result = self._execute(ex_spec, raw_ex_df, raw_ex_ole_df)
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "EXSEQ",
-            "EXTRT", "EXDOSE", "EXDOSU", "EXDOSFRM",
-            "EXROUTE", "EXSTDTC", "EXENDTC",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "EXSEQ",
+            "EXTRT",
+            "EXDOSE",
+            "EXDOSU",
+            "EXDOSFRM",
+            "EXROUTE",
+            "EXSTDTC",
+            "EXENDTC",
         }
         assert set(result.columns) == expected_cols
 

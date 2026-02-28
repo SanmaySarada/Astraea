@@ -48,15 +48,25 @@ def _validate_date_components(
                 return False
     return True
 
+
 # SAS epoch: 1960-01-01
 SAS_EPOCH = date(1960, 1, 1)
 SAS_EPOCH_DATETIME = datetime(1960, 1, 1, tzinfo=UTC)
 
 # Month abbreviation -> number mapping (case-insensitive)
 _MONTH_ABBREV: dict[str, int] = {
-    "jan": 1, "feb": 2, "mar": 3, "apr": 4,
-    "may": 5, "jun": 6, "jul": 7, "aug": 8,
-    "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
 }
 
 # Regex patterns for date format detection
@@ -285,7 +295,9 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
             day, month = first, second
             logger.debug(
                 "Ambiguous date '{}': assuming DD/MM/YYYY -> day={}, month={}",
-                s, day, month,
+                s,
+                day,
+                month,
             )
 
         if not _validate_date_components(year=year, month=month, day=day):
@@ -348,7 +360,9 @@ def format_partial_iso8601(
     if not _validate_date_components(year=year, month=month, day=day):
         logger.warning(
             "Invalid date components: year={}, month={}, day={}",
-            year, month, day,
+            year,
+            month,
+            day,
         )
         return ""
 

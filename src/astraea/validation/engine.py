@@ -157,9 +157,7 @@ class ValidationEngine:
                 )
                 results.extend(rule_results)
             except Exception as exc:
-                logger.error(
-                    "Rule {} failed on domain {}: {}", rule.rule_id, domain, exc
-                )
+                logger.error("Rule {} failed on domain {}: {}", rule.rule_id, domain, exc)
                 results.append(
                     RuleResult(
                         rule_id=rule.rule_id,

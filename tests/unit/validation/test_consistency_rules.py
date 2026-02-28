@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from astraea.validation.rules.base import RuleCategory, RuleSeverity
+from astraea.validation.rules.base import RuleSeverity
 from astraea.validation.rules.consistency import CrossDomainValidator
 
 

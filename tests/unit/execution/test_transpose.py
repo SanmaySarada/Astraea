@@ -9,7 +9,6 @@ import pytest
 from astraea.execution.transpose import TransposeSpec, execute_transpose, handle_transpose
 from astraea.models.mapping import MappingPattern, VariableMapping
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -86,18 +85,14 @@ class TestExecuteTranspose:
         testcds = set(result["VSTESTCD"].unique())
         assert testcds == {"SYSBP", "DIABP", "HR"}
 
-    def test_test_mapped_correctly(
-        self, wide_vs_df: pd.DataFrame, vs_spec: TransposeSpec
-    ) -> None:
+    def test_test_mapped_correctly(self, wide_vs_df: pd.DataFrame, vs_spec: TransposeSpec) -> None:
         """TEST labels match the test_mapping."""
         result = execute_transpose(wide_vs_df, vs_spec)
 
         tests = set(result["VSTEST"].unique())
         assert tests == {"Systolic Blood Pressure", "Diastolic Blood Pressure", "Heart Rate"}
 
-    def test_unit_mapped_correctly(
-        self, wide_vs_df: pd.DataFrame, vs_spec: TransposeSpec
-    ) -> None:
+    def test_unit_mapped_correctly(self, wide_vs_df: pd.DataFrame, vs_spec: TransposeSpec) -> None:
         """Unit values match the unit_mapping."""
         result = execute_transpose(wide_vs_df, vs_spec)
 

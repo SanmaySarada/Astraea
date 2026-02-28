@@ -69,9 +69,7 @@ class CTValueRule(ValidationRule):
                             f"cannot validate values for {var_name}"
                         ),
                         affected_count=0,
-                        fix_suggestion=(
-                            f"Add codelist {vm.codelist_code} to bundled CT data"
-                        ),
+                        fix_suggestion=(f"Add codelist {vm.codelist_code} to bundled CT data"),
                     )
                 )
                 continue
@@ -119,8 +117,7 @@ class CTValueRule(ValidationRule):
                     message=(
                         f"{msg_prefix} CT value(s) in {var_name}: "
                         f"{', '.join(repr(v) for v in invalid_values[:5])}"
-                        + (f" ... ({len(invalid_values)} total)"
-                           if len(invalid_values) > 5 else "")
+                        + (f" ... ({len(invalid_values)} total)" if len(invalid_values) > 5 else "")
                     ),
                     affected_count=affected,
                     fix_suggestion=fix_suggestion,

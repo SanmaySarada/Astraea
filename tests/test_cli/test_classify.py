@@ -29,9 +29,7 @@ def _make_classification_result() -> ClassificationResult:
                 confidence=0.95,
                 reasoning="Filename and variables strongly match Adverse Events domain",
                 heuristic_scores=[
-                    HeuristicScore(
-                        domain="AE", score=0.92, signals=["filename exact match"]
-                    )
+                    HeuristicScore(domain="AE", score=0.92, signals=["filename exact match"])
                 ],
             ),
             DomainClassification(
@@ -41,9 +39,7 @@ def _make_classification_result() -> ClassificationResult:
                 confidence=0.90,
                 reasoning="Demographics domain based on variable names",
                 heuristic_scores=[
-                    HeuristicScore(
-                        domain="DM", score=0.88, signals=["filename exact match"]
-                    )
+                    HeuristicScore(domain="DM", score=0.88, signals=["filename exact match"])
                 ],
             ),
             DomainClassification(
@@ -177,9 +173,7 @@ class TestClassifyCommand:
         mock_classify.return_value = _make_classification_result()
 
         with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-test"}):
-            result = runner.invoke(
-                app, ["classify", str(tmp_path), "--output", str(output_file)]
-            )
+            result = runner.invoke(app, ["classify", str(tmp_path), "--output", str(output_file)])
 
         assert result.exit_code == 0
         assert output_file.exists()
@@ -195,9 +189,7 @@ class TestClassifyCommand:
         classification = _make_classification_result()
         cache_file.write_text(classification.model_dump_json(indent=2))
 
-        result = runner.invoke(
-            app, ["classify", str(tmp_path), "--cache-dir", str(cache_dir)]
-        )
+        result = runner.invoke(app, ["classify", str(tmp_path), "--cache-dir", str(cache_dir)])
 
         assert result.exit_code == 0
         assert "cached" in result.output.lower() or "Loading" in result.output

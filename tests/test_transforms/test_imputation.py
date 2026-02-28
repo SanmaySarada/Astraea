@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from astraea.transforms.imputation import (
     get_date_imputation_flag,
     get_time_imputation_flag,

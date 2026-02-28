@@ -50,9 +50,7 @@ class _LLMClassificationOutput(BaseModel):
     confidence: float = Field(
         ..., ge=0.0, le=1.0, description="Classification confidence (0.0 to 1.0)"
     )
-    reasoning: str = Field(
-        ..., description="Explanation of the classification decision"
-    )
+    reasoning: str = Field(..., description="Explanation of the classification decision")
     merge_candidates: list[str] = Field(
         default_factory=list,
         description="Other dataset names that should merge with this one into the same domain",
@@ -173,14 +171,10 @@ def classify_dataset(
     # Fuse heuristic and LLM scores
     top_heuristic = heuristic_scores[0] if heuristic_scores else None
     top_heuristic_score = (
-        top_heuristic.score
-        if top_heuristic and top_heuristic.domain != "UNCLASSIFIED"
-        else 0.0
+        top_heuristic.score if top_heuristic and top_heuristic.domain != "UNCLASSIFIED" else 0.0
     )
     top_heuristic_domain = (
-        top_heuristic.domain
-        if top_heuristic and top_heuristic.domain != "UNCLASSIFIED"
-        else None
+        top_heuristic.domain if top_heuristic and top_heuristic.domain != "UNCLASSIFIED" else None
     )
 
     final_domain = llm_result.primary_domain.upper()
@@ -234,9 +228,7 @@ def classify_dataset(
     )
 
 
-def _determine_mapping_pattern(
-    domain: str, source_count: int, ref: SDTMReference | None
-) -> str:
+def _determine_mapping_pattern(domain: str, source_count: int, ref: SDTMReference | None) -> str:
     """Determine the mapping pattern for a domain plan.
 
     Returns:
@@ -305,9 +297,7 @@ def classify_all(
     # Classify each dataset
     classifications: list[DomainClassification] = []
     for profile in profiles:
-        heuristic_scores = compute_heuristic_scores(
-            profile.filename, profile=profile, ref=ref
-        )
+        heuristic_scores = compute_heuristic_scores(profile.filename, profile=profile, ref=ref)
         ecrf_form_name = dataset_to_form.get(profile.filename)
 
         classification = classify_dataset(
@@ -356,9 +346,7 @@ def classify_all(
 
     # Collect unclassified
     unclassified = [
-        cls.raw_dataset
-        for cls in classifications
-        if cls.primary_domain == "UNCLASSIFIED"
+        cls.raw_dataset for cls in classifications if cls.primary_domain == "UNCLASSIFIED"
     ]
 
     result = ClassificationResult(

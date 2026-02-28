@@ -39,9 +39,7 @@ def build_ta_domain(
     rows: list[dict[str, object]] = []
 
     # Build element lookup for descriptions
-    element_lookup: dict[str, str] = {
-        e.etcd: e.element for e in config.elements
-    }
+    element_lookup: dict[str, str] = {e.etcd: e.element for e in config.elements}
 
     # Group arms by ARMCD to get unique arm names
     arm_names: dict[str, str] = {}

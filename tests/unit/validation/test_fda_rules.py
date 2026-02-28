@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
 
 from astraea.models.mapping import DomainMappingSpec
-from astraea.validation.rules.base import RuleCategory, RuleSeverity
+from astraea.validation.rules.base import RuleSeverity
 from astraea.validation.rules.fda_business import (
     FDAB009Rule,
     FDAB030Rule,
@@ -19,7 +18,6 @@ from astraea.validation.rules.fda_business import (
     get_fda_business_rules,
 )
 from astraea.validation.rules.fda_trc import TRCPreCheck
-
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
@@ -206,9 +204,7 @@ class TestFDAB039:
         results = rule.evaluate("LB", df, lb_spec, mock_sdtm_ref, mock_ct_ref)
         assert len(results) == 0
 
-    def test_non_numeric_normal_range_detected(
-        self, lb_spec, mock_sdtm_ref, mock_ct_ref
-    ) -> None:
+    def test_non_numeric_normal_range_detected(self, lb_spec, mock_sdtm_ref, mock_ct_ref) -> None:
         rule = FDAB039Rule()
         df = pd.DataFrame(
             {
@@ -234,9 +230,7 @@ class TestFDAB039:
 
 
 class TestFDAB009:
-    def test_consistent_testcd_test_passes(
-        self, lb_spec, mock_sdtm_ref, mock_ct_ref
-    ) -> None:
+    def test_consistent_testcd_test_passes(self, lb_spec, mock_sdtm_ref, mock_ct_ref) -> None:
         rule = FDAB009Rule()
         df = pd.DataFrame(
             {
@@ -247,9 +241,7 @@ class TestFDAB009:
         results = rule.evaluate("LB", df, lb_spec, mock_sdtm_ref, mock_ct_ref)
         assert len(results) == 0
 
-    def test_testcd_maps_to_multiple_tests(
-        self, lb_spec, mock_sdtm_ref, mock_ct_ref
-    ) -> None:
+    def test_testcd_maps_to_multiple_tests(self, lb_spec, mock_sdtm_ref, mock_ct_ref) -> None:
         rule = FDAB009Rule()
         df = pd.DataFrame(
             {
@@ -262,9 +254,7 @@ class TestFDAB009:
         assert any(r.variable == "LBTESTCD" for r in results)
         assert results[0].severity == RuleSeverity.ERROR
 
-    def test_test_maps_to_multiple_testcds(
-        self, lb_spec, mock_sdtm_ref, mock_ct_ref
-    ) -> None:
+    def test_test_maps_to_multiple_testcds(self, lb_spec, mock_sdtm_ref, mock_ct_ref) -> None:
         rule = FDAB009Rule()
         df = pd.DataFrame(
             {
@@ -301,9 +291,7 @@ class TestFDAB030:
         results = rule.evaluate("LB", df, lb_spec, mock_sdtm_ref, mock_ct_ref)
         assert len(results) == 0
 
-    def test_inconsistent_units_detected(
-        self, lb_spec, mock_sdtm_ref, mock_ct_ref
-    ) -> None:
+    def test_inconsistent_units_detected(self, lb_spec, mock_sdtm_ref, mock_ct_ref) -> None:
         rule = FDAB030Rule()
         df = pd.DataFrame(
             {

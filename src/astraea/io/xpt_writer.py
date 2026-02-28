@@ -66,8 +66,7 @@ def validate_for_xpt_v5(
     # Table label validation
     if table_label is not None and len(table_label) > 40:
         errors.append(
-            f"Table label exceeds 40 characters ({len(table_label)} chars): "
-            f"'{table_label[:50]}...'"
+            f"Table label exceeds 40 characters ({len(table_label)} chars): '{table_label[:50]}...'"
         )
 
     # Unlabeled column warning
@@ -76,15 +75,12 @@ def validate_for_xpt_v5(
         col_str = str(col)
         if col_str not in column_labels and col_str.upper() not in upper_label_keys:
             errors.append(
-                f"Column '{col_str}' has no label defined -- "
-                f"every SDTM variable must have a label"
+                f"Column '{col_str}' has no label defined -- every SDTM variable must have a label"
             )
 
     # Table name validation
     if len(table_name) > 8:
-        errors.append(
-            f"Table name '{table_name}' exceeds 8 characters ({len(table_name)} chars)"
-        )
+        errors.append(f"Table name '{table_name}' exceeds 8 characters ({len(table_name)} chars)")
     if not _TABLE_NAME_RE.match(table_name):
         errors.append(
             f"Table name '{table_name}' must start with a letter and contain only "
@@ -95,9 +91,7 @@ def validate_for_xpt_v5(
     for col in df.columns:
         col_str = str(col)
         if len(col_str) > 8:
-            errors.append(
-                f"Column name '{col_str}' exceeds 8 characters ({len(col_str)} chars)"
-            )
+            errors.append(f"Column name '{col_str}' exceeds 8 characters ({len(col_str)} chars)")
         if not _COLUMN_NAME_RE.match(col_str):
             errors.append(
                 f"Column name '{col_str}' must start with a letter and contain only "
@@ -108,8 +102,7 @@ def validate_for_xpt_v5(
     for col, label in column_labels.items():
         if len(label) > 40:
             errors.append(
-                f"Label for '{col}' exceeds 40 characters ({len(label)} chars): "
-                f"'{label[:50]}...'"
+                f"Label for '{col}' exceeds 40 characters ({len(label)} chars): '{label[:50]}...'"
             )
 
     # Character column value validation
@@ -128,14 +121,10 @@ def validate_for_xpt_v5(
                 )
 
             # Check ASCII compliance
-            non_ascii = non_null.astype(str).apply(
-                lambda x: not x.isascii()
-            )
+            non_ascii = non_null.astype(str).apply(lambda x: not x.isascii())
             if non_ascii.any():
                 n_bad = int(non_ascii.sum())
-                errors.append(
-                    f"Column '{col}' contains {n_bad} non-ASCII value(s)"
-                )
+                errors.append(f"Column '{col}' contains {n_bad} non-ASCII value(s)")
 
     return errors
 
@@ -213,10 +202,7 @@ def write_xpt_v5(
 
     # Verify row count matches
     if len(df_readback) != len(df_out):
-        msg = (
-            f"Read-back row count mismatch: "
-            f"wrote {len(df_out)}, read back {len(df_readback)}"
-        )
+        msg = f"Read-back row count mismatch: wrote {len(df_out)}, read back {len(df_readback)}"
         raise RuntimeError(msg)
 
     logger.info(

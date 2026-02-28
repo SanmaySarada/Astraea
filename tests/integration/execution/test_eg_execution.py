@@ -57,21 +57,119 @@ def _mapping(
 def eg_spec() -> DomainMappingSpec:
     """EG domain spec with Findings-class mappings."""
     mappings = [
-        _mapping(var="STUDYID", pattern=MappingPattern.ASSIGN, label="Study Identifier", assigned="PHA022121-C301", order=1),
-        _mapping(var="DOMAIN", pattern=MappingPattern.ASSIGN, label="Domain Abbreviation", assigned="EG", order=2),
-        _mapping(var="USUBJID", pattern=MappingPattern.DERIVATION, label="Unique Subject Identifier", derivation="generate_usubjid", order=3),
-        _mapping(var="EGSEQ", pattern=MappingPattern.DERIVATION, label="Sequence Number", derivation="generate_seq", order=4),
-        _mapping(var="EGTESTCD", pattern=MappingPattern.DIRECT, label="ECG Test or Examination Short Name", source="EGTESTCD", order=5),
-        _mapping(var="EGTEST", pattern=MappingPattern.DIRECT, label="ECG Test or Examination Name", source="EGTEST", order=6),
-        _mapping(var="EGORRES", pattern=MappingPattern.DIRECT, label="Result or Finding in Original Units", source="EGORRES", order=7, core=CoreDesignation.EXP),
-        _mapping(var="EGORRESU", pattern=MappingPattern.DIRECT, label="Original Units", source="EGORRESU", order=8, core=CoreDesignation.EXP),
-        _mapping(var="EGSTRESC", pattern=MappingPattern.DIRECT, label="Character Result/Finding in Std Format", source="EGSTRESC", order=9, core=CoreDesignation.EXP),
-        _mapping(var="EGSTRESN", pattern=MappingPattern.DIRECT, label="Numeric Result/Finding in Std Units", source="EGSTRESN", order=10, core=CoreDesignation.EXP),
-        _mapping(var="EGSTRESU", pattern=MappingPattern.DIRECT, label="Standard Units", source="EGSTRESU", order=11, core=CoreDesignation.EXP),
-        _mapping(var="EGTPT", pattern=MappingPattern.DIRECT, label="Planned Time Point Name", source="EGTPT", order=12, core=CoreDesignation.PERM),
-        _mapping(var="EGDTC", pattern=MappingPattern.DIRECT, label="Date/Time of ECG", source="EGDTC", order=13),
-        _mapping(var="EGPOS", pattern=MappingPattern.DIRECT, label="Position of Subject During Observation", source="EGPOS", order=14, core=CoreDesignation.PERM),
-        _mapping(var="EGDTF", pattern=MappingPattern.DIRECT, label="Date Imputation Flag", source="EGDTF", order=15, core=CoreDesignation.PERM),
+        _mapping(
+            var="STUDYID",
+            pattern=MappingPattern.ASSIGN,
+            label="Study Identifier",
+            assigned="PHA022121-C301",
+            order=1,
+        ),
+        _mapping(
+            var="DOMAIN",
+            pattern=MappingPattern.ASSIGN,
+            label="Domain Abbreviation",
+            assigned="EG",
+            order=2,
+        ),
+        _mapping(
+            var="USUBJID",
+            pattern=MappingPattern.DERIVATION,
+            label="Unique Subject Identifier",
+            derivation="generate_usubjid",
+            order=3,
+        ),
+        _mapping(
+            var="EGSEQ",
+            pattern=MappingPattern.DERIVATION,
+            label="Sequence Number",
+            derivation="generate_seq",
+            order=4,
+        ),
+        _mapping(
+            var="EGTESTCD",
+            pattern=MappingPattern.DIRECT,
+            label="ECG Test or Examination Short Name",
+            source="EGTESTCD",
+            order=5,
+        ),
+        _mapping(
+            var="EGTEST",
+            pattern=MappingPattern.DIRECT,
+            label="ECG Test or Examination Name",
+            source="EGTEST",
+            order=6,
+        ),
+        _mapping(
+            var="EGORRES",
+            pattern=MappingPattern.DIRECT,
+            label="Result or Finding in Original Units",
+            source="EGORRES",
+            order=7,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="EGORRESU",
+            pattern=MappingPattern.DIRECT,
+            label="Original Units",
+            source="EGORRESU",
+            order=8,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="EGSTRESC",
+            pattern=MappingPattern.DIRECT,
+            label="Character Result/Finding in Std Format",
+            source="EGSTRESC",
+            order=9,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="EGSTRESN",
+            pattern=MappingPattern.DIRECT,
+            label="Numeric Result/Finding in Std Units",
+            source="EGSTRESN",
+            order=10,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="EGSTRESU",
+            pattern=MappingPattern.DIRECT,
+            label="Standard Units",
+            source="EGSTRESU",
+            order=11,
+            core=CoreDesignation.EXP,
+        ),
+        _mapping(
+            var="EGTPT",
+            pattern=MappingPattern.DIRECT,
+            label="Planned Time Point Name",
+            source="EGTPT",
+            order=12,
+            core=CoreDesignation.PERM,
+        ),
+        _mapping(
+            var="EGDTC",
+            pattern=MappingPattern.DIRECT,
+            label="Date/Time of ECG",
+            source="EGDTC",
+            order=13,
+        ),
+        _mapping(
+            var="EGPOS",
+            pattern=MappingPattern.DIRECT,
+            label="Position of Subject During Observation",
+            source="EGPOS",
+            order=14,
+            core=CoreDesignation.PERM,
+        ),
+        _mapping(
+            var="EGDTF",
+            pattern=MappingPattern.DIRECT,
+            label="Date Imputation Flag",
+            source="EGDTF",
+            order=15,
+            core=CoreDesignation.PERM,
+        ),
     ]
     return DomainMappingSpec(
         domain="EG",
@@ -95,64 +193,98 @@ def eg_spec() -> DomainMappingSpec:
 @pytest.fixture()
 def raw_ecg_results() -> pd.DataFrame:
     """Synthetic ecg_results data: 8 rows, 2 subjects, SDTM-like columns."""
-    return pd.DataFrame({
-        "Subject": ["001", "001", "001", "001", "002", "002", "002", "002"],
-        "SiteNumber": ["101"] * 8,
-        "EGTESTCD": ["QTCF", "QRS", "PR", "HR", "QTCF", "QRS", "PR", "HR"],
-        "EGTEST": [
-            "QTcF Interval", "QRS Duration", "PR Interval", "Heart Rate",
-            "QTcF Interval", "QRS Duration", "PR Interval", "Heart Rate",
-        ],
-        "EGORRES": ["420", "88", "160", "72", "400", "92", "155", "68"],
-        "EGORRESU": ["ms", "ms", "ms", "beats/min", "ms", "ms", "ms", "beats/min"],
-        "EGSTRESC": ["420", "88", "160", "72", "400", "92", "155", "68"],
-        "EGSTRESN": [420.0, 88.0, 160.0, 72.0, 400.0, 92.0, 155.0, 68.0],
-        "EGSTRESU": ["ms", "ms", "ms", "beats/min", "ms", "ms", "ms", "beats/min"],
-        "EGTPT": ["Pre-dose", "Pre-dose", "Pre-dose", "Pre-dose",
-                  "Post-dose", "Post-dose", "Post-dose", "Post-dose"],
-        "EGDTC": [
-            "2022-01-15T08:00", "2022-01-15T08:00", "2022-01-15T08:00", "2022-01-15T08:00",
-            "2022-01-15T10:00", "2022-01-15T10:00", "2022-01-15T10:00", "2022-01-15T10:00",
-        ],
-        "EGPOS": ["SUPINE", "SUPINE", "SUPINE", "SUPINE",
-                  "SUPINE", "SITTING", "SITTING", "STANDING"],
-        "EGDTF": ["", "", "", "", "", "", "", ""],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "001", "001", "001", "002", "002", "002", "002"],
+            "SiteNumber": ["101"] * 8,
+            "EGTESTCD": ["QTCF", "QRS", "PR", "HR", "QTCF", "QRS", "PR", "HR"],
+            "EGTEST": [
+                "QTcF Interval",
+                "QRS Duration",
+                "PR Interval",
+                "Heart Rate",
+                "QTcF Interval",
+                "QRS Duration",
+                "PR Interval",
+                "Heart Rate",
+            ],
+            "EGORRES": ["420", "88", "160", "72", "400", "92", "155", "68"],
+            "EGORRESU": ["ms", "ms", "ms", "beats/min", "ms", "ms", "ms", "beats/min"],
+            "EGSTRESC": ["420", "88", "160", "72", "400", "92", "155", "68"],
+            "EGSTRESN": [420.0, 88.0, 160.0, 72.0, 400.0, 92.0, 155.0, 68.0],
+            "EGSTRESU": ["ms", "ms", "ms", "beats/min", "ms", "ms", "ms", "beats/min"],
+            "EGTPT": [
+                "Pre-dose",
+                "Pre-dose",
+                "Pre-dose",
+                "Pre-dose",
+                "Post-dose",
+                "Post-dose",
+                "Post-dose",
+                "Post-dose",
+            ],
+            "EGDTC": [
+                "2022-01-15T08:00",
+                "2022-01-15T08:00",
+                "2022-01-15T08:00",
+                "2022-01-15T08:00",
+                "2022-01-15T10:00",
+                "2022-01-15T10:00",
+                "2022-01-15T10:00",
+                "2022-01-15T10:00",
+            ],
+            "EGPOS": [
+                "SUPINE",
+                "SUPINE",
+                "SUPINE",
+                "SUPINE",
+                "SUPINE",
+                "SITTING",
+                "SITTING",
+                "STANDING",
+            ],
+            "EGDTF": ["", "", "", "", "", "", "", ""],
+        }
+    )
 
 
 @pytest.fixture()
 def raw_eg_pre() -> pd.DataFrame:
     """Synthetic eg_pre CRF data: 3 rows with CRF-style columns."""
-    return pd.DataFrame({
-        "Subject": ["001", "001", "001"],
-        "SiteNumber": ["101", "101", "101"],
-        "EGPERF3": ["Y", "Y", "Y"],
-        "EGDAT3": ["2022-01-15", "2022-01-15", "2022-01-15"],
-        "EGRS3": ["Normal", "Normal", "Normal"],
-        "EGABS3": ["", "", ""],
-        "EGCS3": ["N", "N", "N"],
-        "EG_TPT_PRE": ["Pre-dose", "Pre-dose", "Pre-dose"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "001", "001"],
+            "SiteNumber": ["101", "101", "101"],
+            "EGPERF3": ["Y", "Y", "Y"],
+            "EGDAT3": ["2022-01-15", "2022-01-15", "2022-01-15"],
+            "EGRS3": ["Normal", "Normal", "Normal"],
+            "EGABS3": ["", "", ""],
+            "EGCS3": ["N", "N", "N"],
+            "EG_TPT_PRE": ["Pre-dose", "Pre-dose", "Pre-dose"],
+        }
+    )
 
 
 @pytest.fixture()
 def raw_ecg_with_partial_dates() -> pd.DataFrame:
     """ECG data with partial dates for date imputation flag testing."""
-    return pd.DataFrame({
-        "Subject": ["001", "001", "002"],
-        "SiteNumber": ["101", "101", "101"],
-        "EGTESTCD": ["QTCF", "QRS", "QTCF"],
-        "EGTEST": ["QTcF Interval", "QRS Duration", "QTcF Interval"],
-        "EGORRES": ["420", "88", "400"],
-        "EGORRESU": ["ms", "ms", "ms"],
-        "EGSTRESC": ["420", "88", "400"],
-        "EGSTRESN": [420.0, 88.0, 400.0],
-        "EGSTRESU": ["ms", "ms", "ms"],
-        "EGTPT": ["Pre-dose", "Pre-dose", "Pre-dose"],
-        "EGDTC": ["2022-03", "2022-01-15T08:00", "2022-03"],
-        "EGPOS": ["SUPINE", "SUPINE", "SUPINE"],
-        "EGDTF": ["D", "", "D"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "001", "002"],
+            "SiteNumber": ["101", "101", "101"],
+            "EGTESTCD": ["QTCF", "QRS", "QTCF"],
+            "EGTEST": ["QTcF Interval", "QRS Duration", "QTcF Interval"],
+            "EGORRES": ["420", "88", "400"],
+            "EGORRESU": ["ms", "ms", "ms"],
+            "EGSTRESC": ["420", "88", "400"],
+            "EGSTRESN": [420.0, 88.0, 400.0],
+            "EGSTRESU": ["ms", "ms", "ms"],
+            "EGTPT": ["Pre-dose", "Pre-dose", "Pre-dose"],
+            "EGDTC": ["2022-03", "2022-01-15T08:00", "2022-03"],
+            "EGPOS": ["SUPINE", "SUPINE", "SUPINE"],
+            "EGDTF": ["D", "", "D"],
+        }
+    )
 
 
 @pytest.fixture()

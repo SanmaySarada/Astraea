@@ -8,7 +8,6 @@ from loguru import logger
 from astraea.execution.relrec import RELREC_COLUMNS, generate_relrec_stub
 from astraea.models.relrec import RelRecConfig, RelRecRecord, RelRecRelationship
 
-
 # ---------------------------------------------------------------------------
 # RelRecRecord model tests
 # ---------------------------------------------------------------------------
@@ -31,22 +30,37 @@ class TestRelRecRecord:
 
     def test_relrec_record_uppercase_rdomain(self) -> None:
         record = RelRecRecord(
-            studyid="S", rdomain="ae", usubjid="U",
-            idvar="V", idvarval="1", reltype="ONE", relid="R1",
+            studyid="S",
+            rdomain="ae",
+            usubjid="U",
+            idvar="V",
+            idvarval="1",
+            reltype="ONE",
+            relid="R1",
         )
         assert record.rdomain == "AE"
 
     def test_relrec_record_validates_reltype(self) -> None:
         with pytest.raises(ValueError, match="ONE.*MANY"):
             RelRecRecord(
-                studyid="S", rdomain="AE", usubjid="U",
-                idvar="V", idvarval="1", reltype="INVALID", relid="R1",
+                studyid="S",
+                rdomain="AE",
+                usubjid="U",
+                idvar="V",
+                idvarval="1",
+                reltype="INVALID",
+                relid="R1",
             )
 
     def test_relrec_record_many_reltype(self) -> None:
         record = RelRecRecord(
-            studyid="S", rdomain="CM", usubjid="U",
-            idvar="CMSEQ", idvarval="3", reltype="MANY", relid="R2",
+            studyid="S",
+            rdomain="CM",
+            usubjid="U",
+            idvar="CMSEQ",
+            idvarval="3",
+            reltype="MANY",
+            relid="R2",
         )
         assert record.reltype == "MANY"
 
@@ -61,8 +75,10 @@ class TestRelRecConfig:
         config = RelRecConfig(
             relationships=[
                 RelRecRelationship(
-                    domain_1="AE", idvar_1="AESEQ",
-                    domain_2="CM", idvar_2="CMSEQ",
+                    domain_1="AE",
+                    idvar_1="AESEQ",
+                    domain_2="CM",
+                    idvar_2="CMSEQ",
                     description="AE treated by CM",
                 ),
             ]
@@ -113,8 +129,7 @@ class TestGenerateRelrecStub:
 
         # Check that the warning message is present
         warning_found = any(
-            "stub" in str(r).lower() and "deferred" in str(r).lower()
-            for r in caplog.records
+            "stub" in str(r).lower() and "deferred" in str(r).lower() for r in caplog.records
         )
         assert warning_found, "Expected warning about RELREC stub deferral"
 

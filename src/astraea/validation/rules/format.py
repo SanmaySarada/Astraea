@@ -24,9 +24,7 @@ from astraea.validation.rules.base import (
 # ISO 8601 patterns valid for SDTM --DTC variables:
 # YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DDTHH, YYYY-MM-DDTHH:MM,
 # YYYY-MM-DDTHH:MM:SS
-_ISO_8601_PATTERN = re.compile(
-    r"^\d{4}(-\d{2}(-\d{2}(T\d{2}(:\d{2}(:\d{2})?)?)?)?)?$"
-)
+_ISO_8601_PATTERN = re.compile(r"^\d{4}(-\d{2}(-\d{2}(T\d{2}(:\d{2}(:\d{2})?)?)?)?)?$")
 
 # Valid domain code pattern: 2-8 lowercase alpha characters
 _DOMAIN_NAME_PATTERN = re.compile(r"^[a-zA-Z]{2,8}$")
@@ -135,13 +133,9 @@ class ASCIIRule(ValidationRule):
                     severity=RuleSeverity.WARNING,
                     domain=domain,
                     variable=col,
-                    message=(
-                        f"Column '{col}' contains {count} non-ASCII value(s)"
-                    ),
+                    message=(f"Column '{col}' contains {count} non-ASCII value(s)"),
                     affected_count=count,
-                    fix_suggestion=(
-                        "Run fix_common_non_ascii() before XPT write"
-                    ),
+                    fix_suggestion=("Run fix_common_non_ascii() before XPT write"),
                 )
             )
 

@@ -36,22 +36,12 @@ class RelRecRecord(BaseModel):
     """
 
     studyid: str = Field(..., min_length=1, description="Study identifier")
-    rdomain: str = Field(
-        ..., min_length=1, max_length=4, description="Related domain code"
-    )
+    rdomain: str = Field(..., min_length=1, max_length=4, description="Related domain code")
     usubjid: str = Field(..., min_length=1, description="Unique subject identifier")
-    idvar: str = Field(
-        ..., min_length=1, max_length=8, description="Identifier variable name"
-    )
-    idvarval: str = Field(
-        ..., min_length=1, description="Identifier variable value"
-    )
-    reltype: str = Field(
-        ..., description="Relationship type (ONE or MANY)"
-    )
-    relid: str = Field(
-        ..., min_length=1, description="Relationship identifier"
-    )
+    idvar: str = Field(..., min_length=1, max_length=8, description="Identifier variable name")
+    idvarval: str = Field(..., min_length=1, description="Identifier variable value")
+    reltype: str = Field(..., description="Relationship type (ONE or MANY)")
+    relid: str = Field(..., min_length=1, description="Relationship identifier")
 
     @field_validator("rdomain")
     @classmethod

@@ -102,9 +102,7 @@ class TestTSWithDMDates:
 class TestTSOptionalParams:
     def test_ts_optional_params(self, minimal_config: TSConfig) -> None:
         """Build with optional params should include PLESSION and NARMS."""
-        config = minimal_config.model_copy(
-            update={"planned_enrollment": 300, "number_of_arms": 3}
-        )
+        config = minimal_config.model_copy(update={"planned_enrollment": 300, "number_of_arms": 3})
         ts_df = build_ts_domain(config)
 
         codes = set(ts_df["TSPARMCD"].values)
@@ -120,9 +118,7 @@ class TestTSOptionalParams:
 
     def test_ts_accession_and_addon(self, minimal_config: TSConfig) -> None:
         """Build with accession number and addon should include them."""
-        config = minimal_config.model_copy(
-            update={"accession_number": "NDA-123456", "addon": "Y"}
-        )
+        config = minimal_config.model_copy(update={"accession_number": "NDA-123456", "addon": "Y"})
         ts_df = build_ts_domain(config)
 
         codes = set(ts_df["TSPARMCD"].values)
@@ -134,8 +130,12 @@ class TestTSOptionalParams:
         config = minimal_config.model_copy(
             update={
                 "additional_params": [
-                    TSParameter(tsparmcd="REGID", tsparm="Registry Identifier", tsval="NCT12345678"),
-                    TSParameter(tsparmcd="OBJPRIM", tsparm="Trial Primary Objective", tsval="Efficacy"),
+                    TSParameter(
+                        tsparmcd="REGID", tsparm="Registry Identifier", tsval="NCT12345678"
+                    ),
+                    TSParameter(
+                        tsparmcd="OBJPRIM", tsparm="Trial Primary Objective", tsval="Efficacy"
+                    ),
                 ]
             }
         )
@@ -163,7 +163,9 @@ class TestTSSeq:
             update={
                 "planned_enrollment": 200,
                 "additional_params": [
-                    TSParameter(tsparmcd="REGID", tsparm="Registry Identifier", tsval="NCT99999999"),
+                    TSParameter(
+                        tsparmcd="REGID", tsparm="Registry Identifier", tsval="NCT99999999"
+                    ),
                 ],
             }
         )
@@ -195,8 +197,22 @@ class TestTSValidation:
                 "DOMAIN": ["TS"] * 6,
                 "TSSEQ": [1, 2, 3, 4, 5, 6],
                 "TSPARMCD": ["SSTDTC", "INDIC", "TRT", "STYPE", "SDTMVER", "TPHASE"],
-                "TSPARM": ["Study Start Date", "Indication", "Treatment", "Study Type", "SDTM Version", "Trial Phase"],
-                "TSVAL": ["2022-01-01", "HAE", "Drug X", "INTERVENTIONAL", "3.4", "PHASE III TRIAL"],
+                "TSPARM": [
+                    "Study Start Date",
+                    "Indication",
+                    "Treatment",
+                    "Study Type",
+                    "SDTM Version",
+                    "Trial Phase",
+                ],
+                "TSVAL": [
+                    "2022-01-01",
+                    "HAE",
+                    "Drug X",
+                    "INTERVENTIONAL",
+                    "3.4",
+                    "PHASE III TRIAL",
+                ],
             }
         )
         issues = validate_ts_completeness(ts_df)
@@ -211,7 +227,15 @@ class TestTSValidation:
                 "TSSEQ": list(range(1, 8)),
                 "TSPARMCD": ["SSTDTC", "SPONSOR", "INDIC", "TRT", "STYPE", "SDTMVER", "TPHASE"],
                 "TSPARM": ["a"] * 7,
-                "TSVAL": ["2022-01-01", "", "HAE", "Drug X", "INTERVENTIONAL", "3.4", "PHASE III TRIAL"],
+                "TSVAL": [
+                    "2022-01-01",
+                    "",
+                    "HAE",
+                    "Drug X",
+                    "INTERVENTIONAL",
+                    "3.4",
+                    "PHASE III TRIAL",
+                ],
             }
         )
         issues = validate_ts_completeness(ts_df)
@@ -250,4 +274,4 @@ class TestFDARequiredParams:
     def test_fda_required_params_contents(self) -> None:
         """FDA_REQUIRED_PARAMS should contain the 7 mandatory codes."""
         expected = {"SSTDTC", "SPONSOR", "INDIC", "TRT", "STYPE", "SDTMVER", "TPHASE"}
-        assert FDA_REQUIRED_PARAMS == expected
+        assert expected == FDA_REQUIRED_PARAMS

@@ -186,9 +186,7 @@ class MappingEngine:
             raise RuntimeError(msg) from e
 
         # Step 5: Validate and enrich
-        enriched_mappings, validation_issues = validate_and_enrich(
-            proposal, domain_spec, self._ct
-        )
+        enriched_mappings, validation_issues = validate_and_enrich(proposal, domain_spec, self._ct)
 
         if validation_issues:
             for issue in validation_issues:
@@ -221,34 +219,21 @@ class MappingEngine:
                 results_to_issue_dicts,
             )
 
-            pp_results = predict_and_prevent(
-                spec, domain_spec, self._ct
-            )
-            spec.predict_prevent_issues = results_to_issue_dicts(
-                pp_results
-            )
-            error_count = sum(
-                1
-                for r in pp_results
-                if r.severity.value == "ERROR"
-            )
+            pp_results = predict_and_prevent(spec, domain_spec, self._ct)
+            spec.predict_prevent_issues = results_to_issue_dicts(pp_results)
+            error_count = sum(1 for r in pp_results if r.severity.value == "ERROR")
             if error_count:
                 logger.warning(
-                    "Predict-and-prevent found {count} errors "
-                    "for {domain}",
+                    "Predict-and-prevent found {count} errors for {domain}",
                     count=error_count,
                     domain=spec.domain,
                 )
         except ImportError:
-            logger.debug(
-                "Predict-and-prevent module not available, "
-                "skipping spec-level validation"
-            )
+            logger.debug("Predict-and-prevent module not available, skipping spec-level validation")
 
         # Step 9: Log summary
         logger.info(
-            "Mapping complete for {domain} | total={total} "
-            "high={high} medium={med} low={low}",
+            "Mapping complete for {domain} | total={total} high={high} medium={med} low={low}",
             domain=domain,
             total=spec.total_variables,
             high=spec.high_confidence_count,
@@ -291,23 +276,13 @@ def _build_spec(
     spec = domain_spec if isinstance(domain_spec, _DomainSpec) else domain_spec  # type: ignore[assignment]
 
     # Count by confidence level
-    high_count = sum(
-        1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.HIGH
-    )
-    medium_count = sum(
-        1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.MEDIUM
-    )
-    low_count = sum(
-        1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.LOW
-    )
+    high_count = sum(1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.HIGH)
+    medium_count = sum(1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.MEDIUM)
+    low_count = sum(1 for m in enriched_mappings if m.confidence_level == ConfidenceLevel.LOW)
 
     # Count by core designation
-    required_mapped = sum(
-        1 for m in enriched_mappings if m.core == CoreDesignation.REQ
-    )
-    expected_mapped = sum(
-        1 for m in enriched_mappings if m.core == CoreDesignation.EXP
-    )
+    required_mapped = sum(1 for m in enriched_mappings if m.core == CoreDesignation.REQ)
+    expected_mapped = sum(1 for m in enriched_mappings if m.core == CoreDesignation.EXP)
 
     # Identify cross-domain sources
     cross_domain_sources = []

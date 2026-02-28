@@ -27,6 +27,7 @@ from astraea.reference import load_ct_reference, load_sdtm_reference
 # Helper
 # ---------------------------------------------------------------------------
 
+
 def _mapping(
     *,
     var: str,
@@ -61,6 +62,7 @@ def _mapping(
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def executor() -> DatasetExecutor:
     return DatasetExecutor(
@@ -80,18 +82,49 @@ def ae_spec() -> DomainMappingSpec:
         study_id="PHA022121-C301",
         source_datasets=["ae"],
         variable_mappings=[
-            _mapping(var="STUDYID", pattern=MappingPattern.ASSIGN,
-                     label="Study Identifier", assigned="PHA022121-C301", order=1),
-            _mapping(var="DOMAIN", pattern=MappingPattern.ASSIGN,
-                     label="Domain Abbreviation", assigned="AE", order=2),
-            _mapping(var="USUBJID", pattern=MappingPattern.DERIVATION,
-                     label="Unique Subject Identifier", derivation="generate_usubjid", order=3),
-            _mapping(var="AESEQ", pattern=MappingPattern.DERIVATION,
-                     label="Sequence Number", derivation="generate_seq", order=4, dtype="Num"),
-            _mapping(var="AETERM", pattern=MappingPattern.DIRECT,
-                     label="Reported Term for the Adverse Event", source="AETERM", order=5),
-            _mapping(var="AESTDTC", pattern=MappingPattern.DIRECT,
-                     label="Start Date/Time of Adverse Event", source="AESTDTC", order=6),
+            _mapping(
+                var="STUDYID",
+                pattern=MappingPattern.ASSIGN,
+                label="Study Identifier",
+                assigned="PHA022121-C301",
+                order=1,
+            ),
+            _mapping(
+                var="DOMAIN",
+                pattern=MappingPattern.ASSIGN,
+                label="Domain Abbreviation",
+                assigned="AE",
+                order=2,
+            ),
+            _mapping(
+                var="USUBJID",
+                pattern=MappingPattern.DERIVATION,
+                label="Unique Subject Identifier",
+                derivation="generate_usubjid",
+                order=3,
+            ),
+            _mapping(
+                var="AESEQ",
+                pattern=MappingPattern.DERIVATION,
+                label="Sequence Number",
+                derivation="generate_seq",
+                order=4,
+                dtype="Num",
+            ),
+            _mapping(
+                var="AETERM",
+                pattern=MappingPattern.DIRECT,
+                label="Reported Term for the Adverse Event",
+                source="AETERM",
+                order=5,
+            ),
+            _mapping(
+                var="AESTDTC",
+                pattern=MappingPattern.DIRECT,
+                label="Start Date/Time of Adverse Event",
+                source="AESTDTC",
+                order=6,
+            ),
         ],
         total_variables=6,
         required_mapped=4,
@@ -115,18 +148,49 @@ def cm_spec() -> DomainMappingSpec:
         study_id="PHA022121-C301",
         source_datasets=["cm"],
         variable_mappings=[
-            _mapping(var="STUDYID", pattern=MappingPattern.ASSIGN,
-                     label="Study Identifier", assigned="PHA022121-C301", order=1),
-            _mapping(var="DOMAIN", pattern=MappingPattern.ASSIGN,
-                     label="Domain Abbreviation", assigned="CM", order=2),
-            _mapping(var="USUBJID", pattern=MappingPattern.DERIVATION,
-                     label="Unique Subject Identifier", derivation="generate_usubjid", order=3),
-            _mapping(var="CMSEQ", pattern=MappingPattern.DERIVATION,
-                     label="Sequence Number", derivation="generate_seq", order=4, dtype="Num"),
-            _mapping(var="CMTRT", pattern=MappingPattern.DIRECT,
-                     label="Reported Name of Drug, Med, or Therapy", source="CMTRT", order=5),
-            _mapping(var="CMSTDTC", pattern=MappingPattern.DIRECT,
-                     label="Start Date/Time of Medication", source="CMSTDTC", order=6),
+            _mapping(
+                var="STUDYID",
+                pattern=MappingPattern.ASSIGN,
+                label="Study Identifier",
+                assigned="PHA022121-C301",
+                order=1,
+            ),
+            _mapping(
+                var="DOMAIN",
+                pattern=MappingPattern.ASSIGN,
+                label="Domain Abbreviation",
+                assigned="CM",
+                order=2,
+            ),
+            _mapping(
+                var="USUBJID",
+                pattern=MappingPattern.DERIVATION,
+                label="Unique Subject Identifier",
+                derivation="generate_usubjid",
+                order=3,
+            ),
+            _mapping(
+                var="CMSEQ",
+                pattern=MappingPattern.DERIVATION,
+                label="Sequence Number",
+                derivation="generate_seq",
+                order=4,
+                dtype="Num",
+            ),
+            _mapping(
+                var="CMTRT",
+                pattern=MappingPattern.DIRECT,
+                label="Reported Name of Drug, Med, or Therapy",
+                source="CMTRT",
+                order=5,
+            ),
+            _mapping(
+                var="CMSTDTC",
+                pattern=MappingPattern.DIRECT,
+                label="Start Date/Time of Medication",
+                source="CMSTDTC",
+                order=6,
+            ),
         ],
         total_variables=6,
         required_mapped=4,
@@ -141,22 +205,26 @@ def cm_spec() -> DomainMappingSpec:
 
 @pytest.fixture()
 def raw_ae_df() -> pd.DataFrame:
-    return pd.DataFrame({
-        "Subject": ["001", "002", "003"],
-        "SiteNumber": ["101", "101", "102"],
-        "AETERM": ["Headache", "Nausea", "Fatigue"],
-        "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "002", "003"],
+            "SiteNumber": ["101", "101", "102"],
+            "AETERM": ["Headache", "Nausea", "Fatigue"],
+            "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15"],
+        }
+    )
 
 
 @pytest.fixture()
 def raw_cm_df() -> pd.DataFrame:
-    return pd.DataFrame({
-        "Subject": ["001", "002", "003"],
-        "SiteNumber": ["101", "101", "102"],
-        "CMTRT": ["ASPIRIN", "IBUPROFEN", "ACETAMINOPHEN"],
-        "CMSTDTC": ["2022-01-10", "2022-01-20", "2022-02-05"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "002", "003"],
+            "SiteNumber": ["101", "101", "102"],
+            "CMTRT": ["ASPIRIN", "IBUPROFEN", "ACETAMINOPHEN"],
+            "CMSTDTC": ["2022-01-10", "2022-01-20", "2022-02-05"],
+        }
+    )
 
 
 # ===========================================================================
@@ -168,20 +236,28 @@ class TestXPTOutput:
     """Verify execute_to_xpt produces valid, readable .xpt files."""
 
     def test_ae_xpt_created(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """execute_to_xpt produces ae.xpt file that exists."""
         xpt_path = tmp_path / "ae.xpt"
         result_path = executor.execute_to_xpt(
-            ae_spec, {"ae": raw_ae_df}, xpt_path,
+            ae_spec,
+            {"ae": raw_ae_df},
+            xpt_path,
         )
         assert result_path.exists()
         assert result_path.stat().st_size > 0
 
     def test_ae_xpt_readable(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """pyreadstat can read the produced AE XPT file with correct shape."""
         xpt_path = tmp_path / "ae.xpt"
@@ -191,8 +267,11 @@ class TestXPTOutput:
         assert df.shape == (3, 6)
 
     def test_ae_xpt_labels_present(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """Column labels (STUDYID, AETERM) are preserved in XPT metadata."""
         xpt_path = tmp_path / "ae.xpt"
@@ -204,8 +283,11 @@ class TestXPTOutput:
         assert labels["AETERM"] == "Reported Term for the Adverse Event"
 
     def test_ae_xpt_table_name(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """XPT metadata table_name is AE."""
         xpt_path = tmp_path / "ae.xpt"
@@ -215,19 +297,27 @@ class TestXPTOutput:
         assert meta.table_name == "AE"
 
     def test_cm_xpt_created(
-        self, executor: DatasetExecutor, cm_spec: DomainMappingSpec,
-        raw_cm_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        cm_spec: DomainMappingSpec,
+        raw_cm_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """execute_to_xpt produces cm.xpt file."""
         xpt_path = tmp_path / "cm.xpt"
         result_path = executor.execute_to_xpt(
-            cm_spec, {"cm": raw_cm_df}, xpt_path,
+            cm_spec,
+            {"cm": raw_cm_df},
+            xpt_path,
         )
         assert result_path.exists()
 
     def test_cm_xpt_readable(
-        self, executor: DatasetExecutor, cm_spec: DomainMappingSpec,
-        raw_cm_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        cm_spec: DomainMappingSpec,
+        raw_cm_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """CM XPT file is readable with correct shape."""
         xpt_path = tmp_path / "cm.xpt"
@@ -237,8 +327,11 @@ class TestXPTOutput:
         assert df.shape == (3, 6)
 
     def test_xpt_variable_names_valid(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """All variable names in produced XPT are <= 8 chars."""
         xpt_path = tmp_path / "ae.xpt"
@@ -249,8 +342,11 @@ class TestXPTOutput:
             assert len(col) <= 8, f"Variable name '{col}' exceeds 8 characters"
 
     def test_xpt_labels_valid(
-        self, executor: DatasetExecutor, ae_spec: DomainMappingSpec,
-        raw_ae_df: pd.DataFrame, tmp_path: Path,
+        self,
+        executor: DatasetExecutor,
+        ae_spec: DomainMappingSpec,
+        raw_ae_df: pd.DataFrame,
+        tmp_path: Path,
     ) -> None:
         """All labels in produced XPT are <= 40 chars."""
         xpt_path = tmp_path / "ae.xpt"

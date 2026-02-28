@@ -60,7 +60,9 @@ def _make_mixed_spec() -> DomainMappingSpec:
         # 3 HIGH confidence
         _make_variable_mapping("STUDYID", confidence=0.95, confidence_level=ConfidenceLevel.HIGH),
         _make_variable_mapping(
-            "DOMAIN", confidence=0.95, confidence_level=ConfidenceLevel.HIGH,
+            "DOMAIN",
+            confidence=0.95,
+            confidence_level=ConfidenceLevel.HIGH,
             assigned_value="AE",
         ),
         _make_variable_mapping(
@@ -167,9 +169,7 @@ def mixed_spec() -> DomainMappingSpec:
 
 
 @pytest.fixture()
-def session_with_ae(
-    store: SessionStore, mixed_spec: DomainMappingSpec
-) -> str:
+def session_with_ae(store: SessionStore, mixed_spec: DomainMappingSpec) -> str:
     """Create a session with AE domain and return session_id."""
     session = store.create_session(
         study_id="PHA022121-C301",
@@ -236,13 +236,15 @@ class TestTwoTierReview:
         session_with_ae: str,
     ) -> None:
         # Action: review -> batch approve HIGH (y) -> approve each remaining (a, a, a)
-        _, callback = _make_input_callback([
-            "review",  # main action
-            "y",       # batch approve HIGH
-            "a",       # approve AETERM
-            "a",       # approve AESTDTC
-            "a",       # approve AEDECOD
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",  # main action
+                "y",  # batch approve HIGH
+                "a",  # approve AETERM
+                "a",  # approve AESTDTC
+                "a",  # approve AEDECOD
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -265,12 +267,18 @@ class TestTwoTierReview:
         session_with_ae: str,
     ) -> None:
         # Decline batch, then approve all 6 individually
-        _, callback = _make_input_callback([
-            "review",  # main action
-            "n",       # decline batch
-            "a", "a", "a",  # HIGH variables
-            "a", "a", "a",  # MEDIUM/LOW variables
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",  # main action
+                "n",  # decline batch
+                "a",
+                "a",
+                "a",  # HIGH variables
+                "a",
+                "a",
+                "a",  # MEDIUM/LOW variables
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -295,16 +303,18 @@ class TestCorrection:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",       # main action
-            "y",            # batch approve HIGH
-            "c",            # correct AETERM
-            "s",            # source change
-            "AE_PTERM",     # new source
-            "Wrong source", # reason
-            "a",            # approve AESTDTC
-            "a",            # approve AEDECOD
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",  # main action
+                "y",  # batch approve HIGH
+                "c",  # correct AETERM
+                "s",  # source change
+                "AE_PTERM",  # new source
+                "Wrong source",  # reason
+                "a",  # approve AESTDTC
+                "a",  # approve AEDECOD
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -324,12 +334,18 @@ class TestCorrection:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",
-            "c", "s", "AE_PTERM", "Wrong source",
-            "a", "a",
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",
+                "c",
+                "s",
+                "AE_PTERM",
+                "Wrong source",
+                "a",
+                "a",
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -344,12 +360,18 @@ class TestCorrection:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",
-            "c", "s", "AE_PTERM", "Wrong source",
-            "a", "a",
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",
+                "c",
+                "s",
+                "AE_PTERM",
+                "Wrong source",
+                "a",
+                "a",
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
         reviewer.review_domain(session_with_ae, "AE")
 
@@ -374,14 +396,17 @@ class TestReject:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",           # batch approve HIGH
-            "c",           # correct AETERM
-            "r",           # reject
-            "Not needed",  # reason
-            "a", "a",      # approve rest
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",  # batch approve HIGH
+                "c",  # correct AETERM
+                "r",  # reject
+                "Not needed",  # reason
+                "a",
+                "a",  # approve rest
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -421,13 +446,15 @@ class TestSkip:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",   # batch approve HIGH
-            "s",   # skip AETERM
-            "a",   # approve AESTDTC
-            "a",   # approve AEDECOD
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",  # batch approve HIGH
+                "s",  # skip AETERM
+                "a",  # approve AESTDTC
+                "a",  # approve AEDECOD
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")
@@ -481,12 +508,14 @@ class TestQuit:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",   # batch approve HIGH
-            "a",   # approve AETERM
-            "q",   # quit on AESTDTC
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",  # batch approve HIGH
+                "a",  # approve AETERM
+                "q",  # quit on AESTDTC
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         with pytest.raises(ReviewInterrupted):
@@ -517,23 +546,27 @@ class TestResume:
         session_with_ae: str,
     ) -> None:
         # First pass: approve HIGH, approve AETERM, quit
-        _, callback1 = _make_input_callback([
-            "review",
-            "y",   # batch HIGH
-            "a",   # approve AETERM
-            "q",   # quit
-        ])
+        _, callback1 = _make_input_callback(
+            [
+                "review",
+                "y",  # batch HIGH
+                "a",  # approve AETERM
+                "q",  # quit
+            ]
+        )
         reviewer1 = DomainReviewer(store, console, input_callback=callback1)
         with pytest.raises(ReviewInterrupted):
             reviewer1.review_domain(session_with_ae, "AE")
 
         # Second pass: should only see AESTDTC and AEDECOD
-        _, callback2 = _make_input_callback([
-            "review",
-            # No batch prompt (no HIGH pending)
-            "a",   # approve AESTDTC
-            "a",   # approve AEDECOD
-        ])
+        _, callback2 = _make_input_callback(
+            [
+                "review",
+                # No batch prompt (no HIGH pending)
+                "a",  # approve AESTDTC
+                "a",  # approve AEDECOD
+            ]
+        )
         console2 = Console(file=io.StringIO(), force_terminal=True, width=120)
         reviewer2 = DomainReviewer(store, console2, input_callback=callback2)
         result = reviewer2.review_domain(session_with_ae, "AE")
@@ -577,14 +610,17 @@ class TestLogicChange:
         console: Console,
         session_with_ae: str,
     ) -> None:
-        _, callback = _make_input_callback([
-            "review",
-            "y",                    # batch approve HIGH
-            "c",                    # correct AETERM
-            "o",                    # other/logic change
-            "Need partial dates",   # reason
-            "a", "a",              # approve rest
-        ])
+        _, callback = _make_input_callback(
+            [
+                "review",
+                "y",  # batch approve HIGH
+                "c",  # correct AETERM
+                "o",  # other/logic change
+                "Need partial dates",  # reason
+                "a",
+                "a",  # approve rest
+            ]
+        )
         reviewer = DomainReviewer(store, console, input_callback=callback)
 
         result = reviewer.review_domain(session_with_ae, "AE")

@@ -74,9 +74,7 @@ def display_profile_summary(profiles: list[DatasetProfile], console: Console) ->
         )
 
     console.print(table)
-    console.print(
-        f"\n[bold]{len(profiles)}[/bold] datasets profiled"
-    )
+    console.print(f"\n[bold]{len(profiles)}[/bold] datasets profiled")
 
 
 def display_variable_detail(profile: DatasetProfile, console: Console) -> None:
@@ -110,9 +108,7 @@ def display_variable_detail(profile: DatasetProfile, console: Console) -> None:
 
         # Top values display
         if v.top_values:
-            top_strs = [
-                f"{tv.value} ({tv.count})" for tv in v.top_values[:3]
-            ]
+            top_strs = [f"{tv.value} ({tv.count})" for tv in v.top_values[:3]]
             top_display = ", ".join(top_strs)
         elif v.sample_values:
             top_display = ", ".join(v.sample_values[:3])
@@ -217,9 +213,7 @@ def display_codelist(codelist: Codelist, console: Console) -> None:
         f"[bold]Extensible:[/bold] {ext_str}",
     ]
     if codelist.variable_mappings:
-        info_lines.append(
-            f"[bold]Variables:[/bold] {', '.join(codelist.variable_mappings)}"
-        )
+        info_lines.append(f"[bold]Variables:[/bold] {', '.join(codelist.variable_mappings)}")
 
     console.print(Panel("\n".join(info_lines), title=f"Codelist: {codelist.code}"))
 
@@ -239,9 +233,7 @@ def display_codelist(codelist: Codelist, console: Console) -> None:
     console.print(table)
 
 
-def display_ecrf_summary(
-    result: ECRFExtractionResult, console: Console
-) -> None:
+def display_ecrf_summary(result: ECRFExtractionResult, console: Console) -> None:
     """Print a summary table of eCRF extraction results.
 
     Columns: Form Name, Fields, Page Range.
@@ -266,10 +258,7 @@ def display_ecrf_summary(
         table.add_row(form.form_name, field_count, page_range)
 
     console.print(table)
-    console.print(
-        f"\n[bold]Total:[/bold] {len(result.forms)} forms, "
-        f"{result.total_fields} fields"
-    )
+    console.print(f"\n[bold]Total:[/bold] {len(result.forms)} forms, {result.total_fields} fields")
 
 
 def display_ecrf_form_detail(form: ECRFForm, console: Console) -> None:
@@ -281,9 +270,7 @@ def display_ecrf_form_detail(form: ECRFForm, console: Console) -> None:
         form: ECRFForm to display.
         console: Rich Console for output.
     """
-    table = Table(
-        title=f"{form.form_name} ({len(form.fields)} fields)", show_lines=True
-    )
+    table = Table(title=f"{form.form_name} ({len(form.fields)} fields)", show_lines=True)
     table.add_column("#", justify="right", style="dim", width=4)
     table.add_column("Field Name", style="bold cyan", no_wrap=True)
     table.add_column("Type", no_wrap=True)
@@ -309,9 +296,7 @@ def display_ecrf_form_detail(form: ECRFForm, console: Console) -> None:
     console.print(table)
 
 
-def display_classification(
-    result: ClassificationResult, console: Console
-) -> None:
+def display_classification(result: ClassificationResult, console: Console) -> None:
     """Print domain classification results.
 
     Shows: Dataset, Domain, Confidence, Reasoning. Confidence is color-coded:
@@ -366,15 +351,9 @@ def display_classification(
     if merge_plans:
         lines: list[str] = []
         for plan in sorted(merge_plans, key=lambda p: p.domain):
-            datasets = ", ".join(
-                d.replace(".sas7bdat", "") for d in plan.source_datasets
-            )
-            lines.append(
-                f"[bold]{plan.domain}[/bold] ({plan.mapping_pattern}): {datasets}"
-            )
-        console.print(
-            Panel("\n".join(lines), title="Merge Groups", border_style="blue")
-        )
+            datasets = ", ".join(d.replace(".sas7bdat", "") for d in plan.source_datasets)
+            lines.append(f"[bold]{plan.domain}[/bold] ({plan.mapping_pattern}): {datasets}")
+        console.print(Panel("\n".join(lines), title="Merge Groups", border_style="blue"))
 
 
 def display_mapping_spec(spec: DomainMappingSpec, console: Console) -> None:
@@ -397,9 +376,7 @@ def display_mapping_spec(spec: DomainMappingSpec, console: Console) -> None:
         f"[bold]Source:[/bold] {', '.join(spec.source_datasets)}",
     ]
     if spec.cross_domain_sources:
-        info_lines.append(
-            f"[bold]Cross-Domain:[/bold] {', '.join(spec.cross_domain_sources)}"
-        )
+        info_lines.append(f"[bold]Cross-Domain:[/bold] {', '.join(spec.cross_domain_sources)}")
     console.print(Panel("\n".join(info_lines), title=f"Mapping Spec: {spec.domain}"))
 
     # Variable mapping table
@@ -460,19 +437,13 @@ def display_mapping_spec(spec: DomainMappingSpec, console: Console) -> None:
     # Unmapped / SUPPQUAL candidates
     if spec.unmapped_source_variables:
         console.print(
-            f"\n[dim]Unmapped source variables:[/dim] "
-            f"{', '.join(spec.unmapped_source_variables)}"
+            f"\n[dim]Unmapped source variables:[/dim] {', '.join(spec.unmapped_source_variables)}"
         )
     if spec.suppqual_candidates:
-        console.print(
-            f"[dim]SUPPQUAL candidates:[/dim] "
-            f"{', '.join(spec.suppqual_candidates)}"
-        )
+        console.print(f"[dim]SUPPQUAL candidates:[/dim] {', '.join(spec.suppqual_candidates)}")
 
 
-def display_validation_summary(
-    report: ValidationReport, console: Console
-) -> None:
+def display_validation_summary(report: ValidationReport, console: Console) -> None:
     """Print a validation report summary with Rich formatting.
 
     Shows severity counts, pass rate, and submission readiness status
@@ -571,9 +542,9 @@ def display_validation_issues(
     sorted_results = sorted(
         results,
         key=lambda r: (
-            0 if r.severity == RuleSeverity.ERROR else (
-                1 if r.severity == RuleSeverity.WARNING else 2
-            ),
+            0
+            if r.severity == RuleSeverity.ERROR
+            else (1 if r.severity == RuleSeverity.WARNING else 2),
             -r.affected_count,
         ),
     )
@@ -616,9 +587,7 @@ def display_validation_issues(
     # Show count of suppressed false positives
     fp_count = sum(1 for r in sorted_results if r.known_false_positive)
     if fp_count > 0:
-        console.print(
-            f"[dim]{fp_count} known false positive(s) not shown[/dim]"
-        )
+        console.print(f"[dim]{fp_count} known false positive(s) not shown[/dim]")
 
 
 def display_fix_loop_result(
@@ -764,9 +733,7 @@ def display_needs_human(
                 suggested,
             )
 
-    console.print(
-        Panel(table, title="Issues Requiring Human Review", border_style="yellow")
-    )
+    console.print(Panel(table, title="Issues Requiring Human Review", border_style="yellow"))
 
 
 def display_learning_stats(

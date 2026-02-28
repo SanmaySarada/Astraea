@@ -38,12 +38,8 @@ class SuppVariable(BaseModel):
         max_length=40,
         description="Variable label (max 40 chars)",
     )
-    source_col: str = Field(
-        ..., description="Source column name in parent DataFrame"
-    )
-    qorig: str = Field(
-        ..., description="Origin: CRF, ASSIGNED, DERIVED, or PROTOCOL"
-    )
+    source_col: str = Field(..., description="Source column name in parent DataFrame")
+    qorig: str = Field(..., description="Origin: CRF, ASSIGNED, DERIVED, or PROTOCOL")
     qeval: str = Field(
         default="",
         description="Evaluator (optional, e.g., INVESTIGATOR)",

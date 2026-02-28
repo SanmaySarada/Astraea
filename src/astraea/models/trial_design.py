@@ -66,27 +66,15 @@ class TSConfig(BaseModel):
     pharmacological_class: str = Field(
         ..., min_length=1, description="Pharmacological class (PCLAS)"
     )
-    study_type: str = Field(
-        default="INTERVENTIONAL", description="Study type (STYPE)"
-    )
-    sdtm_version: str = Field(
-        default="3.4", description="SDTM-IG version (SDTMVER)"
-    )
-    trial_phase: str = Field(
-        default="PHASE III TRIAL", description="Trial phase (TPHASE)"
-    )
+    study_type: str = Field(default="INTERVENTIONAL", description="Study type (STYPE)")
+    sdtm_version: str = Field(default="3.4", description="SDTM-IG version (SDTMVER)")
+    trial_phase: str = Field(default="PHASE III TRIAL", description="Trial phase (TPHASE)")
     planned_enrollment: int | None = Field(
         default=None, ge=1, description="Planned enrollment (PLESSION)"
     )
-    number_of_arms: int | None = Field(
-        default=None, ge=1, description="Number of arms (NARMS)"
-    )
-    accession_number: str | None = Field(
-        default=None, description="Accession number (ACESSION)"
-    )
-    addon: str | None = Field(
-        default=None, description="Added on to existing treatments (ADDON)"
-    )
+    number_of_arms: int | None = Field(default=None, ge=1, description="Number of arms (NARMS)")
+    accession_number: str | None = Field(default=None, description="Accession number (ACESSION)")
+    addon: str | None = Field(default=None, description="Added on to existing treatments (ADDON)")
     additional_params: list[TSParameter] = Field(
         default_factory=list,
         description="Additional study-specific TS parameters",
@@ -177,9 +165,7 @@ class IEDef(BaseModel):
         tirl: Rule for evaluating the criterion.
     """
 
-    ietestcd: str = Field(
-        ..., min_length=1, max_length=8, description="I/E criterion code"
-    )
+    ietestcd: str = Field(..., min_length=1, max_length=8, description="I/E criterion code")
     ietest: str = Field(..., min_length=1, description="I/E criterion text")
     iecat: str = Field(..., description="INCLUSION or EXCLUSION")
     tirl: str = Field(default="", description="Evaluation rule")
@@ -213,15 +199,9 @@ class TrialDesignConfig(BaseModel):
         inclusion_exclusion: I/E criteria for TI domain. None = no TI data.
     """
 
-    arms: list[ArmDef] = Field(
-        ..., min_length=1, description="Arm-element definitions for TA"
-    )
-    elements: list[ElementDef] = Field(
-        ..., min_length=1, description="Element definitions for TE"
-    )
-    visits: list[VisitDef] = Field(
-        ..., min_length=1, description="Visit definitions for TV"
-    )
+    arms: list[ArmDef] = Field(..., min_length=1, description="Arm-element definitions for TA")
+    elements: list[ElementDef] = Field(..., min_length=1, description="Element definitions for TE")
+    visits: list[VisitDef] = Field(..., min_length=1, description="Visit definitions for TV")
     inclusion_exclusion: list[IEDef] | None = Field(
         default=None,
         description="I/E criteria for TI domain (None = empty TI)",

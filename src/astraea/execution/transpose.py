@@ -28,9 +28,7 @@ class TransposeSpec(BaseModel):
     id_vars: list[str] = Field(
         ..., description="Columns to keep as-is (e.g., USUBJID, VISITNUM, date cols)"
     )
-    value_vars: list[str] = Field(
-        ..., description="Columns to unpivot (test result columns)"
-    )
+    value_vars: list[str] = Field(..., description="Columns to unpivot (test result columns)")
     testcd_mapping: dict[str, str] = Field(
         ..., description="Source column name -> TESTCD value (e.g., 'SYSBP' -> 'SYSBP')"
     )
@@ -48,9 +46,7 @@ class TransposeSpec(BaseModel):
     testcd_var: str = Field(
         ..., description="Target column for test code (e.g., 'VSTESTCD', 'LBTESTCD')"
     )
-    test_var: str = Field(
-        ..., description="Target column for test name (e.g., 'VSTEST', 'LBTEST')"
-    )
+    test_var: str = Field(..., description="Target column for test name (e.g., 'VSTEST', 'LBTEST')")
     unit_var: str = Field(
         ..., description="Target column for original unit (e.g., 'VSORRESU', 'LBORRESU')"
     )
@@ -113,9 +109,7 @@ def execute_transpose(df: pd.DataFrame, spec: TransposeSpec) -> pd.DataFrame:
     return melted
 
 
-def handle_transpose(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
+def handle_transpose(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Stub handler for TRANSPOSE pattern in PATTERN_HANDLERS.
 
     TRANSPOSE mappings are handled at the DataFrame level by execute_transpose(),

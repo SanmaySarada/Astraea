@@ -63,29 +63,19 @@ class ReviewDecision(BaseModel):
     the reviewer's reason for the decision.
     """
 
-    sdtm_variable: str = Field(
-        ..., description="SDTM variable this decision applies to"
-    )
-    status: ReviewStatus = Field(
-        ..., description="Review outcome for this variable"
-    )
+    sdtm_variable: str = Field(..., description="SDTM variable this decision applies to")
+    status: ReviewStatus = Field(..., description="Review outcome for this variable")
     correction_type: CorrectionType | None = Field(
         default=None,
         description="Type of correction (only set when status is CORRECTED)",
     )
-    original_mapping: VariableMapping = Field(
-        ..., description="The original proposed mapping"
-    )
+    original_mapping: VariableMapping = Field(..., description="The original proposed mapping")
     corrected_mapping: VariableMapping | None = Field(
         default=None,
         description="The corrected mapping (only set when status is CORRECTED)",
     )
-    reason: str = Field(
-        default="", description="Human explanation (required when corrected)"
-    )
-    timestamp: str = Field(
-        ..., description="ISO 8601 timestamp of when the decision was made"
-    )
+    reason: str = Field(default="", description="Human explanation (required when corrected)")
+    timestamp: str = Field(..., description="ISO 8601 timestamp of when the decision was made")
 
     @model_validator(mode="after")
     def _validate_correction_fields(self) -> ReviewDecision:
@@ -98,10 +88,7 @@ class ReviewDecision(BaseModel):
             if self.correction_type is None:
                 msg = "correction_type is required when status is CORRECTED"
                 raise ValueError(msg)
-            if (
-                self.corrected_mapping is None
-                and self.correction_type != CorrectionType.REJECT
-            ):
+            if self.corrected_mapping is None and self.correction_type != CorrectionType.REJECT:
                 msg = "corrected_mapping is required when status is CORRECTED (except REJECT)"
                 raise ValueError(msg)
         return self
@@ -115,33 +102,17 @@ class HumanCorrection(BaseModel):
     and why -- forming input-output pairs for prompt optimization.
     """
 
-    session_id: str = Field(
-        ..., description="Review session this correction belongs to"
-    )
-    domain: str = Field(
-        ..., description="SDTM domain (e.g., 'AE', 'DM')"
-    )
-    sdtm_variable: str = Field(
-        ..., description="SDTM variable that was corrected"
-    )
-    correction_type: CorrectionType = Field(
-        ..., description="Type of correction made"
-    )
-    original_mapping: VariableMapping = Field(
-        ..., description="The original proposed mapping"
-    )
+    session_id: str = Field(..., description="Review session this correction belongs to")
+    domain: str = Field(..., description="SDTM domain (e.g., 'AE', 'DM')")
+    sdtm_variable: str = Field(..., description="SDTM variable that was corrected")
+    correction_type: CorrectionType = Field(..., description="Type of correction made")
+    original_mapping: VariableMapping = Field(..., description="The original proposed mapping")
     corrected_mapping: VariableMapping | None = Field(
         default=None, description="The corrected mapping (None for REJECT)"
     )
-    reason: str = Field(
-        ..., description="Human explanation for the correction"
-    )
-    reviewer: str = Field(
-        default="", description="Reviewer identifier"
-    )
-    timestamp: str = Field(
-        ..., description="ISO 8601 timestamp of the correction"
-    )
+    reason: str = Field(..., description="Human explanation for the correction")
+    reviewer: str = Field(default="", description="Reviewer identifier")
+    timestamp: str = Field(..., description="ISO 8601 timestamp of the correction")
 
 
 class DomainReview(BaseModel):
@@ -151,9 +122,7 @@ class DomainReview(BaseModel):
     the final reviewed spec after all corrections are applied.
     """
 
-    domain: str = Field(
-        ..., description="SDTM domain code"
-    )
+    domain: str = Field(..., description="SDTM domain code")
     status: DomainReviewStatus = Field(
         default=DomainReviewStatus.PENDING,
         description="Overall review status for this domain",
@@ -186,28 +155,16 @@ class ReviewSession(BaseModel):
     and resumed across process exits.
     """
 
-    session_id: str = Field(
-        ..., description="Unique session identifier (12 hex chars)"
-    )
-    study_id: str = Field(
-        ..., description="Study identifier (e.g., 'PHA022121-C301')"
-    )
-    created_at: str = Field(
-        ..., description="ISO 8601 timestamp of session creation"
-    )
-    updated_at: str = Field(
-        ..., description="ISO 8601 timestamp of last update"
-    )
+    session_id: str = Field(..., description="Unique session identifier (12 hex chars)")
+    study_id: str = Field(..., description="Study identifier (e.g., 'PHA022121-C301')")
+    created_at: str = Field(..., description="ISO 8601 timestamp of session creation")
+    updated_at: str = Field(..., description="ISO 8601 timestamp of last update")
     status: SessionStatus = Field(
         default=SessionStatus.IN_PROGRESS,
         description="Overall session status",
     )
-    domains: list[str] = Field(
-        ..., description="Ordered list of domains to review"
-    )
-    current_domain_index: int = Field(
-        default=0, description="Index into domains list for resume"
-    )
+    domains: list[str] = Field(..., description="Ordered list of domains to review")
+    current_domain_index: int = Field(default=0, description="Index into domains list for resume")
     domain_reviews: dict[str, DomainReview] = Field(
         default_factory=dict,
         description="Per-domain review state keyed by domain code",

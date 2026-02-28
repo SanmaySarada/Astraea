@@ -165,14 +165,18 @@ class TestDMEndToEnd:
             study_id="TEST-STUDY-001",
         )
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "SUBJID",
-            "SITEID", "SEX", "AGE", "ARMCD",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "SUBJID",
+            "SITEID",
+            "SEX",
+            "AGE",
+            "ARMCD",
         }
         assert set(result.columns) == expected_cols
 
-    def test_studyid_is_constant(
-        self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame
-    ) -> None:
+    def test_studyid_is_constant(self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame) -> None:
         """STUDYID should be the same constant for all rows."""
         executor = DatasetExecutor(ct_ref=load_ct_reference())
         result = executor.execute(
@@ -182,9 +186,7 @@ class TestDMEndToEnd:
         )
         assert all(result["STUDYID"] == "TEST-STUDY-001")
 
-    def test_domain_is_dm(
-        self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame
-    ) -> None:
+    def test_domain_is_dm(self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame) -> None:
         """DOMAIN should be 'DM' for all rows."""
         executor = DatasetExecutor(ct_ref=load_ct_reference())
         result = executor.execute(
@@ -254,9 +256,7 @@ class TestDMEndToEnd:
         )
         assert len(result) == 5
 
-    def test_sex_recoded(
-        self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame
-    ) -> None:
+    def test_sex_recoded(self, dm_spec: DomainMappingSpec, raw_dm_df: pd.DataFrame) -> None:
         """SEX should be recoded via C66731 codelist (Male -> M, Female -> F)."""
         ct_ref = load_ct_reference()
         executor = DatasetExecutor(ct_ref=ct_ref)

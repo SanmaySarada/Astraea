@@ -100,9 +100,7 @@ def handle_reformat(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
     return df[mapping.source_variable].copy()
 
 
-def handle_lookup_recode(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
+def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Map source values through a codelist lookup table.
 
     If mapping.codelist_code and a CTReference are available, builds a recode
@@ -152,9 +150,7 @@ def handle_lookup_recode(
     return df[mapping.source_variable].copy()
 
 
-def handle_derivation(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
+def handle_derivation(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Apply a derivation rule to produce computed values.
 
     Checks mapping.derivation_rule for known transform names. If found,
@@ -200,9 +196,7 @@ def handle_derivation(
     return pd.Series(None, index=df.index, dtype="object")
 
 
-def handle_combine(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
+def handle_combine(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Combine multiple source columns into one target.
 
     Parses mapping.derivation_rule to identify the combination strategy.
@@ -223,9 +217,7 @@ def handle_combine(
     return pd.Series(None, index=df.index, dtype="object")
 
 
-def handle_split(
-    df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
-) -> pd.Series:
+def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Stub for SPLIT pattern -- complex domain-specific implementation deferred to Phase 5/6.
 
     Returns a Series of None with a warning.

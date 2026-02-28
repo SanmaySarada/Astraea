@@ -144,9 +144,7 @@ def auto_fixer(ct_ref: CTReference, sdtm_ref: SDTMReference) -> AutoFixer:
 
 
 @pytest.fixture()
-def fix_loop_engine(
-    engine: ValidationEngine, auto_fixer: AutoFixer
-) -> FixLoopEngine:
+def fix_loop_engine(engine: ValidationEngine, auto_fixer: AutoFixer) -> FixLoopEngine:
     """Create FixLoopEngine with real references."""
     return FixLoopEngine(engine=engine, auto_fixer=auto_fixer, max_iterations=3)
 
@@ -203,13 +201,9 @@ class TestFixLoopConvergence:
                 _make_vm("USUBJID"),
             ],
         )
-        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {
-            "DM": (df, spec)
-        }
+        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {"DM": (df, spec)}
 
-        loop = FixLoopEngine(
-            engine=engine, auto_fixer=auto_fixer, max_iterations=3
-        )
+        loop = FixLoopEngine(engine=engine, auto_fixer=auto_fixer, max_iterations=3)
         result = loop.run_fix_loop(domains, study_id="TEST-001")
 
         assert result.iterations_run >= 1
@@ -235,9 +229,7 @@ class TestFixLoopConvergence:
         assert (fixed_df["DOMAIN"] == "AE").all()
 
         # Check fix action recorded
-        domain_fix_actions = [
-            a for a in result.all_fix_actions if a.variable == "DOMAIN"
-        ]
+        domain_fix_actions = [a for a in result.all_fix_actions if a.variable == "DOMAIN"]
         assert len(domain_fix_actions) >= 1
         assert domain_fix_actions[0].fix_type in (
             "add_missing_column",
@@ -281,9 +273,7 @@ class TestFixLoopMaxIterations:
         mock_fixer.apply_fixes.side_effect = fake_apply
 
         max_iter = 2
-        loop = FixLoopEngine(
-            engine=engine, auto_fixer=mock_fixer, max_iterations=max_iter
-        )
+        loop = FixLoopEngine(engine=engine, auto_fixer=mock_fixer, max_iterations=max_iter)
 
         df = pd.DataFrame(
             {
@@ -292,9 +282,7 @@ class TestFixLoopMaxIterations:
             }
         )
         spec = _make_spec(domain="AE")
-        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {
-            "AE": (df, spec)
-        }
+        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {"AE": (df, spec)}
 
         result = loop.run_fix_loop(domains, study_id="TEST-001")
 
@@ -353,9 +341,7 @@ class TestFixLoopNeedsHuman:
                 _make_vm("AESTDTC"),
             ],
         )
-        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {
-            "AE": (df, spec)
-        }
+        domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {"AE": (df, spec)}
 
         result = fix_loop_engine.run_fix_loop(domains, study_id="TEST-001")
 
@@ -490,9 +476,7 @@ class TestOutputWriting:
     ) -> None:
         """Fixed datasets are written to XPT files in output_dir."""
         domains = sample_domain_with_issues
-        fix_loop_engine.run_fix_loop(
-            domains, output_dir=tmp_path, study_id="TEST-001"
-        )
+        fix_loop_engine.run_fix_loop(domains, output_dir=tmp_path, study_id="TEST-001")
 
         xpt_file = tmp_path / "ae.xpt"
         assert xpt_file.exists()
@@ -505,9 +489,7 @@ class TestOutputWriting:
     ) -> None:
         """Audit trail JSON is written to output_dir."""
         domains = sample_domain_with_issues
-        fix_loop_engine.run_fix_loop(
-            domains, output_dir=tmp_path, study_id="TEST-001"
-        )
+        fix_loop_engine.run_fix_loop(domains, output_dir=tmp_path, study_id="TEST-001")
 
         audit_file = tmp_path / "autofix_audit.json"
         assert audit_file.exists()

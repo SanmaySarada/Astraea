@@ -9,7 +9,6 @@ import pytest
 
 from astraea.io.xpt_writer import XPTValidationError, validate_for_xpt_v5, write_xpt_v5
 
-
 # --- Fixtures ---
 
 
@@ -94,9 +93,7 @@ class TestValidateForXptV5:
     def test_multiple_errors_all_reported(self) -> None:
         df = pd.DataFrame({"TOOLONGNAME": ["caf\u00e9"]})
         long_label = "B" * 50
-        errors = validate_for_xpt_v5(
-            df, {"TOOLONGNAME": long_label}, "WAYLONGTABLE"
-        )
+        errors = validate_for_xpt_v5(df, {"TOOLONGNAME": long_label}, "WAYLONGTABLE")
         # Should catch: table name too long, column name too long, label too long, non-ASCII
         assert len(errors) >= 3
 
@@ -145,9 +142,7 @@ class TestWriteXptV5:
             assert list(df_back[col]) == list(simple_df[col])
 
         # Check numeric columns (float comparison)
-        np.testing.assert_array_almost_equal(
-            df_back["AGE"].values, simple_df["AGE"].values
-        )
+        np.testing.assert_array_almost_equal(df_back["AGE"].values, simple_df["AGE"].values)
 
     def test_columns_uppercased(self, tmp_path: object) -> None:
         """Verify column names are uppercased in the output."""

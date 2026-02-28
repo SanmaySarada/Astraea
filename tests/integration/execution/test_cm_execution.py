@@ -200,9 +200,7 @@ def raw_cm_df() -> pd.DataFrame:
 class TestCMEndToEnd:
     """Integration tests for CM domain execution pipeline."""
 
-    def _execute(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> pd.DataFrame:
+    def _execute(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> pd.DataFrame:
         """Helper to execute the CM spec and return the result."""
         sdtm_ref = load_sdtm_reference()
         ct_ref = load_ct_reference()
@@ -219,22 +217,27 @@ class TestCMEndToEnd:
         """Output should have exactly the 12 mapped columns."""
         result = self._execute(cm_spec, raw_cm_df)
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "CMSEQ",
-            "CMTRT", "CMDOSE", "CMDOSU", "CMROUTE",
-            "CMDOSFRQ", "CMSTDTC", "CMENDTC", "CMINDC",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "CMSEQ",
+            "CMTRT",
+            "CMDOSE",
+            "CMDOSU",
+            "CMROUTE",
+            "CMDOSFRQ",
+            "CMSTDTC",
+            "CMENDTC",
+            "CMINDC",
         }
         assert set(result.columns) == expected_cols
 
-    def test_five_rows_preserved(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_five_rows_preserved(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """All 5 rows from raw data should be preserved."""
         result = self._execute(cm_spec, raw_cm_df)
         assert len(result) == 5
 
-    def test_cmtrt_direct_copy(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_cmtrt_direct_copy(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """CMTRT should be a direct copy of the source column."""
         result = self._execute(cm_spec, raw_cm_df)
         expected = ["IBUPROFEN", "PARACETAMOL", "ASPIRIN", "LISINOPRIL", "METFORMIN"]
@@ -264,9 +267,7 @@ class TestCMEndToEnd:
         cmstdtc = lisinopril_rows.iloc[0]["CMSTDTC"]
         assert cmstdtc == "2019-06"
 
-    def test_full_date_converted(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_full_date_converted(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """Row with '15 Jan 2022' should produce CMSTDTC = '2022-01-15'."""
         result = self._execute(cm_spec, raw_cm_df)
         ibuprofen_rows = result[result["CMTRT"] == "IBUPROFEN"]
@@ -274,26 +275,20 @@ class TestCMEndToEnd:
         cmstdtc = ibuprofen_rows.iloc[0]["CMSTDTC"]
         assert cmstdtc == "2022-01-15"
 
-    def test_route_recoded(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_route_recoded(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """CMROUTE values should match C66729 submission values (ORAL -> ORAL)."""
         result = self._execute(cm_spec, raw_cm_df)
         route_values = set(result["CMROUTE"].dropna().unique())
         assert "ORAL" in route_values
 
-    def test_frequency_recoded(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_frequency_recoded(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """CMDOSFRQ values should include standard CT terms (BID, QD, PRN)."""
         result = self._execute(cm_spec, raw_cm_df)
         freq_values = set(result["CMDOSFRQ"].dropna().unique())
         assert freq_values <= {"BID", "QD", "PRN"}
         assert len(freq_values) == 3
 
-    def test_cmseq_generated(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_cmseq_generated(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """CMSEQ should be generated, with subject 001 having seq 1 and 2."""
         result = self._execute(cm_spec, raw_cm_df)
         assert "CMSEQ" in result.columns
@@ -303,9 +298,7 @@ class TestCMEndToEnd:
         seq_values = sorted(subj_001["CMSEQ"].tolist())
         assert seq_values == [1, 2]
 
-    def test_no_edc_columns(
-        self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame
-    ) -> None:
+    def test_no_edc_columns(self, cm_spec: DomainMappingSpec, raw_cm_df: pd.DataFrame) -> None:
         """EDC columns like 'projectid' should not appear in output."""
         result = self._execute(cm_spec, raw_cm_df)
         assert "projectid" not in result.columns

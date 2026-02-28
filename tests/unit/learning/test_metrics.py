@@ -16,7 +16,6 @@ from astraea.models.mapping import (
     DomainMappingSpec,
     MappingPattern,
     VariableMapping,
-    VariableOrigin,
 )
 from astraea.review.models import (
     CorrectionType,
@@ -44,9 +43,7 @@ def _make_mapping(var_name: str) -> VariableMapping:
     )
 
 
-def _make_spec(
-    domain: str, variables: list[str], study_id: str = "STUDY-001"
-) -> DomainMappingSpec:
+def _make_spec(domain: str, variables: list[str], study_id: str = "STUDY-001") -> DomainMappingSpec:
     """Create a minimal DomainMappingSpec for testing."""
     mappings = [_make_mapping(v) for v in variables]
     return DomainMappingSpec(
@@ -79,9 +76,7 @@ def _make_decision(
     corrected = None
     if status == ReviewStatus.CORRECTED and correction_type != CorrectionType.REJECT:
         corrected = _make_mapping(var_name)
-        corrected = corrected.model_copy(
-            update={"mapping_logic": "Corrected logic"}
-        )
+        corrected = corrected.model_copy(update={"mapping_logic": "Corrected logic"})
     return ReviewDecision(
         sdtm_variable=var_name,
         status=status,
@@ -123,9 +118,7 @@ class TestComputeDomainAccuracy:
 
     def test_mixed_decisions(self) -> None:
         """Mixed decisions: some approved, some corrected, some rejected."""
-        spec = _make_spec(
-            "AE", ["AETERM", "AEDECOD", "AESTDTC", "AEENDTC"]
-        )
+        spec = _make_spec("AE", ["AETERM", "AEDECOD", "AESTDTC", "AEENDTC"])
         review = DomainReview(
             domain="AE",
             status=DomainReviewStatus.COMPLETED,

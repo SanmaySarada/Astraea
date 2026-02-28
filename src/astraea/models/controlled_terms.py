@@ -54,12 +54,8 @@ class CTPackage(BaseModel):
     and contains all codelists.
     """
 
-    version: str = Field(
-        ..., description="CT package version (e.g., '2024-09-27')"
-    )
-    ig_version: str = Field(
-        ..., description="Associated SDTM-IG version (e.g., '3.4')"
-    )
+    version: str = Field(..., description="CT package version (e.g., '2024-09-27')")
+    ig_version: str = Field(..., description="Associated SDTM-IG version (e.g., '3.4')")
     codelists: dict[str, Codelist] = Field(
         default_factory=dict, description="Codelists keyed by codelist code"
     )

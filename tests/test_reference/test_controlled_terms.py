@@ -247,9 +247,31 @@ class TestNonExtensibleCodelists:
         assert cl.name == "Domain Abbreviation"
         assert cl.extensible is False
         expected = {
-            "AE", "CE", "CM", "CO", "DA", "DM", "DS", "DV", "EG", "EX",
-            "FA", "IE", "LB", "MH", "PE", "QS", "SC", "SE", "SV",
-            "TA", "TE", "TI", "TS", "TV", "VS",
+            "AE",
+            "CE",
+            "CM",
+            "CO",
+            "DA",
+            "DM",
+            "DS",
+            "DV",
+            "EG",
+            "EX",
+            "FA",
+            "IE",
+            "LB",
+            "MH",
+            "PE",
+            "QS",
+            "SC",
+            "SE",
+            "SV",
+            "TA",
+            "TE",
+            "TI",
+            "TS",
+            "TV",
+            "VS",
         }
         assert set(cl.terms.keys()) == expected
 
@@ -305,8 +327,7 @@ class TestExtensibleCodelists:
         assert cl.name == name
         assert cl.extensible is True
         assert len(cl.terms) >= min_terms, (
-            f"Codelist {code} ({name}) has {len(cl.terms)} terms, "
-            f"expected >= {min_terms}"
+            f"Codelist {code} ({name}) has {len(cl.terms)} terms, expected >= {min_terms}"
         )
 
 
@@ -314,9 +335,22 @@ class TestAllSixteenCodelists:
     """Verify all 16 new codelists are loadable via CTReference."""
 
     ALL_NEW_CODES = [
-        "C66767", "C66727", "C65047", "C67154", "C66741", "C67153",
-        "C71153", "C71152", "C66726", "C66734", "C78736", "C78734",
-        "C71148", "C66728", "C99079", "C74456",
+        "C66767",
+        "C66727",
+        "C65047",
+        "C67154",
+        "C66741",
+        "C67153",
+        "C71153",
+        "C71152",
+        "C66726",
+        "C66734",
+        "C78736",
+        "C78734",
+        "C71148",
+        "C66728",
+        "C99079",
+        "C74456",
     ]
 
     def test_none_missing(self, ct: CTReference) -> None:

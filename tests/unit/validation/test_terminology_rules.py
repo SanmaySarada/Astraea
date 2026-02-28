@@ -152,9 +152,7 @@ class TestCTValueRule:
         # Extensible codelists should NOT have fix_suggestion
         assert results[0].fix_suggestion is None
 
-    def test_no_codelist_code_skipped(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_no_codelist_code_skipped(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Variables without codelist_code should be skipped."""
         df = pd.DataFrame({"AETERM": ["Headache", "Nausea"]})
         spec = _make_spec(
@@ -165,9 +163,7 @@ class TestCTValueRule:
         results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_missing_codelist_warning(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_missing_codelist_warning(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Unknown codelist code should produce a WARNING."""
         df = pd.DataFrame({"TESTVAR": ["A", "B"]})
         spec = _make_spec(
@@ -180,9 +176,7 @@ class TestCTValueRule:
         assert results[0].severity == RuleSeverity.WARNING
         assert "not found" in results[0].message
 
-    def test_null_values_ignored(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_null_values_ignored(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Null values should not be validated against CT."""
         df = pd.DataFrame({"SEX": ["M", None, "F", None]})
         spec = _make_spec(
@@ -206,9 +200,7 @@ class TestCTValueRule:
         results = rule.evaluate("DM", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_all_values_empty_skipped(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_all_values_empty_skipped(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """All-null column should be skipped."""
         df = pd.DataFrame({"SEX": [None, None]})
         spec = _make_spec(
@@ -228,9 +220,7 @@ class TestDomainValueRule:
         assert rule.rule_id == "ASTR-T002"
         assert rule.category == RuleCategory.TERMINOLOGY
 
-    def test_correct_domain_value(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_correct_domain_value(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Correct DOMAIN values should produce no findings."""
         df = pd.DataFrame({"DOMAIN": ["AE", "AE", "AE"]})
         spec = _make_spec(domain="AE")
@@ -238,9 +228,7 @@ class TestDomainValueRule:
         results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_wrong_domain_value(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_wrong_domain_value(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Wrong DOMAIN values should produce ERROR."""
         df = pd.DataFrame({"DOMAIN": ["AE", "DM", "AE"]})
         spec = _make_spec(domain="AE")
@@ -251,9 +239,7 @@ class TestDomainValueRule:
         assert results[0].affected_count == 1
         assert "'DM'" in results[0].message
 
-    def test_missing_domain_column(
-        self, sdtm_ref: SDTMReference, ct_ref: CTReference
-    ) -> None:
+    def test_missing_domain_column(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         """Missing DOMAIN column should produce ERROR."""
         df = pd.DataFrame({"USUBJID": ["SUBJ-001"]})
         spec = _make_spec(domain="AE")

@@ -192,9 +192,7 @@ class SessionStore:
 
         self._conn.commit()
 
-    def save_domain_review(
-        self, session_id: str, domain_review: DomainReview
-    ) -> None:
+    def save_domain_review(self, session_id: str, domain_review: DomainReview) -> None:
         """Save/update a single domain review within a session.
 
         Args:
@@ -202,13 +200,9 @@ class SessionStore:
             domain_review: The domain review to persist.
         """
         # Serialize decisions dict
-        decisions_json = json.dumps(
-            {k: v.model_dump() for k, v in domain_review.decisions.items()}
-        )
+        decisions_json = json.dumps({k: v.model_dump() for k, v in domain_review.decisions.items()})
         # Serialize corrections list
-        corrections_json = json.dumps(
-            [c.model_dump() for c in domain_review.corrections]
-        )
+        corrections_json = json.dumps([c.model_dump() for c in domain_review.corrections])
 
         self._conn.execute(
             """INSERT OR REPLACE INTO domain_reviews
@@ -293,9 +287,7 @@ class SessionStore:
         for dr_row in domain_rows:
             # Deserialize decisions
             decisions_raw = json.loads(dr_row["decisions_json"])
-            decisions = {
-                k: ReviewDecision(**v) for k, v in decisions_raw.items()
-            }
+            decisions = {k: ReviewDecision(**v) for k, v in decisions_raw.items()}
 
             # Deserialize corrections
             corrections_raw = json.loads(dr_row["corrections_json"])
@@ -304,13 +296,9 @@ class SessionStore:
             domain_reviews[dr_row["domain"]] = DomainReview(
                 domain=dr_row["domain"],
                 status=DomainReviewStatus(dr_row["status"]),
-                original_spec=DomainMappingSpec.model_validate_json(
-                    dr_row["original_spec_json"]
-                ),
+                original_spec=DomainMappingSpec.model_validate_json(dr_row["original_spec_json"]),
                 reviewed_spec=(
-                    DomainMappingSpec.model_validate_json(
-                        dr_row["reviewed_spec_json"]
-                    )
+                    DomainMappingSpec.model_validate_json(dr_row["reviewed_spec_json"])
                     if dr_row["reviewed_spec_json"]
                     else None
                 ),
@@ -346,21 +334,21 @@ class SessionStore:
                 (study_id,),
             ).fetchall()
         else:
-            rows = self._conn.execute(
-                "SELECT * FROM sessions ORDER BY created_at DESC"
-            ).fetchall()
+            rows = self._conn.execute("SELECT * FROM sessions ORDER BY created_at DESC").fetchall()
 
         results = []
         for row in rows:
             domains = json.loads(row["domains_json"])
-            results.append({
-                "session_id": row["session_id"],
-                "study_id": row["study_id"],
-                "status": row["status"],
-                "created_at": row["created_at"],
-                "updated_at": row["updated_at"],
-                "domain_count": len(domains),
-            })
+            results.append(
+                {
+                    "session_id": row["session_id"],
+                    "study_id": row["study_id"],
+                    "status": row["status"],
+                    "created_at": row["created_at"],
+                    "updated_at": row["updated_at"],
+                    "domain_count": len(domains),
+                }
+            )
         return results
 
     def close(self) -> None:

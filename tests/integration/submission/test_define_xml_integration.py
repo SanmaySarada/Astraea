@@ -72,33 +72,51 @@ def dm_spec() -> DomainMappingSpec:
     """DM spec -- simple, non-repeating domain."""
     mappings = [
         _mapping(
-            var="STUDYID", label="Study Identifier",
-            pattern=MappingPattern.ASSIGN, assigned="TEST-001", order=1,
+            var="STUDYID",
+            label="Study Identifier",
+            pattern=MappingPattern.ASSIGN,
+            assigned="TEST-001",
+            order=1,
             origin=VariableOrigin.ASSIGNED,
         ),
         _mapping(
-            var="DOMAIN", label="Domain Abbreviation",
-            pattern=MappingPattern.ASSIGN, assigned="DM", order=2,
+            var="DOMAIN",
+            label="Domain Abbreviation",
+            pattern=MappingPattern.ASSIGN,
+            assigned="DM",
+            order=2,
             origin=VariableOrigin.ASSIGNED,
         ),
         _mapping(
-            var="USUBJID", label="Unique Subject Identifier",
-            pattern=MappingPattern.DERIVATION, source="SUBJID", order=3,
+            var="USUBJID",
+            label="Unique Subject Identifier",
+            pattern=MappingPattern.DERIVATION,
+            source="SUBJID",
+            order=3,
             origin=VariableOrigin.DERIVED,
             computational_method="STUDYID || '-' || SITEID || '-' || SUBJID",
         ),
         _mapping(
-            var="SUBJID", label="Subject Identifier for the Study",
-            source="SUBJID", order=4, origin=VariableOrigin.CRF,
-        ),
-        _mapping(
-            var="SEX", label="Sex",
-            source="SEX", order=5, codelist="C66731",
+            var="SUBJID",
+            label="Subject Identifier for the Study",
+            source="SUBJID",
+            order=4,
             origin=VariableOrigin.CRF,
         ),
         _mapping(
-            var="AGE", label="Age", dtype="Num",
-            pattern=MappingPattern.DERIVATION, order=6,
+            var="SEX",
+            label="Sex",
+            source="SEX",
+            order=5,
+            codelist="C66731",
+            origin=VariableOrigin.CRF,
+        ),
+        _mapping(
+            var="AGE",
+            label="Age",
+            dtype="Num",
+            pattern=MappingPattern.DERIVATION,
+            order=6,
             core=CoreDesignation.EXP,
             origin=VariableOrigin.DERIVED,
             computational_method="RFSTDTC - BRTHDTC in years",
@@ -128,37 +146,60 @@ def lb_spec() -> DomainMappingSpec:
     """LB spec -- Findings domain with TRANSPOSE pattern."""
     mappings = [
         _mapping(
-            var="STUDYID", label="Study Identifier",
-            pattern=MappingPattern.ASSIGN, assigned="TEST-001", order=1,
+            var="STUDYID",
+            label="Study Identifier",
+            pattern=MappingPattern.ASSIGN,
+            assigned="TEST-001",
+            order=1,
         ),
         _mapping(
-            var="DOMAIN", label="Domain Abbreviation",
-            pattern=MappingPattern.ASSIGN, assigned="LB", order=2,
+            var="DOMAIN",
+            label="Domain Abbreviation",
+            pattern=MappingPattern.ASSIGN,
+            assigned="LB",
+            order=2,
         ),
         _mapping(
-            var="USUBJID", label="Unique Subject Identifier",
-            source="SUBJID", order=3,
+            var="USUBJID",
+            label="Unique Subject Identifier",
+            source="SUBJID",
+            order=3,
         ),
         _mapping(
-            var="LBSEQ", label="Sequence Number", dtype="Num",
-            source="LBSEQ", order=4,
+            var="LBSEQ",
+            label="Sequence Number",
+            dtype="Num",
+            source="LBSEQ",
+            order=4,
         ),
         _mapping(
-            var="LBTESTCD", label="Lab Test Short Name",
-            pattern=MappingPattern.TRANSPOSE, source="columns", order=5,
+            var="LBTESTCD",
+            label="Lab Test Short Name",
+            pattern=MappingPattern.TRANSPOSE,
+            source="columns",
+            order=5,
         ),
         _mapping(
-            var="LBTEST", label="Lab Test or Examination Name",
-            pattern=MappingPattern.TRANSPOSE, source="columns", order=6,
+            var="LBTEST",
+            label="Lab Test or Examination Name",
+            pattern=MappingPattern.TRANSPOSE,
+            source="columns",
+            order=6,
         ),
         _mapping(
-            var="LBORRES", label="Result or Finding in Original Units",
-            pattern=MappingPattern.TRANSPOSE, source="values", order=7,
+            var="LBORRES",
+            label="Result or Finding in Original Units",
+            pattern=MappingPattern.TRANSPOSE,
+            source="values",
+            order=7,
             core=CoreDesignation.EXP,
         ),
         _mapping(
-            var="LBSPEC", label="Specimen Type",
-            source="LBSPEC", order=8, core=CoreDesignation.EXP,
+            var="LBSPEC",
+            label="Specimen Type",
+            source="LBSPEC",
+            order=8,
+            core=CoreDesignation.EXP,
             codelist="C78734",
         ),
     ]
@@ -184,19 +225,23 @@ def lb_spec() -> DomainMappingSpec:
 @pytest.fixture
 def lb_data() -> pd.DataFrame:
     """Synthetic LB data for ValueListDef test code extraction."""
-    return pd.DataFrame({
-        "STUDYID": ["TEST-001"] * 4,
-        "DOMAIN": ["LB"] * 4,
-        "USUBJID": ["TEST-001-001-001"] * 4,
-        "LBSEQ": [1, 2, 3, 4],
-        "LBTESTCD": ["ALB", "ALT", "AST", "WBC"],
-        "LBTEST": [
-            "Albumin", "Alanine Aminotransferase",
-            "Aspartate Aminotransferase", "White Blood Cells",
-        ],
-        "LBORRES": ["4.2", "25", "18", "5.5"],
-        "LBSPEC": ["BLOOD"] * 4,
-    })
+    return pd.DataFrame(
+        {
+            "STUDYID": ["TEST-001"] * 4,
+            "DOMAIN": ["LB"] * 4,
+            "USUBJID": ["TEST-001-001-001"] * 4,
+            "LBSEQ": [1, 2, 3, 4],
+            "LBTESTCD": ["ALB", "ALT", "AST", "WBC"],
+            "LBTEST": [
+                "Albumin",
+                "Alanine Aminotransferase",
+                "Aspartate Aminotransferase",
+                "White Blood Cells",
+            ],
+            "LBORRES": ["4.2", "25", "18", "5.5"],
+            "LBSPEC": ["BLOOD"] * 4,
+        }
+    )
 
 
 # ── Tests ───────────────────────────────────────────────────────────
@@ -206,9 +251,7 @@ def lb_data() -> pd.DataFrame:
 class TestDefineXmlGeneration:
     """Integration tests for define.xml generation."""
 
-    def test_define_xml_multi_domain(
-        self, tmp_path, dm_spec, lb_spec, lb_data
-    ):
+    def test_define_xml_multi_domain(self, tmp_path, dm_spec, lb_spec, lb_data):
         """Generate define.xml with DM + LB and verify structure."""
         output_path = tmp_path / "define.xml"
         ct_ref = load_ct_reference()
@@ -277,9 +320,7 @@ class TestDefineXmlGeneration:
         assert mdv is not None
         assert mdv.get(f"{{{DEFINE_NS}}}DefineVersion") == "2.0.0"
 
-    def test_define_xml_findings_value_list(
-        self, tmp_path, lb_spec, lb_data
-    ):
+    def test_define_xml_findings_value_list(self, tmp_path, lb_spec, lb_data):
         """Verify ValueListDef for Findings domain with TRANSPOSE."""
         output_path = tmp_path / "define.xml"
         ct_ref = load_ct_reference()
@@ -328,10 +369,7 @@ class TestDefineXmlGeneration:
         root = tree.getroot()
 
         # Collect all ItemDef OIDs
-        item_def_oids = {
-            id_el.get("OID")
-            for id_el in root.findall(f".//{{{ODM_NS}}}ItemDef")
-        }
+        item_def_oids = {id_el.get("OID") for id_el in root.findall(f".//{{{ODM_NS}}}ItemDef")}
         assert len(item_def_oids) > 0
 
         # Collect all ItemRef ItemOIDs
@@ -344,15 +382,10 @@ class TestDefineXmlGeneration:
 
         # Every ItemRef should point to an existing ItemDef
         missing_refs = item_ref_oids - item_def_oids
-        assert len(missing_refs) == 0, (
-            f"ItemRef OIDs without matching ItemDef: {missing_refs}"
-        )
+        assert len(missing_refs) == 0, f"ItemRef OIDs without matching ItemDef: {missing_refs}"
 
         # Collect MethodDef OIDs
-        method_oids = {
-            md.get("OID")
-            for md in root.findall(f".//{{{ODM_NS}}}MethodDef")
-        }
+        method_oids = {md.get("OID") for md in root.findall(f".//{{{ODM_NS}}}MethodDef")}
 
         # All MethodOID references should point to existing MethodDefs
         method_refs = {

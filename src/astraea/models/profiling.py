@@ -64,6 +64,4 @@ class DatasetProfile(BaseModel):
     date_variables: list[str] = Field(
         default_factory=list, description="Names of variables detected as dates"
     )
-    edc_columns: list[str] = Field(
-        default_factory=list, description="Names of EDC system columns"
-    )
+    edc_columns: list[str] = Field(default_factory=list, description="Names of EDC system columns")

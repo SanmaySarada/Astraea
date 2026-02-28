@@ -41,11 +41,10 @@ def generate_usubjid(
     components = [str(studyid).strip(), str(siteid).strip(), str(subjid).strip()]
     names = ["studyid", "siteid", "subjid"]
     inputs = [studyid, siteid, subjid]
-    for name, val, raw in zip(names, components, inputs):
+    for name, val, raw in zip(names, components, inputs, strict=True):
         if not val or val.lower() in ("nan", "none"):
             raise ValueError(
-                f"USUBJID component '{name}' is empty or NaN "
-                f"(got '{val}' from input {raw!r})"
+                f"USUBJID component '{name}' is empty or NaN (got '{val}' from input {raw!r})"
             )
     return delimiter.join(components)
 
@@ -86,7 +85,9 @@ def extract_usubjid_components(
     if len(parts) < 3:
         logger.warning(
             "USUBJID '{}' has {} parts (expected 3 with delimiter '{}')",
-            usubjid, len(parts), delimiter,
+            usubjid,
+            len(parts),
+            delimiter,
         )
         return {
             "studyid": parts[0] if len(parts) >= 1 else "",
@@ -98,7 +99,9 @@ def extract_usubjid_components(
     logger.warning(
         "USUBJID '{}' has {} parts (expected 3 with delimiter '{}'); "
         "treating first as studyid, second as siteid, rest as subjid",
-        usubjid, len(parts), delimiter,
+        usubjid,
+        len(parts),
+        delimiter,
     )
     return {
         "studyid": parts[0],
@@ -162,7 +165,8 @@ def generate_usubjid_column(
             n_bad = int(nan_mask.sum())
             logger.warning(
                 "Found {} NaN/empty values in {} -- these will produce invalid USUBJIDs",
-                n_bad, col_label,
+                n_bad,
+                col_label,
             )
 
     result = studyid_series + delimiter + siteid_series + delimiter + subjid_series
@@ -231,8 +235,7 @@ def validate_usubjid_consistency(
 
         if len(delimiter_counts) > 1:
             errors.append(
-                f"Inconsistent USUBJID formats in DM: "
-                f"delimiter counts {dict(delimiter_counts)}"
+                f"Inconsistent USUBJID formats in DM: delimiter counts {dict(delimiter_counts)}"
             )
 
     # Check all non-DM USUBJIDs exist in DM

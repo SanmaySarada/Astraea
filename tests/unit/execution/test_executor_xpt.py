@@ -148,18 +148,14 @@ class TestCrossDomainValidation:
         """No errors when all domain USUBJIDs exist in DM."""
         dm_df = pd.DataFrame({"USUBJID": ["S001", "S002"]})
         ae_df = pd.DataFrame({"USUBJID": ["S001", "S002"]})
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": ae_df}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": ae_df})
         assert errors == []
 
     def test_fail_orphan_subject(self) -> None:
         """Error when a domain has a USUBJID not in DM."""
         dm_df = pd.DataFrame({"USUBJID": ["S001", "S002"]})
         ae_df = pd.DataFrame({"USUBJID": ["S001", "S002", "S003"]})
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": ae_df}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": ae_df})
         assert len(errors) == 1
         assert "S003" in errors[0]
         assert "AE" in errors[0]
@@ -168,9 +164,7 @@ class TestCrossDomainValidation:
         """Error when DM lacks USUBJID column."""
         dm_df = pd.DataFrame({"SUBJID": ["001"]})
         ae_df = pd.DataFrame({"USUBJID": ["S001"]})
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": ae_df}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": ae_df})
         assert len(errors) == 1
         assert "missing USUBJID" in errors[0]
 
@@ -179,9 +173,7 @@ class TestCrossDomainValidation:
         dm_df = pd.DataFrame({"USUBJID": ["S001", "S002"]})
         ae_df = pd.DataFrame({"USUBJID": ["S001", "S002"]})
         cm_df = pd.DataFrame({"USUBJID": ["S001", "S003"]})
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": ae_df, "CM": cm_df}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": ae_df, "CM": cm_df})
         assert len(errors) == 1
         assert "S003" in errors[0]
         assert "CM" in errors[0]

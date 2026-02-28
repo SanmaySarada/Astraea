@@ -107,12 +107,8 @@ class VariableMappingProposal(BaseModel):
     source_variable: str | None = Field(
         default=None, description="Source variable name (None for ASSIGN pattern)"
     )
-    mapping_pattern: MappingPattern = Field(
-        ..., description="How the source maps to the target"
-    )
-    mapping_logic: str = Field(
-        ..., description="Human-readable description of the mapping logic"
-    )
+    mapping_pattern: MappingPattern = Field(..., description="How the source maps to the target")
+    mapping_logic: str = Field(..., description="Human-readable description of the mapping logic")
     derivation_rule: str | None = Field(
         default=None,
         description="Pseudo-code DSL for the execution engine (for DERIVATION, COMBINE, etc.)",
@@ -123,12 +119,8 @@ class VariableMappingProposal(BaseModel):
     codelist_code: str | None = Field(
         default=None, description="NCI codelist code (e.g., 'C66729') if applicable"
     )
-    confidence: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)"
-    )
-    rationale: str = Field(
-        ..., description="Explanation of why this mapping was chosen"
-    )
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)")
+    rationale: str = Field(..., description="Explanation of why this mapping was chosen")
     origin: str | None = Field(
         default=None,
         description="Proposed origin type (CRF, Derived, Assigned, Protocol, eDT)",
@@ -143,9 +135,7 @@ class DomainMappingProposal(BaseModel):
     unmapped variables and SUPPQUAL candidates.
     """
 
-    domain: str = Field(
-        ..., description="Target SDTM domain code (e.g., 'AE', 'DM')"
-    )
+    domain: str = Field(..., description="Target SDTM domain code (e.g., 'AE', 'DM')")
     variable_proposals: list[VariableMappingProposal] = Field(
         default_factory=list, description="Proposed mappings for each SDTM variable"
     )
@@ -157,9 +147,7 @@ class DomainMappingProposal(BaseModel):
         default_factory=list,
         description="Source variables recommended for SUPPQUAL domain",
     )
-    mapping_notes: str = Field(
-        default="", description="General notes about the mapping approach"
-    )
+    mapping_notes: str = Field(default="", description="General notes about the mapping approach")
 
 
 class VariableMapping(BaseModel):
@@ -170,54 +158,32 @@ class VariableMapping(BaseModel):
     against the SDTM-IG domain spec.
     """
 
-    sdtm_variable: str = Field(
-        ..., description="Target SDTM variable name (e.g., 'AETERM')"
-    )
-    sdtm_label: str = Field(
-        ..., description="SDTM variable label from the IG spec"
-    )
-    sdtm_data_type: Literal["Char", "Num"] = Field(
-        ..., description="SDTM data type: Char or Num"
-    )
+    sdtm_variable: str = Field(..., description="Target SDTM variable name (e.g., 'AETERM')")
+    sdtm_label: str = Field(..., description="SDTM variable label from the IG spec")
+    sdtm_data_type: Literal["Char", "Num"] = Field(..., description="SDTM data type: Char or Num")
     core: CoreDesignation = Field(
         ..., description="Core designation from SDTM-IG: Req, Exp, or Perm"
     )
-    source_dataset: str | None = Field(
-        default=None, description="Source dataset name"
-    )
-    source_variable: str | None = Field(
-        default=None, description="Source variable name"
-    )
+    source_dataset: str | None = Field(default=None, description="Source dataset name")
+    source_variable: str | None = Field(default=None, description="Source variable name")
     source_label: str | None = Field(
         default=None, description="Source variable label from SAS metadata"
     )
-    mapping_pattern: MappingPattern = Field(
-        ..., description="How the source maps to the target"
-    )
-    mapping_logic: str = Field(
-        ..., description="Human-readable description of the mapping logic"
-    )
+    mapping_pattern: MappingPattern = Field(..., description="How the source maps to the target")
+    mapping_logic: str = Field(..., description="Human-readable description of the mapping logic")
     derivation_rule: str | None = Field(
         default=None, description="Pseudo-code DSL for the execution engine"
     )
     assigned_value: str | None = Field(
         default=None, description="Constant value for ASSIGN pattern"
     )
-    codelist_code: str | None = Field(
-        default=None, description="NCI codelist code if applicable"
-    )
-    codelist_name: str | None = Field(
-        default=None, description="NCI codelist name if applicable"
-    )
-    confidence: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)"
-    )
+    codelist_code: str | None = Field(default=None, description="NCI codelist code if applicable")
+    codelist_name: str | None = Field(default=None, description="NCI codelist name if applicable")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score (0.0 to 1.0)")
     confidence_level: ConfidenceLevel = Field(
         ..., description="Categorical confidence level derived from score"
     )
-    confidence_rationale: str = Field(
-        ..., description="Explanation of the confidence assessment"
-    )
+    confidence_rationale: str = Field(..., description="Explanation of the confidence assessment")
     notes: str = Field(default="", description="Additional notes about this mapping")
     order: int = Field(
         default=0,
@@ -246,21 +212,11 @@ class DomainMappingSpec(BaseModel):
     used by the dataset generator.
     """
 
-    domain: str = Field(
-        ..., description="SDTM domain code (e.g., 'AE', 'DM')"
-    )
-    domain_label: str = Field(
-        ..., description="Domain description (e.g., 'Adverse Events')"
-    )
-    domain_class: str = Field(
-        ..., description="Domain class (e.g., 'Events', 'Findings')"
-    )
-    structure: str = Field(
-        ..., description="Dataset structure description"
-    )
-    study_id: str = Field(
-        ..., description="Study identifier (e.g., 'PHA022121-C301')"
-    )
+    domain: str = Field(..., description="SDTM domain code (e.g., 'AE', 'DM')")
+    domain_label: str = Field(..., description="Domain description (e.g., 'Adverse Events')")
+    domain_class: str = Field(..., description="Domain class (e.g., 'Events', 'Findings')")
+    structure: str = Field(..., description="Dataset structure description")
+    study_id: str = Field(..., description="Study identifier (e.g., 'PHA022121-C301')")
     source_datasets: list[str] = Field(
         default_factory=list, description="Source datasets used for this domain"
     )
@@ -271,30 +227,18 @@ class DomainMappingSpec(BaseModel):
     variable_mappings: list[VariableMapping] = Field(
         default_factory=list, description="Ordered list of variable mappings"
     )
-    total_variables: int = Field(
-        ..., ge=0, description="Total number of mapped variables"
-    )
-    required_mapped: int = Field(
-        ..., ge=0, description="Number of Req variables with mappings"
-    )
-    expected_mapped: int = Field(
-        ..., ge=0, description="Number of Exp variables with mappings"
-    )
-    high_confidence_count: int = Field(
-        ..., ge=0, description="Number of HIGH confidence mappings"
-    )
+    total_variables: int = Field(..., ge=0, description="Total number of mapped variables")
+    required_mapped: int = Field(..., ge=0, description="Number of Req variables with mappings")
+    expected_mapped: int = Field(..., ge=0, description="Number of Exp variables with mappings")
+    high_confidence_count: int = Field(..., ge=0, description="Number of HIGH confidence mappings")
     medium_confidence_count: int = Field(
         ..., ge=0, description="Number of MEDIUM confidence mappings"
     )
-    low_confidence_count: int = Field(
-        ..., ge=0, description="Number of LOW confidence mappings"
-    )
+    low_confidence_count: int = Field(..., ge=0, description="Number of LOW confidence mappings")
     mapping_timestamp: str = Field(
         ..., description="ISO 8601 timestamp of when mapping was performed"
     )
-    model_used: str = Field(
-        ..., description="LLM model identifier used for mapping"
-    )
+    model_used: str = Field(..., description="LLM model identifier used for mapping")
     unmapped_source_variables: list[str] = Field(
         default_factory=list,
         description="Source variables not mapped to any SDTM target",
@@ -323,9 +267,7 @@ class StudyMetadata(BaseModel):
     that contain site and subject identifiers, needed for USUBJID construction.
     """
 
-    study_id: str = Field(
-        ..., description="Study identifier (e.g., 'PHA022121-C301')"
-    )
+    study_id: str = Field(..., description="Study identifier (e.g., 'PHA022121-C301')")
     site_id_variable: str = Field(
         default="SiteNumber",
         description="Raw variable name containing site identifier",

@@ -193,12 +193,16 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """Output should have exactly the 8 mapped SDTM variables."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         expected_cols = {
-            "STUDYID", "DOMAIN", "USUBJID", "DSSEQ",
-            "DSTERM", "DSDECOD", "DSCAT", "DSSTDTC",
+            "STUDYID",
+            "DOMAIN",
+            "USUBJID",
+            "DSSEQ",
+            "DSTERM",
+            "DSDECOD",
+            "DSCAT",
+            "DSSTDTC",
         }
         assert set(result.columns) == expected_cols
 
@@ -209,9 +213,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """Merged output should have 6 rows (3 from ds + 3 from ds2)."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         assert len(result) == 6
 
     def test_dscat_differentiates_sources(
@@ -221,9 +223,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """DSCAT should contain both 'DISPOSITION EVENT' and 'PROTOCOL MILESTONE'."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         dscat_values = set(result["DSCAT"].unique())
         assert "DISPOSITION EVENT" in dscat_values
         assert "PROTOCOL MILESTONE" in dscat_values
@@ -235,9 +235,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """DSDECOD should contain valid C66727 submission values."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         dsdecod_values = set(result["DSDECOD"].dropna().unique())
         assert dsdecod_values == {"COMPLETED", "ADVERSE EVENT"}
 
@@ -248,9 +246,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """DSSTDTC should be in ISO 8601 format."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         # Check all dates are ISO format (YYYY-MM-DD)
         for val in result["DSSTDTC"].dropna():
             assert len(str(val)) == 10, f"Expected ISO date, got: {val}"
@@ -263,9 +259,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """DSSEQ should be present with correct per-subject sequencing."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         assert "DSSEQ" in result.columns
         # Each subject has 2 records (1 from ds, 1 from ds2) -> seq 1, 2
         for usubjid in result["USUBJID"].unique():
@@ -281,9 +275,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """No NaN columns from mismatched names after alignment."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         # DSTERM comes from DSDECOD column -- should have no NaN
         assert result["DSTERM"].notna().all()
         # DSDECOD comes from DSDECOD_STD via lookup -- should have no NaN
@@ -296,9 +288,7 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """Columns should follow SDTM-IG order."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         cols = list(result.columns)
         assert cols.index("STUDYID") < cols.index("DOMAIN")
         assert cols.index("DOMAIN") < cols.index("USUBJID")
@@ -311,7 +301,5 @@ class TestDSEndToEnd:
         ds_executor: DatasetExecutor,
     ) -> None:
         """EDC system columns should not appear in output."""
-        result = ds_executor.execute(
-            ds_spec, raw_ds_dfs, study_id="PHA022121-C301"
-        )
+        result = ds_executor.execute(ds_spec, raw_ds_dfs, study_id="PHA022121-C301")
         assert "projectid" not in result.columns

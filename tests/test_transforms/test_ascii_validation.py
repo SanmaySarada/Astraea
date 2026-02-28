@@ -17,18 +17,22 @@ class TestValidateAscii:
 
     def test_all_ascii_no_issues(self) -> None:
         """DataFrame with only ASCII data returns empty list."""
-        df = pd.DataFrame({
-            "name": ["Alice", "Bob", "Charlie"],
-            "code": ["A01", "B02", "C03"],
-        })
+        df = pd.DataFrame(
+            {
+                "name": ["Alice", "Bob", "Charlie"],
+                "code": ["A01", "B02", "C03"],
+            }
+        )
         issues = validate_ascii(df)
         assert issues == []
 
     def test_detects_non_ascii(self) -> None:
         """DataFrame with curly quotes produces issue entries."""
-        df = pd.DataFrame({
-            "text": ["normal", "has \u201csmart\u201d quotes", "ok"],
-        })
+        df = pd.DataFrame(
+            {
+                "text": ["normal", "has \u201csmart\u201d quotes", "ok"],
+            }
+        )
         issues = validate_ascii(df)
         assert len(issues) == 1
         assert issues[0]["column"] == "text"
@@ -39,36 +43,44 @@ class TestValidateAscii:
     def test_issue_cap(self) -> None:
         """DataFrame with >100 non-ASCII values returns exactly 100 issues."""
         # Create 150 rows each with a non-ASCII character
-        df = pd.DataFrame({
-            "text": [f"value\u00b0{i}" for i in range(150)],
-        })
+        df = pd.DataFrame(
+            {
+                "text": [f"value\u00b0{i}" for i in range(150)],
+            }
+        )
         issues = validate_ascii(df)
         assert len(issues) == _MAX_ISSUES
 
     def test_numeric_columns_skipped(self) -> None:
         """Numeric columns are not checked for ASCII."""
-        df = pd.DataFrame({
-            "num_int": [1, 2, 3],
-            "num_float": [1.0, 2.0, 3.0],
-            "text": ["a", "b", "c"],
-        })
+        df = pd.DataFrame(
+            {
+                "num_int": [1, 2, 3],
+                "num_float": [1.0, 2.0, 3.0],
+                "text": ["a", "b", "c"],
+            }
+        )
         issues = validate_ascii(df)
         assert issues == []
 
     def test_null_values_skipped(self) -> None:
         """NaN/None values do not produce issues."""
-        df = pd.DataFrame({
-            "text": ["hello", None, pd.NA],
-        })
+        df = pd.DataFrame(
+            {
+                "text": ["hello", None, pd.NA],
+            }
+        )
         issues = validate_ascii(df)
         assert issues == []
 
     def test_multiple_columns(self) -> None:
         """Issues across multiple columns are detected."""
-        df = pd.DataFrame({
-            "col_a": ["fine", "has \u2013 dash"],
-            "col_b": ["\u00b0C", "ok"],
-        })
+        df = pd.DataFrame(
+            {
+                "col_a": ["fine", "has \u2013 dash"],
+                "col_b": ["\u00b0C", "ok"],
+            }
+        )
         issues = validate_ascii(df)
         assert len(issues) == 2
         columns = {i["column"] for i in issues}

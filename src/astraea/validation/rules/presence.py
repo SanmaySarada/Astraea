@@ -48,9 +48,7 @@ class RequiredVariableRule(ValidationRule):
         if domain_spec is None:
             return results
 
-        required_vars = [
-            v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ
-        ]
+        required_vars = [v.name for v in domain_spec.variables if v.core == CoreDesignation.REQ]
         df_cols = {str(c).upper() for c in df.columns}
 
         for var_name in required_vars:
@@ -63,10 +61,7 @@ class RequiredVariableRule(ValidationRule):
                         severity=RuleSeverity.ERROR,
                         domain=domain,
                         variable=var_name,
-                        message=(
-                            f"Required variable {var_name} is missing "
-                            f"from {domain} dataset"
-                        ),
+                        message=(f"Required variable {var_name} is missing from {domain} dataset"),
                         affected_count=len(df),
                         fix_suggestion=f"Add {var_name} column to the {domain} dataset",
                         p21_equivalent="SD0083",
@@ -103,9 +98,7 @@ class ExpectedVariableRule(ValidationRule):
         if domain_spec is None:
             return results
 
-        expected_vars = [
-            v.name for v in domain_spec.variables if v.core == CoreDesignation.EXP
-        ]
+        expected_vars = [v.name for v in domain_spec.variables if v.core == CoreDesignation.EXP]
         df_cols = {str(c).upper() for c in df.columns}
 
         for var_name in expected_vars:
@@ -118,10 +111,7 @@ class ExpectedVariableRule(ValidationRule):
                         severity=RuleSeverity.WARNING,
                         domain=domain,
                         variable=var_name,
-                        message=(
-                            f"Expected variable {var_name} is missing "
-                            f"from {domain} dataset"
-                        ),
+                        message=(f"Expected variable {var_name} is missing from {domain} dataset"),
                         affected_count=0,
                         fix_suggestion=(
                             f"Consider adding {var_name} to the {domain} dataset "
@@ -223,10 +213,7 @@ class USUBJIDPresentRule(ValidationRule):
                     severity=RuleSeverity.ERROR,
                     domain=domain,
                     variable="USUBJID",
-                    message=(
-                        f"USUBJID contains {null_count} null value(s) "
-                        f"in {domain} dataset"
-                    ),
+                    message=(f"USUBJID contains {null_count} null value(s) in {domain} dataset"),
                     affected_count=null_count,
                     fix_suggestion="Ensure USUBJID derivation populates all rows",
                 )

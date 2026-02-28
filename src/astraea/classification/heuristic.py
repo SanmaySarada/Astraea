@@ -109,9 +109,7 @@ def score_by_filename(dataset_name: str) -> list[HeuristicScore]:
                 best_score = 1.0
                 best_signal = f"filename exact match: {pattern}"
                 break
-            elif name.startswith(pattern + "_") or _is_segment_match(
-                name, pattern
-            ):
+            elif name.startswith(pattern + "_") or _is_segment_match(name, pattern):
                 if best_score < 0.7:
                     best_score = 0.7
                     best_signal = f"filename contains: {pattern}"
@@ -148,11 +146,7 @@ def score_by_variables(
         domains with overlap > 0.1.
     """
     # Get clinical variable names (non-EDC), uppercased
-    clinical_vars = frozenset(
-        vp.name.upper()
-        for vp in profile.variables
-        if not vp.is_edc_column
-    )
+    clinical_vars = frozenset(vp.name.upper() for vp in profile.variables if not vp.is_edc_column)
 
     scores: list[HeuristicScore] = []
 
@@ -162,9 +156,7 @@ def score_by_variables(
             continue
 
         # Get domain-specific variables (excluding common identifiers)
-        domain_vars = frozenset(
-            v.name for v in spec.variables if v.name not in _COMMON_IDENTIFIERS
-        )
+        domain_vars = frozenset(v.name for v in spec.variables if v.name not in _COMMON_IDENTIFIERS)
 
         if not domain_vars:
             continue
@@ -177,9 +169,7 @@ def score_by_variables(
                 HeuristicScore(
                     domain=domain,
                     score=round(overlap_ratio, 3),
-                    signals=[
-                        f"variable overlap: {len(overlap)}/{len(domain_vars)}"
-                    ],
+                    signals=[f"variable overlap: {len(overlap)}/{len(domain_vars)}"],
                 )
             )
 

@@ -272,9 +272,7 @@ class FDAB009Rule(ValidationRule):
                 cd_str = str(cd)
                 testcd_to_test.setdefault(cd_str, set()).add(str(test))
 
-        violations_cd = {
-            cd: tests for cd, tests in testcd_to_test.items() if len(tests) > 1
-        }
+        violations_cd = {cd: tests for cd, tests in testcd_to_test.items() if len(tests) > 1}
         if violations_cd:
             details = "; ".join(
                 f"{cd} -> {sorted(tests)}" for cd, tests in sorted(violations_cd.items())
@@ -305,9 +303,7 @@ class FDAB009Rule(ValidationRule):
                 test_str = str(test)
                 test_to_testcd.setdefault(test_str, set()).add(str(cd))
 
-        violations_test = {
-            test: cds for test, cds in test_to_testcd.items() if len(cds) > 1
-        }
+        violations_test = {test: cds for test, cds in test_to_testcd.items() if len(cds) > 1}
         if violations_test:
             details = "; ".join(
                 f"{test} -> {sorted(cds)}" for test, cds in sorted(violations_test.items())
@@ -370,16 +366,12 @@ class FDAB030Rule(ValidationRule):
             if pd.notna(cd) and pd.notna(unit):
                 testcd_units.setdefault(str(cd), set()).add(str(unit))
 
-        violations = {
-            cd: units for cd, units in testcd_units.items() if len(units) > 1
-        }
+        violations = {cd: units for cd, units in testcd_units.items() if len(units) > 1}
 
         if not violations:
             return []
 
-        details = "; ".join(
-            f"{cd}: {sorted(units)}" for cd, units in sorted(violations.items())
-        )
+        details = "; ".join(f"{cd}: {sorted(units)}" for cd, units in sorted(violations.items()))
         return [
             RuleResult(
                 rule_id=self.rule_id,
@@ -389,8 +381,7 @@ class FDAB030Rule(ValidationRule):
                 domain=domain,
                 variable=stresu_col,
                 message=(
-                    f"{len(violations)} TESTCD(s) have inconsistent {stresu_col} values: "
-                    f"{details}"
+                    f"{len(violations)} TESTCD(s) have inconsistent {stresu_col} values: {details}"
                 ),
                 affected_count=len(violations),
                 fix_suggestion=f"Ensure {stresu_col} is consistent for each {testcd_col}",

@@ -45,9 +45,19 @@ REQUIRED_DV_VARIABLES = {"STUDYID", "DOMAIN", "USUBJID", "DVSEQ", "DVTERM"}
 
 # Non-standard source column names in dv.sas7bdat
 NON_STANDARD_SOURCE_VARS = {
-    "Description", "Category", "Date_Occurred", "Subject_ID",
-    "Site_Number", "Site_Name", "Causality", "Status", "Source",
-    "Major_Minor", "Date_Reported", "Deviation_Id", "PD_Code",
+    "Description",
+    "Category",
+    "Date_Occurred",
+    "Subject_ID",
+    "Site_Number",
+    "Site_Name",
+    "Causality",
+    "Status",
+    "Source",
+    "Major_Minor",
+    "Date_Reported",
+    "Deviation_Id",
+    "PD_Code",
 }
 
 # Skip condition
@@ -229,8 +239,7 @@ class TestDVMappingEndToEnd:
         mapped_vars = {m.sdtm_variable for m in dv_mapping_result.variable_mappings}
         missing = REQUIRED_DV_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required DV variables: {missing}. "
-            f"Mapped variables: {sorted(mapped_vars)}"
+            f"Missing required DV variables: {missing}. Mapped variables: {sorted(mapped_vars)}"
         )
 
     def test_dates_mapped(self, dv_mapping_result: DomainMappingSpec) -> None:

@@ -8,7 +8,6 @@ import pytest
 from astraea.execution.suppqual import generate_suppqual, validate_suppqual_integrity
 from astraea.models.suppqual import SuppVariable
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -74,8 +73,16 @@ class TestGenerateSuppqual:
         result = generate_suppqual(parent_ae_df, "AE", "STUDY1", supp_vars)
 
         expected_cols = [
-            "STUDYID", "RDOMAIN", "USUBJID", "IDVAR",
-            "IDVARVAL", "QNAM", "QLABEL", "QVAL", "QORIG", "QEVAL",
+            "STUDYID",
+            "RDOMAIN",
+            "USUBJID",
+            "IDVAR",
+            "IDVARVAL",
+            "QNAM",
+            "QLABEL",
+            "QVAL",
+            "QORIG",
+            "QEVAL",
         ]
         assert list(result.columns) == expected_cols
 
@@ -195,9 +202,7 @@ class TestGenerateSuppqual:
 
     def test_empty_parent_df(self, supp_vars: list[SuppVariable]) -> None:
         """Empty parent DataFrame produces empty SUPPQUAL."""
-        parent_df = pd.DataFrame(
-            columns=["USUBJID", "AESEQ", "AESEV", "AEACNOTH"]
-        )
+        parent_df = pd.DataFrame(columns=["USUBJID", "AESEQ", "AESEV", "AEACNOTH"])
         result = generate_suppqual(parent_df, "AE", "STUDY1", supp_vars)
 
         assert result.empty
@@ -207,9 +212,7 @@ class TestGenerateSuppqual:
         self, parent_ae_df: pd.DataFrame, supp_vars: list[SuppVariable]
     ) -> None:
         """STUDYID is set to the provided study_id."""
-        result = generate_suppqual(
-            parent_ae_df, "AE", "MY-STUDY-123", supp_vars
-        )
+        result = generate_suppqual(parent_ae_df, "AE", "MY-STUDY-123", supp_vars)
 
         assert all(result["STUDYID"] == "MY-STUDY-123")
 
@@ -370,8 +373,16 @@ class TestValidateSuppqualIntegrity:
         )
         supp_df = pd.DataFrame(
             columns=[
-                "STUDYID", "RDOMAIN", "USUBJID", "IDVAR",
-                "IDVARVAL", "QNAM", "QLABEL", "QVAL", "QORIG", "QEVAL",
+                "STUDYID",
+                "RDOMAIN",
+                "USUBJID",
+                "IDVAR",
+                "IDVARVAL",
+                "QNAM",
+                "QLABEL",
+                "QVAL",
+                "QORIG",
+                "QEVAL",
             ]
         )
         errors = validate_suppqual_integrity(supp_df, parent_df, "AE")

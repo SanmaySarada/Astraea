@@ -30,7 +30,6 @@ from astraea.models.ecrf import ECRFField, ECRFForm
 from astraea.models.mapping import (
     ConfidenceLevel,
     DomainMappingSpec,
-    MappingPattern,
     StudyMetadata,
 )
 from astraea.models.profiling import DatasetProfile
@@ -46,7 +45,13 @@ STUDY_ID = "PHA022121-C301"
 
 # Required EG variables per SDTM-IG v3.4
 REQUIRED_EG_VARIABLES = {
-    "STUDYID", "DOMAIN", "USUBJID", "EGSEQ", "EGTESTCD", "EGTEST", "EGORRES",
+    "STUDYID",
+    "DOMAIN",
+    "USUBJID",
+    "EGSEQ",
+    "EGTESTCD",
+    "EGTEST",
+    "EGORRES",
 }
 
 # Skip condition: no API key means we cannot run LLM calls
@@ -280,17 +285,14 @@ class TestEGMappingEndToEnd:
     def test_eg_mapping_has_tpt(self, eg_mapping_result: DomainMappingSpec) -> None:
         """Verify EGTPT (time point reference) mapping exists."""
         mapped_vars = {m.sdtm_variable for m in eg_mapping_result.variable_mappings}
-        assert "EGTPT" in mapped_vars, (
-            f"EGTPT not found in mapped variables: {sorted(mapped_vars)}"
-        )
+        assert "EGTPT" in mapped_vars, f"EGTPT not found in mapped variables: {sorted(mapped_vars)}"
 
     def test_eg_mapping_required_vars(self, eg_mapping_result: DomainMappingSpec) -> None:
         """Verify all REQ variables present."""
         mapped_vars = {m.sdtm_variable for m in eg_mapping_result.variable_mappings}
         missing = REQUIRED_EG_VARIABLES - mapped_vars
         assert not missing, (
-            f"Missing required EG variables: {missing}. "
-            f"Mapped: {sorted(mapped_vars)}"
+            f"Missing required EG variables: {missing}. Mapped: {sorted(mapped_vars)}"
         )
 
     def test_eg_mapping_domain_class(self, eg_mapping_result: DomainMappingSpec) -> None:
@@ -303,9 +305,7 @@ class TestEGMappingEndToEnd:
         """Verify average confidence >= 0.6."""
         confidences = [m.confidence for m in eg_mapping_result.variable_mappings]
         avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
-        assert avg_conf >= 0.6, (
-            f"Average confidence {avg_conf:.2f} is below 0.6 threshold"
-        )
+        assert avg_conf >= 0.6, f"Average confidence {avg_conf:.2f} is below 0.6 threshold"
 
 
 @pytest.mark.integration
@@ -313,22 +313,17 @@ class TestEGMappingEndToEnd:
 class TestEGCTValidation:
     """Validate controlled terminology references in EG mapping output."""
 
-    def test_eg_mapping_position_codelist(
-        self, eg_mapping_result: DomainMappingSpec
-    ) -> None:
+    def test_eg_mapping_position_codelist(self, eg_mapping_result: DomainMappingSpec) -> None:
         """If EGPOS mapping exists, verify it references CT codelist C71148 (position).
 
         C71148 is the CDISC CT codelist for Position of Subject during
         data collection (SUPINE, SITTING, STANDING, etc.).
         """
-        egpos = [
-            m for m in eg_mapping_result.variable_mappings if m.sdtm_variable == "EGPOS"
-        ]
+        egpos = [m for m in eg_mapping_result.variable_mappings if m.sdtm_variable == "EGPOS"]
         if egpos:
             assert egpos[0].codelist_code is not None, (
                 "EGPOS should reference a CT codelist (C71148 for Position)"
             )
             assert egpos[0].codelist_code == "C71148", (
-                f"EGPOS codelist should be C71148 (Position), "
-                f"got {egpos[0].codelist_code}"
+                f"EGPOS codelist should be C71148 (Position), got {egpos[0].codelist_code}"
             )

@@ -200,7 +200,11 @@ class TestValidationRule:
         )
         # We pass None for sdtm_ref and ct_ref since AlwaysFailRule doesn't use them
         results = rule.evaluate(
-            domain="AE", df=df, spec=spec, sdtm_ref=None, ct_ref=None  # type: ignore[arg-type]
+            domain="AE",
+            df=df,
+            spec=spec,
+            sdtm_ref=None,
+            ct_ref=None,  # type: ignore[arg-type]
         )
         assert len(results) == 1
         assert results[0].domain == "AE"
@@ -230,6 +234,10 @@ class TestValidationRule:
             model_used="test",
         )
         results = rule.evaluate(
-            domain="DM", df=df, spec=spec, sdtm_ref=None, ct_ref=None  # type: ignore[arg-type]
+            domain="DM",
+            df=df,
+            spec=spec,
+            sdtm_ref=None,
+            ct_ref=None,  # type: ignore[arg-type]
         )
         assert results == []

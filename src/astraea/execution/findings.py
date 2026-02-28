@@ -27,9 +27,7 @@ from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
 
 
-def normalize_lab_columns(
-    df: pd.DataFrame, source_name: str
-) -> pd.DataFrame:
+def normalize_lab_columns(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """Normalize column names for lab source DataFrames.
 
     Handles two main lab source patterns:
@@ -66,16 +64,8 @@ def normalize_lab_columns(
 
     # Ensure LBTESTCD exists: derive from LBTEST if missing
     if "LBTESTCD" not in result.columns and "LBTEST" in result.columns:
-        result["LBTESTCD"] = (
-            result["LBTEST"]
-            .astype(str)
-            .str[:8]
-            .str.upper()
-            .str.strip()
-        )
-        logger.debug(
-            "Created LBTESTCD from LBTEST for source '{}'", source_name
-        )
+        result["LBTESTCD"] = result["LBTEST"].astype(str).str[:8].str.upper().str.strip()
+        logger.debug("Created LBTESTCD from LBTEST for source '{}'", source_name)
 
     return result
 
@@ -137,9 +127,7 @@ def normalize_ecg_columns(
     return result
 
 
-def normalize_vs_columns(
-    df: pd.DataFrame, source_name: str
-) -> pd.DataFrame:
+def normalize_vs_columns(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """Normalize column names for vital signs source DataFrames.
 
     Handles common CRF patterns for VS data:
@@ -177,24 +165,14 @@ def normalize_vs_columns(
         mask = result["VSTIM"].notna() & (result["VSTIM"].astype(str).str.strip() != "")
         if mask.any():
             result.loc[mask, "VSDTC"] = (
-                result.loc[mask, "VSDTC"].astype(str)
-                + "T"
-                + result.loc[mask, "VSTIM"].astype(str)
+                result.loc[mask, "VSDTC"].astype(str) + "T" + result.loc[mask, "VSTIM"].astype(str)
             )
         result = result.drop(columns=["VSTIM"])
 
     # Ensure VSTESTCD exists: derive from VSTEST if missing
     if "VSTESTCD" not in result.columns and "VSTEST" in result.columns:
-        result["VSTESTCD"] = (
-            result["VSTEST"]
-            .astype(str)
-            .str[:8]
-            .str.upper()
-            .str.strip()
-        )
-        logger.debug(
-            "Created VSTESTCD from VSTEST for source '{}'", source_name
-        )
+        result["VSTESTCD"] = result["VSTEST"].astype(str).str[:8].str.upper().str.strip()
+        logger.debug("Created VSTESTCD from VSTEST for source '{}'", source_name)
 
     return result
 
@@ -232,8 +210,15 @@ def merge_findings_sources(
     domain_upper = domain.upper()
     # Standard SDTM Findings columns share the domain prefix or are common identifiers
     common_sdtm_cols = {
-        "STUDYID", "DOMAIN", "USUBJID", "VISITNUM", "VISIT", "EPOCH",
-        "Subject", "SiteNumber", "InstanceName",
+        "STUDYID",
+        "DOMAIN",
+        "USUBJID",
+        "VISITNUM",
+        "VISIT",
+        "EPOCH",
+        "Subject",
+        "SiteNumber",
+        "InstanceName",
     }
     supp_candidates = []
     for col in merged.columns:

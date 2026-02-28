@@ -205,9 +205,7 @@ def mock_ct() -> MagicMock:
 
 
 class TestExecutorBasic:
-    def test_executor_basic_dm(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_basic_dm(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """Execute DM spec and verify output columns."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
@@ -222,18 +220,14 @@ class TestExecutorBasic:
         assert "SEX" in result.columns
         assert len(result) == 2
 
-    def test_executor_assign_pattern(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_assign_pattern(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """STUDYID column should be constant 'TEST-001' for all rows."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
         result = executor.execute(spec, {"dm": raw_dm_df}, study_id="TEST-001")
         assert all(result["STUDYID"] == "TEST-001")
 
-    def test_executor_direct_pattern(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_direct_pattern(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """SUBJID should match raw Subject column."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
@@ -242,9 +236,7 @@ class TestExecutorBasic:
 
 
 class TestExecutorColumnOrder:
-    def test_executor_variable_order(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_variable_order(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """Columns should be ordered by mapping order field."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
@@ -254,9 +246,7 @@ class TestExecutorColumnOrder:
         assert cols.index("DOMAIN") < cols.index("SUBJID")
         assert cols.index("SUBJID") < cols.index("SEX")
 
-    def test_executor_drops_unmapped(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_drops_unmapped(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """Raw columns not in spec should not appear in output."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
@@ -267,9 +257,7 @@ class TestExecutorColumnOrder:
 
 
 class TestExecutorSeq:
-    def test_executor_seq_not_in_dm(
-        self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock
-    ) -> None:
+    def test_executor_seq_not_in_dm(self, raw_dm_df: pd.DataFrame, mock_ct: MagicMock) -> None:
         """DM domain should NOT have DMSEQ."""
         executor = DatasetExecutor(ct_ref=mock_ct)
         spec = _make_dm_spec()
@@ -278,9 +266,7 @@ class TestExecutorSeq:
 
 
 class TestExecutorCrossDomain:
-    def test_executor_with_cross_domain_dy(
-        self, raw_ae_df: pd.DataFrame
-    ) -> None:
+    def test_executor_with_cross_domain_dy(self, raw_ae_df: pd.DataFrame) -> None:
         """Verify --DY derivation with RFSTDTC lookup for AE domain."""
         executor = DatasetExecutor()
         spec = _make_ae_spec()

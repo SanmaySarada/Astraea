@@ -132,9 +132,7 @@ class TestLearningVectorStoreCounts:
         }
 
         vstore.add_example(_make_example())
-        vstore.add_example(
-            _make_example(sdtm_variable="AEDECOD", mapping_logic="Derivation")
-        )
+        vstore.add_example(_make_example(sdtm_variable="AEDECOD", mapping_logic="Derivation"))
         vstore.add_correction(_make_correction())
 
         counts = vstore.get_collection_counts()

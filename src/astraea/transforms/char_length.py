@@ -33,12 +33,7 @@ def optimize_char_lengths(df: pd.DataFrame) -> dict[str, int]:
         if len(non_null) == 0:
             widths[col] = 1
         else:
-            max_len = (
-                non_null.astype(str)
-                .str.encode("ascii", errors="replace")
-                .str.len()
-                .max()
-            )
+            max_len = non_null.astype(str).str.encode("ascii", errors="replace").str.len().max()
             widths[col] = max(1, int(max_len))
 
     logger.debug(

@@ -31,9 +31,7 @@ class ValidationReport(BaseModel):
     domains_validated: list[str] = Field(
         default_factory=list, description="List of domain codes validated"
     )
-    results: list[RuleResult] = Field(
-        default_factory=list, description="All validation findings"
-    )
+    results: list[RuleResult] = Field(default_factory=list, description="All validation findings")
     total_rules_run: int = Field(
         default=0, description="Total number of rule evaluations performed"
     )
@@ -48,9 +46,7 @@ class ValidationReport(BaseModel):
         default=True,
         description="True if effective_error_count is zero -- study can be submitted",
     )
-    generated_at: str = Field(
-        default="", description="ISO 8601 timestamp of report generation"
-    )
+    generated_at: str = Field(default="", description="ISO 8601 timestamp of report generation")
     summary_by_domain: dict[str, dict[str, int]] = Field(
         default_factory=dict,
         description="Domain -> {errors, warnings, notices} counts",
@@ -83,9 +79,7 @@ class ValidationReport(BaseModel):
         """Return all results flagged as known false positives."""
         return [r for r in self.results if r.known_false_positive]
 
-    def flag_known_false_positives(
-        self, whitelist_path: Path | None = None
-    ) -> None:
+    def flag_known_false_positives(self, whitelist_path: Path | None = None) -> None:
         """Flag matching RuleResults as known false positives.
 
         Loads the whitelist from JSON and marks matching results. A result
@@ -156,15 +150,9 @@ class ValidationReport(BaseModel):
         for d in domains:
             domain_results = [r for r in results if r.domain == d]
             summary_by_domain[d] = {
-                "errors": sum(
-                    1 for r in domain_results if r.severity == RuleSeverity.ERROR
-                ),
-                "warnings": sum(
-                    1 for r in domain_results if r.severity == RuleSeverity.WARNING
-                ),
-                "notices": sum(
-                    1 for r in domain_results if r.severity == RuleSeverity.NOTICE
-                ),
+                "errors": sum(1 for r in domain_results if r.severity == RuleSeverity.ERROR),
+                "warnings": sum(1 for r in domain_results if r.severity == RuleSeverity.WARNING),
+                "notices": sum(1 for r in domain_results if r.severity == RuleSeverity.NOTICE),
             }
 
         # Category-level breakdown
@@ -173,23 +161,15 @@ class ValidationReport(BaseModel):
             cat_results = [r for r in results if r.category == cat]
             if cat_results:
                 summary_by_category[cat.value] = {
-                    "errors": sum(
-                        1 for r in cat_results if r.severity == RuleSeverity.ERROR
-                    ),
-                    "warnings": sum(
-                        1 for r in cat_results if r.severity == RuleSeverity.WARNING
-                    ),
-                    "notices": sum(
-                        1 for r in cat_results if r.severity == RuleSeverity.NOTICE
-                    ),
+                    "errors": sum(1 for r in cat_results if r.severity == RuleSeverity.ERROR),
+                    "warnings": sum(1 for r in cat_results if r.severity == RuleSeverity.WARNING),
+                    "notices": sum(1 for r in cat_results if r.severity == RuleSeverity.NOTICE),
                 }
 
         # Pass rate: % of domains with zero errors
         if domains:
             domains_with_errors = sum(
-                1
-                for d in domains
-                if summary_by_domain.get(d, {}).get("errors", 0) > 0
+                1 for d in domains if summary_by_domain.get(d, {}).get("errors", 0) > 0
             )
             pass_rate = (len(domains) - domains_with_errors) / len(domains)
         else:
@@ -276,8 +256,7 @@ class ValidationReport(BaseModel):
             for cat in sorted(self.summary_by_category):
                 counts = self.summary_by_category[cat]
                 lines.append(
-                    f"| {cat} | {counts['errors']} | "
-                    f"{counts['warnings']} | {counts['notices']} |"
+                    f"| {cat} | {counts['errors']} | {counts['warnings']} | {counts['notices']} |"
                 )
             lines.append("")
 
@@ -285,9 +264,9 @@ class ValidationReport(BaseModel):
         sorted_results = sorted(
             self.results,
             key=lambda r: (
-                0 if r.severity == RuleSeverity.ERROR else (
-                    1 if r.severity == RuleSeverity.WARNING else 2
-                ),
+                0
+                if r.severity == RuleSeverity.ERROR
+                else (1 if r.severity == RuleSeverity.WARNING else 2),
                 -r.affected_count,
             ),
         )
@@ -323,9 +302,7 @@ class ValidationReport(BaseModel):
                 domain_str = r.domain or "-"
                 var_str = r.variable or "-"
                 reason = r.known_false_positive_reason or "-"
-                lines.append(
-                    f"| {r.rule_id} | {domain_str} | {var_str} | {reason} |"
-                )
+                lines.append(f"| {r.rule_id} | {domain_str} | {var_str} | {reason} |")
             lines.append("")
 
         # Submission readiness assessment
@@ -333,8 +310,7 @@ class ValidationReport(BaseModel):
         lines.append("")
         if self.submission_ready:
             lines.append(
-                "**READY** -- No blocking errors found. "
-                "Study datasets are ready for submission."
+                "**READY** -- No blocking errors found. Study datasets are ready for submission."
             )
         else:
             blocking = [
@@ -342,9 +318,7 @@ class ValidationReport(BaseModel):
                 for r in self.results
                 if r.severity == RuleSeverity.ERROR and not r.known_false_positive
             ]
-            lines.append(
-                f"**NOT READY** -- {len(blocking)} blocking error(s) must be resolved:"
-            )
+            lines.append(f"**NOT READY** -- {len(blocking)} blocking error(s) must be resolved:")
             lines.append("")
             for r in blocking:
                 domain_str = f" [{r.domain}]" if r.domain else ""

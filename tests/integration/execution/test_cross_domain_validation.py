@@ -27,6 +27,7 @@ from astraea.reference import load_ct_reference, load_sdtm_reference
 # Helper
 # ---------------------------------------------------------------------------
 
+
 def _mapping(
     *,
     var: str,
@@ -64,19 +65,22 @@ def _mapping(
 # Shared fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def dm_df() -> pd.DataFrame:
     """Pre-built DM DataFrame with 3 subjects."""
-    return pd.DataFrame({
-        "STUDYID": ["PHA022121-C301"] * 3,
-        "DOMAIN": ["DM"] * 3,
-        "USUBJID": [
-            "PHA022121-C301-101-001",
-            "PHA022121-C301-101-002",
-            "PHA022121-C301-102-003",
-        ],
-        "RFSTDTC": ["2022-01-01", "2022-01-15", "2022-02-01"],
-    })
+    return pd.DataFrame(
+        {
+            "STUDYID": ["PHA022121-C301"] * 3,
+            "DOMAIN": ["DM"] * 3,
+            "USUBJID": [
+                "PHA022121-C301-101-001",
+                "PHA022121-C301-101-002",
+                "PHA022121-C301-102-003",
+            ],
+            "RFSTDTC": ["2022-01-01", "2022-01-15", "2022-02-01"],
+        }
+    )
 
 
 @pytest.fixture()
@@ -88,101 +92,149 @@ def cross_domain() -> CrossDomainContext:
             "PHA022121-C301-101-002": "2022-01-15",
             "PHA022121-C301-102-003": "2022-02-01",
         },
-        se_data=pd.DataFrame({
-            "USUBJID": [
-                "PHA022121-C301-101-001", "PHA022121-C301-101-001",
-                "PHA022121-C301-101-002", "PHA022121-C301-101-002",
-                "PHA022121-C301-102-003", "PHA022121-C301-102-003",
-            ],
-            "EPOCH": [
-                "SCREENING", "TREATMENT",
-                "SCREENING", "TREATMENT",
-                "SCREENING", "TREATMENT",
-            ],
-            "SESTDTC": [
-                "2021-12-15", "2022-01-01",
-                "2021-12-20", "2022-01-15",
-                "2022-01-10", "2022-02-01",
-            ],
-            "SEENDTC": [
-                "2021-12-31", "2022-06-30",
-                "2022-01-14", "2022-06-30",
-                "2022-01-31", "2022-06-30",
-            ],
-        }),
+        se_data=pd.DataFrame(
+            {
+                "USUBJID": [
+                    "PHA022121-C301-101-001",
+                    "PHA022121-C301-101-001",
+                    "PHA022121-C301-101-002",
+                    "PHA022121-C301-101-002",
+                    "PHA022121-C301-102-003",
+                    "PHA022121-C301-102-003",
+                ],
+                "EPOCH": [
+                    "SCREENING",
+                    "TREATMENT",
+                    "SCREENING",
+                    "TREATMENT",
+                    "SCREENING",
+                    "TREATMENT",
+                ],
+                "SESTDTC": [
+                    "2021-12-15",
+                    "2022-01-01",
+                    "2021-12-20",
+                    "2022-01-15",
+                    "2022-01-10",
+                    "2022-02-01",
+                ],
+                "SEENDTC": [
+                    "2021-12-31",
+                    "2022-06-30",
+                    "2022-01-14",
+                    "2022-06-30",
+                    "2022-01-31",
+                    "2022-06-30",
+                ],
+            }
+        ),
     )
 
 
 @pytest.fixture()
 def raw_ae_df() -> pd.DataFrame:
     """Minimal raw AE data for 3 subjects with ISO dates."""
-    return pd.DataFrame({
-        "Subject": ["001", "002", "003"],
-        "SiteNumber": ["101", "101", "102"],
-        "AETERM": ["Headache", "Nausea", "Fatigue"],
-        "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "002", "003"],
+            "SiteNumber": ["101", "101", "102"],
+            "AETERM": ["Headache", "Nausea", "Fatigue"],
+            "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15"],
+        }
+    )
 
 
 @pytest.fixture()
 def ae_with_orphan_df() -> pd.DataFrame:
     """AE data with an orphan subject 999 not in DM."""
-    return pd.DataFrame({
-        "Subject": ["001", "002", "003", "999"],
-        "SiteNumber": ["101", "101", "102", "999"],
-        "AETERM": ["Headache", "Nausea", "Fatigue", "Dizziness"],
-        "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15", "2022-04-01"],
-    })
+    return pd.DataFrame(
+        {
+            "Subject": ["001", "002", "003", "999"],
+            "SiteNumber": ["101", "101", "102", "999"],
+            "AETERM": ["Headache", "Nausea", "Fatigue", "Dizziness"],
+            "AESTDTC": ["2022-01-15", "2022-02-01", "2022-03-15", "2022-04-01"],
+        }
+    )
 
 
 def _ae_base_spec(*, include_dy: bool = False, include_epoch: bool = False) -> DomainMappingSpec:
     """Build an AE spec with optional --DY and EPOCH mappings."""
     mappings = [
         _mapping(
-            var="STUDYID", pattern=MappingPattern.ASSIGN,
-            label="Study Identifier", assigned="PHA022121-C301",
-            order=1, origin=VariableOrigin.ASSIGNED,
+            var="STUDYID",
+            pattern=MappingPattern.ASSIGN,
+            label="Study Identifier",
+            assigned="PHA022121-C301",
+            order=1,
+            origin=VariableOrigin.ASSIGNED,
         ),
         _mapping(
-            var="DOMAIN", pattern=MappingPattern.ASSIGN,
-            label="Domain Abbreviation", assigned="AE",
-            order=2, origin=VariableOrigin.ASSIGNED,
+            var="DOMAIN",
+            pattern=MappingPattern.ASSIGN,
+            label="Domain Abbreviation",
+            assigned="AE",
+            order=2,
+            origin=VariableOrigin.ASSIGNED,
         ),
         _mapping(
-            var="USUBJID", pattern=MappingPattern.DERIVATION,
-            label="Unique Subject Identifier", derivation="generate_usubjid",
-            order=3, origin=VariableOrigin.DERIVED,
+            var="USUBJID",
+            pattern=MappingPattern.DERIVATION,
+            label="Unique Subject Identifier",
+            derivation="generate_usubjid",
+            order=3,
+            origin=VariableOrigin.DERIVED,
         ),
         _mapping(
-            var="AESEQ", pattern=MappingPattern.DERIVATION,
-            label="Sequence Number", derivation="generate_seq",
-            order=4, dtype="Num", origin=VariableOrigin.DERIVED,
+            var="AESEQ",
+            pattern=MappingPattern.DERIVATION,
+            label="Sequence Number",
+            derivation="generate_seq",
+            order=4,
+            dtype="Num",
+            origin=VariableOrigin.DERIVED,
         ),
         _mapping(
-            var="AETERM", pattern=MappingPattern.DIRECT,
-            label="Reported Term for the Adverse Event", source="AETERM",
-            order=5, origin=VariableOrigin.CRF,
+            var="AETERM",
+            pattern=MappingPattern.DIRECT,
+            label="Reported Term for the Adverse Event",
+            source="AETERM",
+            order=5,
+            origin=VariableOrigin.CRF,
         ),
         _mapping(
-            var="AESTDTC", pattern=MappingPattern.DIRECT,
-            label="Start Date/Time of Adverse Event", source="AESTDTC",
-            order=6, origin=VariableOrigin.CRF,
+            var="AESTDTC",
+            pattern=MappingPattern.DIRECT,
+            label="Start Date/Time of Adverse Event",
+            source="AESTDTC",
+            order=6,
+            origin=VariableOrigin.CRF,
         ),
     ]
 
     if include_dy:
-        mappings.append(_mapping(
-            var="AESTDY", pattern=MappingPattern.DERIVATION,
-            label="Study Day of Start of Adverse Event", derivation="calculate_study_day",
-            order=7, dtype="Num", origin=VariableOrigin.DERIVED,
-        ))
+        mappings.append(
+            _mapping(
+                var="AESTDY",
+                pattern=MappingPattern.DERIVATION,
+                label="Study Day of Start of Adverse Event",
+                derivation="calculate_study_day",
+                order=7,
+                dtype="Num",
+                origin=VariableOrigin.DERIVED,
+            )
+        )
 
     if include_epoch:
-        mappings.append(_mapping(
-            var="EPOCH", pattern=MappingPattern.DERIVATION,
-            label="Epoch", derivation="assign_epoch",
-            order=8, origin=VariableOrigin.DERIVED,
-        ))
+        mappings.append(
+            _mapping(
+                var="EPOCH",
+                pattern=MappingPattern.DERIVATION,
+                label="Epoch",
+                derivation="assign_epoch",
+                order=8,
+                origin=VariableOrigin.DERIVED,
+            )
+        )
 
     return DomainMappingSpec(
         domain="AE",
@@ -226,9 +278,7 @@ class TestCrossDomainValidation:
         spec = _ae_base_spec()
         result = executor.execute(spec, {"ae": raw_ae_df})
 
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": result}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": result})
         assert errors == []
 
     def test_orphan_subject_detected(
@@ -238,9 +288,7 @@ class TestCrossDomainValidation:
         spec = _ae_base_spec()
         result = executor.execute(spec, {"ae": ae_with_orphan_df})
 
-        errors = DatasetExecutor.validate_cross_domain_usubjid(
-            dm_df, {"AE": result}
-        )
+        errors = DatasetExecutor.validate_cross_domain_usubjid(dm_df, {"AE": result})
         assert len(errors) == 1
         assert "999" in errors[0]
         assert "AE" in errors[0]
@@ -254,15 +302,17 @@ class TestCrossDomainValidation:
         ae_result = executor.execute(ae_spec, {"ae": raw_ae_df})
 
         # Build a CM-like DataFrame with same 3 subjects
-        cm_result = pd.DataFrame({
-            "STUDYID": ["PHA022121-C301"] * 3,
-            "DOMAIN": ["CM"] * 3,
-            "USUBJID": [
-                "PHA022121-C301-101-001",
-                "PHA022121-C301-101-002",
-                "PHA022121-C301-102-003",
-            ],
-        })
+        cm_result = pd.DataFrame(
+            {
+                "STUDYID": ["PHA022121-C301"] * 3,
+                "DOMAIN": ["CM"] * 3,
+                "USUBJID": [
+                    "PHA022121-C301-101-001",
+                    "PHA022121-C301-101-002",
+                    "PHA022121-C301-102-003",
+                ],
+            }
+        )
 
         errors = DatasetExecutor.validate_cross_domain_usubjid(
             dm_df, {"AE": ae_result, "CM": cm_result}
@@ -289,7 +339,9 @@ class TestStudyDayDerivation:
         """
         spec = _ae_base_spec(include_dy=True)
         result = executor.execute(
-            spec, {"ae": raw_ae_df}, cross_domain=cross_domain,
+            spec,
+            {"ae": raw_ae_df},
+            cross_domain=cross_domain,
         )
 
         assert "AESTDY" in result.columns
@@ -334,7 +386,9 @@ class TestEpochDerivation:
         """
         spec = _ae_base_spec(include_epoch=True)
         result = executor.execute(
-            spec, {"ae": raw_ae_df}, cross_domain=cross_domain,
+            spec,
+            {"ae": raw_ae_df},
+            cross_domain=cross_domain,
         )
 
         assert "EPOCH" in result.columns
@@ -352,7 +406,9 @@ class TestEpochDerivation:
             },
         )
         result = executor.execute(
-            spec, {"ae": raw_ae_df}, cross_domain=cross_domain_no_se,
+            spec,
+            {"ae": raw_ae_df},
+            cross_domain=cross_domain_no_se,
         )
 
         # EPOCH should either not be present or be empty/NaN
@@ -371,25 +427,19 @@ class TestVariableOriginMetadata:
     def test_origin_populated_on_assign(self) -> None:
         """ASSIGN pattern -> VariableOrigin.ASSIGNED."""
         spec = _ae_base_spec()
-        studyid_mapping = next(
-            m for m in spec.variable_mappings if m.sdtm_variable == "STUDYID"
-        )
+        studyid_mapping = next(m for m in spec.variable_mappings if m.sdtm_variable == "STUDYID")
         assert studyid_mapping.origin == VariableOrigin.ASSIGNED
 
     def test_origin_populated_on_direct(self) -> None:
         """DIRECT pattern -> VariableOrigin.CRF."""
         spec = _ae_base_spec()
-        aeterm_mapping = next(
-            m for m in spec.variable_mappings if m.sdtm_variable == "AETERM"
-        )
+        aeterm_mapping = next(m for m in spec.variable_mappings if m.sdtm_variable == "AETERM")
         assert aeterm_mapping.origin == VariableOrigin.CRF
 
     def test_origin_populated_on_derivation(self) -> None:
         """DERIVATION pattern -> VariableOrigin.DERIVED."""
         spec = _ae_base_spec(include_dy=True)
-        aestdy_mapping = next(
-            m for m in spec.variable_mappings if m.sdtm_variable == "AESTDY"
-        )
+        aestdy_mapping = next(m for m in spec.variable_mappings if m.sdtm_variable == "AESTDY")
         assert aestdy_mapping.origin == VariableOrigin.DERIVED
 
     def test_origin_accessible_after_execution(
@@ -407,6 +457,4 @@ class TestVariableOriginMetadata:
         """Every mapping in the AE spec has a non-None origin value."""
         spec = _ae_base_spec(include_dy=True, include_epoch=True)
         for m in spec.variable_mappings:
-            assert m.origin is not None, (
-                f"VariableMapping {m.sdtm_variable} has origin=None"
-            )
+            assert m.origin is not None, f"VariableMapping {m.sdtm_variable} has origin=None"

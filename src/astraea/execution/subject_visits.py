@@ -51,9 +51,7 @@ def extract_visit_dates(
     for ds_name, df in raw_dfs.items():
         # Check for required visit metadata columns
         if "InstanceName" not in df.columns or "FolderName" not in df.columns:
-            logger.debug(
-                "Skipping {} -- no InstanceName/FolderName columns", ds_name
-            )
+            logger.debug("Skipping {} -- no InstanceName/FolderName columns", ds_name)
             continue
 
         # Detect subject column
@@ -72,9 +70,7 @@ def extract_visit_dates(
             det_date_cols = [c for c in date_cols if c in df.columns]
         else:
             det_date_cols = [
-                c
-                for c in df.columns
-                if c.upper().endswith("DAT") or c.upper().endswith("DTC")
+                c for c in df.columns if c.upper().endswith("DAT") or c.upper().endswith("DTC")
             ]
 
         # Determine FolderSeq column
@@ -229,8 +225,6 @@ def build_sv_domain(
     # Enforce column order
     sv_df = sv_df[[c for c in sv_columns if c in sv_df.columns]]
 
-    logger.info(
-        "Built SV domain: {} rows for study {}", len(sv_df), study_id
-    )
+    logger.info("Built SV domain: {} rows for study {}", len(sv_df), study_id)
 
     return sv_df

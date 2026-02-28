@@ -91,9 +91,7 @@ def group_pages_by_form(
         forms=header_excluded,
     )
     for name, page_list in forms.items():
-        logger.debug(
-            "  Form '{name}': {n} page(s)", name=name, n=len(page_list)
-        )
+        logger.debug("  Form '{name}': {n} page(s)", name=name, n=len(page_list))
 
     return forms
 
