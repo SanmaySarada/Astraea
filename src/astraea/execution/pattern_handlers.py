@@ -108,7 +108,7 @@ def _resolve_column(
         return _EDC_ALIASES[name]
 
     # 4. Case-insensitive fallback
-    lower_map = {c.lower(): c for c in df.columns}
+    lower_map: dict[str, str] = {str(c).lower(): str(c) for c in df.columns}
     if name.lower() in lower_map:
         return lower_map[name.lower()]
 
@@ -134,6 +134,347 @@ def _extract_race_from_col(col_name: str, df: pd.DataFrame) -> str | None:
             return race
 
     return None
+
+
+# ---------------------------------------------------------------------------
+# Derivation rule handler functions
+# ---------------------------------------------------------------------------
+
+
+def _handle_generate_usubjid(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Generate USUBJID from study_id, site column, and subject column."""
+    from astraea.transforms.usubjid import generate_usubjid_column
+
+    study_id: str | None = kwargs.get("study_id")  # type: ignore[assignment]
+    if args:
+        # First arg can override study_id literal
+        study_id = args[0]
+
+    site_hint = str(kwargs.get("site_col", "SiteNumber"))
+    subject_hint = str(kwargs.get("subject_col", "Subject"))
+    site_col = _resolve_column(df, site_hint, kwargs) or "SiteNumber"
+    subject_col = _resolve_column(df, subject_hint, kwargs) or "Subject"
+
+    if study_id is not None:
+        return generate_usubjid_column(
+            df,
+            studyid_value=study_id,
+            siteid_col=site_col,
+            subjid_col=subject_col,
+        )
+    logger.warning("GENERATE_USUBJID: no study_id available for {}", mapping.sdtm_variable)
+    return pd.Series(None, index=df.index, dtype="object")
+
+
+def _handle_concat(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Concatenate column values and literal strings element-wise."""
+    parts: list[pd.Series] = []
+    for arg in args:
+        resolved = _resolve_column(df, arg, kwargs)
+        if resolved is not None:
+            parts.append(df[resolved].astype(str).fillna(""))
+        else:
+            # Treat as literal string
+            parts.append(pd.Series(arg, index=df.index, dtype="object"))
+    if not parts:
+        return pd.Series("", index=df.index, dtype="object")
+    result = parts[0]
+    for p in parts[1:]:
+        result = result + p
+    return result
+
+
+def _handle_iso8601_date(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Convert SAS numeric DATE values to ISO 8601."""
+    from astraea.transforms.dates import sas_date_to_iso
+
+    col_hint = args[0] if args else (mapping.source_variable or "")
+    if not col_hint:
+        logger.warning("ISO8601_DATE: no source column specified for {}", mapping.sdtm_variable)
+        return pd.Series(None, index=df.index, dtype="object")
+    col = _resolve_column(df, col_hint, kwargs) or col_hint
+    if col not in df.columns:
+        logger.warning("ISO8601_DATE: column '{}' not found for {}", col, mapping.sdtm_variable)
+        return pd.Series(None, index=df.index, dtype="object")
+    return df[col].map(sas_date_to_iso)
+
+
+def _handle_iso8601_datetime(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Convert SAS numeric DATETIME values to ISO 8601."""
+    from astraea.transforms.dates import sas_datetime_to_iso
+
+    col_hint = args[0] if args else (mapping.source_variable or "")
+    if not col_hint:
+        logger.warning("ISO8601_DATETIME: no source column for {}", mapping.sdtm_variable)
+        return pd.Series(None, index=df.index, dtype="object")
+    col = _resolve_column(df, col_hint, kwargs) or col_hint
+    if col not in df.columns:
+        logger.warning("ISO8601_DATETIME: column '{}' not found for {}", col, mapping.sdtm_variable)
+        return pd.Series(None, index=df.index, dtype="object")
+    return df[col].map(sas_datetime_to_iso)
+
+
+def _handle_iso8601_partial_date(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Build partial ISO 8601 from year/month/day component columns."""
+    from astraea.transforms.dates import format_partial_iso8601
+
+    if not args:
+        return pd.Series(None, index=df.index, dtype="object")
+
+    # Resolve up to 3 columns: year, month, day
+    year_col = _resolve_column(df, args[0], kwargs)
+    month_col = _resolve_column(df, args[1], kwargs) if len(args) > 1 else None
+    day_col = _resolve_column(df, args[2], kwargs) if len(args) > 2 else None
+
+    def _row_to_iso(row: pd.Series) -> str:
+        year_val = row.get(year_col) if year_col else None
+        month_val = row.get(month_col) if month_col else None
+        day_val = row.get(day_col) if day_col else None
+
+        year = int(float(year_val)) if pd.notna(year_val) and year_val is not None else None
+        month = int(float(month_val)) if pd.notna(month_val) and month_val is not None else None
+        day = int(float(day_val)) if pd.notna(day_val) and day_val is not None else None
+
+        return format_partial_iso8601(year=year, month=month, day=day)
+
+    return df.apply(_row_to_iso, axis=1)
+
+
+def _handle_parse_string_date(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Parse string dates (DD Mon YYYY, etc.) to ISO 8601."""
+    from astraea.transforms.dates import parse_string_date_to_iso
+
+    col_hint = args[0] if args else (mapping.source_variable or "")
+    if not col_hint:
+        return pd.Series(None, index=df.index, dtype="object")
+    col = _resolve_column(df, col_hint, kwargs) or col_hint
+    if col not in df.columns:
+        logger.warning(
+            "PARSE_STRING_DATE: column '{}' not found for {}", col, mapping.sdtm_variable,
+        )
+        return pd.Series(None, index=df.index, dtype="object")
+    return df[col].map(parse_string_date_to_iso)
+
+
+def _handle_min_date_per_subject(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Find the minimum date per USUBJID and map back to all rows."""
+    return _handle_date_agg_per_subject(df, args, mapping, agg="min", **kwargs)
+
+
+def _handle_max_date_per_subject(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Find the maximum date per USUBJID and map back to all rows."""
+    return _handle_date_agg_per_subject(df, args, mapping, agg="max", **kwargs)
+
+
+def _handle_date_agg_per_subject(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    *,
+    agg: str,
+    **kwargs: object,
+) -> pd.Series:
+    """Aggregate a date column per USUBJID and broadcast back.
+
+    If the source column is in a cross-domain DataFrame, look it up from
+    ``kwargs["cross_domain_dfs"]``.
+    """
+    from astraea.transforms.dates import sas_date_to_iso
+
+    if not args:
+        return pd.Series(None, index=df.index, dtype="object")
+
+    source_col_name = args[0]
+    work_df = df
+
+    # Check cross-domain DataFrames
+    cross_dfs: dict[str, pd.DataFrame] = kwargs.get("cross_domain_dfs", {})  # type: ignore[assignment]
+    for _name, cdf in cross_dfs.items():
+        resolved = _resolve_column(cdf, source_col_name, kwargs)
+        if resolved is not None:
+            work_df = cdf
+            source_col_name = resolved
+            break
+    else:
+        resolved_local = _resolve_column(df, source_col_name, kwargs)
+        if resolved_local:
+            source_col_name = resolved_local
+
+    if source_col_name not in work_df.columns:
+        logger.warning(
+            "{}: column '{}' not found for {}",
+            agg.upper() + "_DATE_PER_SUBJECT",
+            source_col_name,
+            mapping.sdtm_variable,
+        )
+        return pd.Series(None, index=df.index, dtype="object")
+
+    # Find USUBJID column in the work DataFrame
+    usubjid_col = _resolve_column(work_df, "USUBJID", kwargs) or "USUBJID"
+    if usubjid_col not in work_df.columns:
+        logger.warning(
+            "{}: USUBJID column not found in DataFrame for {}",
+            agg.upper() + "_DATE_PER_SUBJECT",
+            mapping.sdtm_variable,
+        )
+        return pd.Series(None, index=df.index, dtype="object")
+
+    # Aggregate: group by USUBJID, get min/max of the date column
+    grouped = work_df.groupby(usubjid_col)[source_col_name]
+    agg_dates = grouped.min() if agg == "min" else grouped.max()
+
+    # Map back to original df's USUBJID
+    df_usubjid_col = _resolve_column(df, "USUBJID", kwargs) or "USUBJID"
+    if df_usubjid_col not in df.columns:
+        return pd.Series(None, index=df.index, dtype="object")
+
+    mapped_numeric = df[df_usubjid_col].map(agg_dates)
+
+    # Convert to ISO 8601
+    return mapped_numeric.map(sas_date_to_iso)
+
+
+def _handle_race_checkbox(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Derive RACE from checkbox columns (0/1 values).
+
+    Returns single race name if exactly 1 checked, "MULTIPLE" if >1, None if 0.
+    """
+    # Resolve checkbox column names
+    resolved_cols: list[tuple[str, str]] = []  # (resolved_col, race_name)
+    for arg in args:
+        col = _resolve_column(df, arg, kwargs)
+        if col is not None and col in df.columns:
+            race = _extract_race_from_col(col, df)
+            if race:
+                resolved_cols.append((col, race))
+
+    if not resolved_cols:
+        logger.warning(
+            "RACE_CHECKBOX: no valid checkbox columns found for {}", mapping.sdtm_variable,
+        )
+        return pd.Series(None, index=df.index, dtype="object")
+
+    def _derive_race(row: pd.Series) -> str | None:
+        checked = []
+        for col, race in resolved_cols:
+            val = row.get(col)
+            if pd.notna(val) and float(val) == 1:
+                checked.append(race)
+        if len(checked) == 0:
+            return None
+        if len(checked) == 1:
+            return checked[0]
+        return "MULTIPLE"
+
+    return df.apply(_derive_race, axis=1)
+
+
+def _handle_numeric_to_yn(
+    df: pd.DataFrame,
+    args: list[str],
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series:
+    """Convert 0/1 values to Y/N using numeric_to_yn."""
+    from astraea.transforms.recoding import numeric_to_yn
+
+    # Use args[0] if available, else fall back to mapping.source_variable
+    col_hint = args[0] if args else (mapping.source_variable or "")
+    if not col_hint:
+        return pd.Series(None, index=df.index, dtype="object")
+    col = _resolve_column(df, col_hint, kwargs) or col_hint
+    if col not in df.columns:
+        logger.warning("NUMERIC_TO_YN: column '{}' not found for {}", col, mapping.sdtm_variable)
+        return pd.Series(None, index=df.index, dtype="object")
+    return df[col].map(numeric_to_yn)
+
+
+# ---------------------------------------------------------------------------
+# Derivation dispatch table
+# ---------------------------------------------------------------------------
+
+_DERIVATION_DISPATCH: dict[str, Callable[..., pd.Series]] = {
+    "GENERATE_USUBJID": _handle_generate_usubjid,
+    "CONCAT": _handle_concat,
+    "ISO8601_DATE": _handle_iso8601_date,
+    "ISO8601_DATETIME": _handle_iso8601_datetime,
+    "ISO8601_PARTIAL_DATE": _handle_iso8601_partial_date,
+    "PARSE_STRING_DATE": _handle_parse_string_date,
+    "MIN_DATE_PER_SUBJECT": _handle_min_date_per_subject,
+    "MAX_DATE_PER_SUBJECT": _handle_max_date_per_subject,
+    "RACE_CHECKBOX": _handle_race_checkbox,
+    "RACE_FROM_CHECKBOXES": _handle_race_checkbox,  # alias
+    "NUMERIC_TO_YN": _handle_numeric_to_yn,
+    "LAST_DISPOSITION_DATE": _handle_max_date_per_subject,  # alias
+    "LAST_DISPOSITION_DATE_PER_SUBJECT": _handle_max_date_per_subject,  # alias
+}
+
+
+def _dispatch_derivation_rule(
+    df: pd.DataFrame,
+    rule: str,
+    mapping: VariableMapping,
+    **kwargs: object,
+) -> pd.Series | None:
+    """Parse a derivation rule and dispatch to the appropriate handler.
+
+    Returns None if the keyword is not recognized.
+    """
+    keyword, args = parse_derivation_rule(rule)
+    handler = _DERIVATION_DISPATCH.get(keyword)
+    if handler is not None:
+        return handler(df, args, mapping, **kwargs)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Pattern handler functions (public API)
+# ---------------------------------------------------------------------------
 
 
 def handle_assign(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
@@ -183,14 +524,20 @@ def handle_rename(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) 
 def handle_reformat(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Apply a registered transform function to the source column.
 
-    Looks up the transform by mapping.derivation_rule name. If found, applies
-    it element-wise via .map(). If not found, passes through the source column
-    unchanged with a warning.
+    First tries derivation rule dispatch (e.g. ISO8601_DATE(COL)). If the
+    rule keyword is not recognized, falls back to the transform registry.
+    If neither matches, passes through unchanged with a warning.
 
     Raises:
         ValueError: If mapping.source_variable is None.
         KeyError: If source_variable not found in df.columns.
     """
+    # Try derivation rule dispatch first
+    if mapping.derivation_rule:
+        result = _dispatch_derivation_rule(df, mapping.derivation_rule, mapping, **kwargs)
+        if result is not None:
+            return result
+
     if mapping.source_variable is None:
         msg = f"REFORMAT pattern for {mapping.sdtm_variable} has no source_variable"
         raise ValueError(msg)
@@ -265,32 +612,35 @@ def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: o
 def handle_derivation(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Apply a derivation rule to produce computed values.
 
-    Checks mapping.derivation_rule for known transform names. If found,
-    applies the transform to the source column. For USUBJID generation,
-    delegates to generate_usubjid_column.
-
-    For unrecognized derivation rules, returns a Series of None with a warning.
-    This is intentionally conservative -- unknown derivations are flagged, not guessed.
+    Dispatches through the derivation rule parser first. Falls back to the
+    legacy USUBJID special-case and then the transform registry. For
+    unrecognized derivation rules, returns a Series of None with a warning.
     """
     rule = mapping.derivation_rule or ""
 
-    # Check for USUBJID generation
+    # 1. Try formal derivation rule dispatch
+    if rule:
+        result = _dispatch_derivation_rule(df, rule, mapping, **kwargs)
+        if result is not None:
+            return result
+
+    # 2. Legacy USUBJID fallback (bare "USUBJID" in rule text)
     if "USUBJID" in rule.upper() or "generate_usubjid" in rule:
         from astraea.transforms.usubjid import generate_usubjid_column
 
         study_id: str | None = kwargs.get("study_id")  # type: ignore[assignment]
-        site_col: str = kwargs.get("site_col", "SiteNumber")  # type: ignore[assignment]
-        subject_col: str = kwargs.get("subject_col", "Subject")  # type: ignore[assignment]
+        site_col_name: str = kwargs.get("site_col", "SiteNumber")  # type: ignore[assignment]
+        subject_col_name: str = kwargs.get("subject_col", "Subject")  # type: ignore[assignment]
 
         if study_id is not None:
             return generate_usubjid_column(
                 df,
                 studyid_value=study_id,
-                siteid_col=site_col,
-                subjid_col=subject_col,
+                siteid_col=site_col_name,
+                subjid_col=subject_col_name,
             )
 
-    # Check for registered transforms
+    # 3. Check for registered transforms
     transform_fn = get_transform(rule)
     has_transform = (
         transform_fn is not None
@@ -311,13 +661,18 @@ def handle_derivation(df: pd.DataFrame, mapping: VariableMapping, **kwargs: obje
 def handle_combine(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Combine multiple source columns into one target.
 
-    Parses mapping.derivation_rule to identify the combination strategy.
-    Currently supports USUBJID concatenation; other combine patterns
-    return Series of None with a warning.
+    Dispatches through the derivation rule parser. Falls back to the legacy
+    USUBJID special-case. Other unrecognized combine patterns return None.
     """
     rule = mapping.derivation_rule or ""
 
-    # USUBJID is the primary COMBINE use case
+    # 1. Try formal derivation rule dispatch (CONCAT, GENERATE_USUBJID, etc.)
+    if rule:
+        result = _dispatch_derivation_rule(df, rule, mapping, **kwargs)
+        if result is not None:
+            return result
+
+    # 2. Legacy USUBJID fallback
     if "USUBJID" in rule.upper() or "generate_usubjid" in rule:
         return handle_derivation(df, mapping, **kwargs)
 
