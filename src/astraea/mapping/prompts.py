@@ -57,9 +57,7 @@ if they contain non-standard clinical data (see SUPPQUAL rules below).
 - Use the ASSIGN pattern for STUDYID and DOMAIN (they are constants).
 - Prefer _STD suffix columns over display columns when CT codelists apply. \
 The _STD columns typically contain the coded submission values.
-- For derivation_rule, use a pseudo-code DSL describing the transformation \
-logic (e.g., ASSIGN("DM"), DIRECT(dm.AGE), CONCAT(STUDYID, "-", SITEID, \
-"-", SUBJID)).
+- For derivation_rule, use a keyword from the Derivation Rule Vocabulary below.
 
 ## SUPPQUAL Candidate Rules
 
@@ -90,6 +88,33 @@ RecordId, StudyEventRepeatKey, etc.)
 is a suppqual_candidate if it: (a) contains clinically meaningful data, \
 (b) does not map to any standard variable in the parent domain, and \
 (c) is not an EDC system variable.
+
+## Derivation Rule Vocabulary
+
+The derivation_rule field MUST use one of these recognized keywords. \
+The execution engine will reject any rule not in this list:
+
+| Keyword | Usage | Example |
+|---------|-------|---------|
+| GENERATE_USUBJID | USUBJID construction from STUDYID + SITEID + SUBJID | GENERATE_USUBJID |
+| CONCAT | Concatenate column values and literals | CONCAT(col1, '-', col2) |
+| ISO8601_DATE | Convert SAS numeric date to ISO 8601 | ISO8601_DATE(AESTDAT_INT) |
+| ISO8601_DATETIME | Convert SAS numeric datetime to ISO 8601 | ISO8601_DATETIME(EXDTTM_INT) |
+| ISO8601_PARTIAL_DATE | Build ISO date from year/month/day columns | ISO8601_PARTIAL_DATE(BRTHYR_YYYY) |
+| PARSE_STRING_DATE | Parse string date to ISO 8601 | PARSE_STRING_DATE(AESTDAT_RAW) |
+| MIN_DATE_PER_SUBJECT | Earliest date per USUBJID | MIN_DATE_PER_SUBJECT(EXSTDAT_INT) |
+| MAX_DATE_PER_SUBJECT | Latest date per USUBJID | MAX_DATE_PER_SUBJECT(EXENDAT_INT) |
+| RACE_CHECKBOX | Derive RACE from 0/1 checkbox columns | RACE_CHECKBOX(RACEAME, RACEASI, RACEWHI) |
+| NUMERIC_TO_YN | Convert 0/1 numeric to Y/N | NUMERIC_TO_YN(AESLIFE) |
+
+For ASSIGN and DIRECT patterns, no derivation_rule is needed -- use assigned_value \
+or source_variable directly.
+
+For LOOKUP_RECODE, specify the codelist_code -- no derivation_rule needed.
+
+Arguments MUST use actual SAS column names from the Source Dataset Profile above, \
+NOT eCRF field names or OID names. The column names shown in the profile sections \
+are the exact names available in the data.
 """
 
 MAPPING_USER_INSTRUCTIONS = """\
@@ -105,7 +130,7 @@ For each mapping, specify:
 - source_variable: the raw variable name (or null for ASSIGN)
 - mapping_pattern: one of the 9 patterns above
 - mapping_logic: human-readable description of the mapping
-- derivation_rule: pseudo-code DSL for the execution engine (if applicable)
+- derivation_rule: must use a keyword from the Derivation Rule Vocabulary above
 - assigned_value: constant value (for ASSIGN pattern only)
 - codelist_code: NCI codelist code (if a CT codelist applies)
 - confidence: numeric score 0.0-1.0
