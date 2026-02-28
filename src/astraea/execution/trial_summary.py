@@ -19,16 +19,40 @@ from loguru import logger
 
 from astraea.models.trial_design import TSConfig, TSParameter
 
-# FDA-mandatory TS parameters (missing any = submission risk)
+# FDA-mandatory TS parameters (missing any = submission risk).
+# Per FDA CDER guidance for NDA/BLA submissions. Missing any of these
+# triggers a validation warning from validate_ts_completeness().
+# Source: FDA Data Standards Catalog + SDTM-IG v3.4 Appendix C.
 FDA_REQUIRED_PARAMS: frozenset[str] = frozenset(
     {
-        "SSTDTC",
-        "SPONSOR",
-        "INDIC",
-        "TRT",
-        "STYPE",
-        "SDTMVER",
-        "TPHASE",
+        # -- Original 7 (core study metadata) --
+        "SSTDTC",   # Study Start Date
+        "SPONSOR",  # Clinical Study Sponsor
+        "INDIC",    # Trial Disease/Condition Indication
+        "TRT",      # Investigational Therapy or Treatment
+        "STYPE",    # Study Type
+        "SDTMVER",  # SDTM Version
+        "TPHASE",   # Trial Phase Classification
+        # -- Additional FDA CDER-mandated parameters --
+        "TITLE",    # Trial Title
+        "PLANSUB",  # Planned Number of Subjects
+        "RANDOM",   # Trial is Randomized
+        "SEXPOP",   # Sex of Participants
+        "TBLIND",   # Trial Blinding Schema
+        "TCNTRL",   # Control Type
+        "OBJPRIM",  # Trial Primary Objective
+        "REGID",    # Registry Identifier (e.g., NCT number)
+        "OUTMSPRI", # Primary Outcome Measure
+        "FCNTRY",   # Planned Country of Investigational Sites
+        "AGEMIN",   # Planned Minimum Age of Subjects
+        "AGEMAX",   # Planned Maximum Age of Subjects
+        "LENGTH",   # Trial Length
+        "STOPRULE", # Study Stop Rules
+        "ADAPT",    # Adaptive Design
+        "ACTSUB",   # Actual Number of Subjects
+        "NARMS",    # Planned Number of Arms
+        "HLTSUBJI", # Healthy Subject Indicator
+        "SENDTC",   # Study End Date
     }
 )
 
