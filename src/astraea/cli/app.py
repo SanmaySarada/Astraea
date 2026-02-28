@@ -4,7 +4,8 @@ Provides commands for profiling SAS datasets, querying SDTM-IG domain
 specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
 classifying raw datasets to SDTM domains, reviewing mapping specifications,
 executing mapping specs to produce SDTM XPT files, running SDTM validation,
-and generating submission artifacts (define.xml, cSDRG).
+auto-fixing deterministic validation issues, and generating submission
+artifacts (define.xml, cSDRG).
 
 Usage:
     astraea profile <data-folder>
@@ -18,6 +19,7 @@ Usage:
     astraea sessions
     astraea execute-domain <spec-path> <data-dir>
     astraea validate <output-dir>
+    astraea auto-fix <output-dir>
     astraea generate-define <output-dir>
     astraea generate-csdrg <output-dir>
 """
@@ -582,12 +584,20 @@ def validate_cmd(
         str,
         typer.Option("--format", help="Output format: table, json, or markdown"),
     ] = "table",
+    auto_fix: Annotated[
+        bool,
+        typer.Option("--auto-fix", help="Auto-fix deterministic issues after validation"),
+    ] = False,
 ) -> None:
     """Run SDTM validation on generated datasets.
 
     Loads .xpt files and mapping specs from the output directory, runs the
     full validation pipeline (per-domain rules, cross-domain consistency,
     FDA TRC pre-checks, package size/naming checks), and displays results.
+
+    Use --auto-fix to automatically fix deterministic issues (CT case
+    normalization, missing DOMAIN/STUDYID columns, name/label truncation,
+    non-ASCII characters) after validation.
 
     Exit code 0 if submission-ready, 1 if blocking issues found.
     """
@@ -676,6 +686,34 @@ def validate_cmd(
     console.print("[bold blue][4/4][/bold blue] Generating report...")
     all_domains = sorted(set(list(domain_dfs.keys()) + list(domain_specs.keys())))
     report = ValidationReport.from_results(study_id, all_results, all_domains)
+
+    # Auto-fix if requested and there are errors
+    if auto_fix and report.effective_error_count > 0:
+        console.print("\n[bold blue]Running auto-fix loop...[/bold blue]")
+
+        from astraea.cli.display import display_fix_loop_result, display_needs_human
+        from astraea.validation.autofix import AutoFixer
+        from astraea.validation.fix_loop import FixLoopEngine
+
+        auto_fixer = AutoFixer(ct_ref=ct_ref, sdtm_ref=sdtm_ref)
+        fix_engine = FixLoopEngine(
+            engine=engine, auto_fixer=auto_fixer, max_iterations=3
+        )
+        fix_result = fix_engine.run_fix_loop(
+            domains_to_validate, output_dir=output_dir, study_id=study_id
+        )
+
+        # Use the fix loop's final report
+        report = fix_result.final_report
+        all_results = fix_result.remaining_issues
+
+        # Display fix loop results
+        console.print()
+        display_fix_loop_result(fix_result, console)
+
+        if fix_result.needs_human_issues:
+            console.print()
+            display_needs_human(fix_result.needs_human_issues, console)
 
     # Display results
     console.print()
@@ -899,6 +937,151 @@ def generate_csdrg_cmd(
             title="cSDRG Generated",
         )
     )
+
+
+@app.command(name="auto-fix")
+def auto_fix_cmd(
+    output_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing .xpt files and mapping specs"),
+    ],
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = "UNKNOWN",
+    specs_dir: Annotated[
+        Path | None,
+        typer.Option("--specs-dir", help="Directory with spec files"),
+    ] = None,
+    max_iterations: Annotated[
+        int,
+        typer.Option("--max-iterations", help="Maximum fix iterations"),
+    ] = 3,
+    format: Annotated[
+        str,
+        typer.Option("--format", help="Report format: markdown or json"),
+    ] = "markdown",
+) -> None:
+    """Auto-fix deterministic validation issues in generated SDTM datasets.
+
+    Runs a validate-fix-revalidate loop (max 3 iterations by default).
+    Automatically fixes: CT case normalization, missing DOMAIN/STUDYID columns,
+    variable name/label truncation, and non-ASCII characters. Issues requiring
+    human judgment are reported with context and suggested fixes.
+
+    Fixed datasets are written back to the output directory. An audit trail
+    of all fixes is saved to autofix_audit.json.
+    """
+    import pandas as pd
+    import pyreadstat
+
+    from astraea.cli.display import (
+        display_fix_loop_result,
+        display_needs_human,
+        display_validation_summary,
+    )
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.reference import load_ct_reference, load_sdtm_reference
+    from astraea.validation.autofix import AutoFixer
+    from astraea.validation.engine import ValidationEngine
+    from astraea.validation.fix_loop import FixLoopEngine
+
+    # Validate directory
+    if not output_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {output_dir}")
+        raise typer.Exit(code=1)
+
+    # Step 1: Load .xpt files
+    console.print("[bold blue][1/4][/bold blue] Loading datasets...")
+    xpt_files = sorted(output_dir.glob("*.xpt"))
+    if not xpt_files:
+        console.print(f"[bold red]Error:[/bold red] No .xpt files found in {output_dir}")
+        raise typer.Exit(code=1)
+
+    domain_dfs: dict[str, pd.DataFrame] = {}
+    for xpt_path in xpt_files:
+        try:
+            df, _meta = pyreadstat.read_xport(str(xpt_path))
+            domain_code = xpt_path.stem.upper()
+            domain_dfs[domain_code] = df
+            console.print(f"  Loaded {xpt_path.name}: {len(df)} rows, {len(df.columns)} vars")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not read {xpt_path.name}: {e}[/yellow]")
+
+    # Step 2: Load mapping specs
+    console.print("[bold blue][2/4][/bold blue] Loading mapping specs...")
+    search_dir = specs_dir or output_dir
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
+        search_dir.glob("*_mapping.json")
+    )
+    domain_specs: dict[str, DomainMappingSpec] = {}
+    for spec_path in spec_files:
+        try:
+            spec = DomainMappingSpec.model_validate_json(spec_path.read_text())
+            domain_specs[spec.domain.upper()] = spec
+            console.print(f"  Loaded spec: {spec.domain} ({spec_path.name})")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not load spec {spec_path.name}: {e}[/yellow]")
+
+    # Build domains dict
+    domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {}
+    for domain_code in domain_dfs:
+        if domain_code in domain_specs:
+            domains[domain_code] = (domain_dfs[domain_code], domain_specs[domain_code])
+
+    if not domains:
+        console.print(
+            "[bold red]Error:[/bold red] No domains with both .xpt and spec files found"
+        )
+        raise typer.Exit(code=1)
+
+    # Step 3: Run fix loop
+    console.print(
+        f"[bold blue][3/4][/bold blue] Running auto-fix loop "
+        f"(max {max_iterations} iterations)..."
+    )
+    sdtm_ref = load_sdtm_reference()
+    ct_ref = load_ct_reference()
+    engine = ValidationEngine(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+    auto_fixer = AutoFixer(ct_ref=ct_ref, sdtm_ref=sdtm_ref)
+    fix_engine = FixLoopEngine(
+        engine=engine, auto_fixer=auto_fixer, max_iterations=max_iterations
+    )
+
+    fix_result = fix_engine.run_fix_loop(
+        domains, output_dir=output_dir, study_id=study_id
+    )
+
+    # Step 4: Display results
+    console.print("[bold blue][4/4][/bold blue] Results...")
+    console.print()
+    display_fix_loop_result(fix_result, console)
+
+    if fix_result.needs_human_issues:
+        console.print()
+        display_needs_human(fix_result.needs_human_issues, console)
+
+    console.print()
+    display_validation_summary(fix_result.final_report, console)
+
+    # Export report
+    if format == "markdown":
+        md_path = output_dir / "validation_report.md"
+        md_path.write_text(fix_result.final_report.to_markdown())
+        console.print(f"\n[green]Markdown report saved to:[/green] {md_path}")
+    elif format == "json":
+        json_path = output_dir / "validation_report.json"
+        json_path.write_text(fix_result.final_report.model_dump_json(indent=2))
+        console.print(f"\n[green]JSON report saved to:[/green] {json_path}")
+
+    if not fix_result.final_report.submission_ready:
+        console.print(
+            f"\n[bold red]NOT READY:[/bold red] "
+            f"{fix_result.final_report.effective_error_count} blocking error(s) remain"
+        )
+        raise typer.Exit(code=1)
+    else:
+        console.print("\n[bold green]SUBMISSION READY[/bold green]")
 
 
 def _find_primary_sas(

@@ -18,6 +18,8 @@ from astraea.models.ecrf import ECRFExtractionResult, ECRFForm
 from astraea.models.mapping import ConfidenceLevel, DomainMappingSpec
 from astraea.models.profiling import DatasetProfile
 from astraea.models.sdtm import CoreDesignation, DomainSpec, VariableSpec
+from astraea.validation.autofix import IssueClassification
+from astraea.validation.fix_loop import FixLoopResult
 from astraea.validation.report import ValidationReport
 from astraea.validation.rules.base import RuleResult, RuleSeverity
 
@@ -617,6 +619,154 @@ def display_validation_issues(
         console.print(
             f"[dim]{fp_count} known false positive(s) not shown[/dim]"
         )
+
+
+def display_fix_loop_result(
+    result: FixLoopResult,
+    console: Console,
+) -> None:
+    """Print auto-fix loop results with Rich formatting.
+
+    Shows a summary panel with iteration count, total fixes, and
+    convergence status, followed by a per-iteration breakdown table
+    and a table of applied fixes (first 10).
+
+    Args:
+        result: FixLoopResult from the fix loop engine.
+        console: Rich Console for output.
+    """
+    # Summary panel
+    converged_text = "[green]Yes[/green]" if result.converged else "[yellow]No[/yellow]"
+    info_lines = [
+        f"[bold]Iterations:[/bold] {result.iterations_run}/{result.max_iterations}",
+        f"[bold]Total Fixed:[/bold] {result.total_fixed}",
+        f"[bold]Converged:[/bold] {converged_text}",
+        f"[bold]Remaining Issues:[/bold] {len(result.remaining_issues)}",
+        f"[bold]Needs Human:[/bold] {len(result.needs_human_issues)}",
+    ]
+    console.print(Panel("\n".join(info_lines), title="Auto-Fix Results"))
+
+    # Per-iteration breakdown
+    if result.iteration_details:
+        iter_table = Table(title="Per-Iteration Breakdown", show_lines=True)
+        iter_table.add_column("Iteration", justify="right", style="bold")
+        iter_table.add_column("Issues Found", justify="right")
+        iter_table.add_column("Auto-Fixed", justify="right", style="green")
+        iter_table.add_column("Remaining", justify="right")
+        iter_table.add_column("Needs Human", justify="right", style="yellow")
+
+        for detail in result.iteration_details:
+            iter_table.add_row(
+                str(detail.iteration),
+                str(detail.issues_found),
+                str(detail.auto_fixed),
+                str(detail.remaining_auto_fixable),
+                str(detail.needs_human),
+            )
+
+        console.print(iter_table)
+
+    # Fixed issues table (first 10)
+    if result.all_fix_actions:
+        fix_table = Table(title="Fixed Issues", show_lines=True)
+        fix_table.add_column("#", justify="right", style="dim", width=4)
+        fix_table.add_column("Fix Type", style="bold cyan")
+        fix_table.add_column("Domain", no_wrap=True)
+        fix_table.add_column("Variable", no_wrap=True)
+        fix_table.add_column("Before", max_width=30)
+        fix_table.add_column("After", max_width=30)
+
+        for idx, action in enumerate(result.all_fix_actions[:10], 1):
+            before = action.before_value
+            if len(before) > 30:
+                before = before[:27] + "..."
+            after = action.after_value
+            if len(after) > 30:
+                after = after[:27] + "..."
+
+            fix_table.add_row(
+                str(idx),
+                action.fix_type,
+                action.domain,
+                action.variable or "-",
+                before,
+                after,
+            )
+
+        console.print(fix_table)
+
+        if len(result.all_fix_actions) > 10:
+            console.print(
+                f"[dim]...and {len(result.all_fix_actions) - 10} more fix(es) "
+                f"(see autofix_audit.json for full audit trail)[/dim]"
+            )
+
+
+def display_needs_human(
+    issues: list[IssueClassification],
+    console: Console,
+) -> None:
+    """Print issues requiring human review with Rich formatting.
+
+    Groups issues by domain and displays each with severity color-coding,
+    rule ID, variable, message, and suggested fix.
+
+    Args:
+        issues: List of IssueClassification items (needs-human only).
+        console: Rich Console for output.
+    """
+
+    if not issues:
+        console.print("[dim]No issues requiring human review.[/dim]")
+        return
+
+    # Group by domain
+    by_domain: dict[str, list] = {}
+    for ic in issues:
+        domain = ic.result.domain or "GENERAL"
+        by_domain.setdefault(domain, []).append(ic)
+
+    table = Table(
+        title=f"Issues Requiring Human Review ({len(issues)} total)",
+        show_lines=True,
+    )
+    table.add_column("Severity", no_wrap=True)
+    table.add_column("Rule", style="bold", no_wrap=True)
+    table.add_column("Domain", no_wrap=True)
+    table.add_column("Variable", no_wrap=True)
+    table.add_column("Message", max_width=40)
+    table.add_column("Suggested Fix", max_width=35)
+
+    for domain in sorted(by_domain):
+        for ic in by_domain[domain]:
+            r = ic.result
+            if r.severity == RuleSeverity.ERROR:
+                sev_text = Text("Error", style="bold red")
+            elif r.severity == RuleSeverity.WARNING:
+                sev_text = Text("Warning", style="yellow")
+            else:
+                sev_text = Text("Notice", style="dim")
+
+            msg = r.message
+            if len(msg) > 40:
+                msg = msg[:37] + "..."
+
+            suggested = ic.suggested_fix or ""
+            if len(suggested) > 35:
+                suggested = suggested[:32] + "..."
+
+            table.add_row(
+                sev_text,
+                r.rule_id,
+                r.domain or "-",
+                r.variable or "-",
+                msg,
+                suggested,
+            )
+
+    console.print(
+        Panel(table, title="Issues Requiring Human Review", border_style="yellow")
+    )
 
 
 def _format_core(core: CoreDesignation) -> Text:
