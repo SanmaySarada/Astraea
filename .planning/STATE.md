@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 15.1 (Wiring Gaps and Tech Debt Closure)
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-02-28 -- Completed 15.1-01-PLAN.md (wiring gaps fix)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 15.1-02-PLAN.md (tech debt docs and split tests)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 ~99%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 100%
 
 ### Roadmap Evolution
 - Phase 15.1 inserted after Phase 15: Fix wiring gaps (SUPPQUAL/ordering rule registration, review→validate filename mismatch) and remaining tech debt (URGENT)
@@ -22,7 +22,7 @@ Progress: [███████████████████████
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 51
+- Total plans completed: 52
 - Average duration: ~3.4 minutes
 
 **By Phase:**
