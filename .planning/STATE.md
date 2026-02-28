@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (TRANSPOSE + SUPPQUAL foundation complete).
+**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (TS builder + PE execution complete).
 
 ## Current Position
 
 Phase: 6 of 8 (Findings Domains)
-Plan: 1 of 6 (TRANSPOSE + SUPPQUAL foundation)
+Plan: 3 of 6 (TS domain builder + PE execution)
 Status: In progress
-Last activity: 2026-02-27 -- Completed 06-01-PLAN.md (TRANSPOSE handler + SUPPQUAL generator)
+Last activity: 2026-02-28 -- Completed 06-03-PLAN.md (TS domain builder + PE execution)
 
-Progress: [███████████████████████████████████████████████████] ~92%
+Progress: [████████████████████████████████████████████████████] ~93%
 
 ## Performance Metrics
 
@@ -34,7 +34,7 @@ Progress: [███████████████████████
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
-| 06-findings-domains | 1/6 | ~5 min | ~5.0 min |
+| 06-findings-domains | 2/6 | ~9 min | ~4.5 min |
 
 ## Phase 1 Deliverables
 
@@ -187,9 +187,11 @@ CLI commands available: `astraea execute-domain`
 | TransposeSpec + execute_transpose | src/astraea/execution/transpose.py | 17 | Done |
 | SuppVariable model | src/astraea/models/suppqual.py | -- | Done |
 | SUPPQUAL generator + integrity | src/astraea/execution/suppqual.py | 26 | Done |
-| **Total so far** | | **43 new tests** | **1/6 plans** |
+| TSConfig model + TS builder | src/astraea/execution/trial_summary.py | 20 | Done |
+| PE domain execution test | tests/integration/execution/test_pe_execution.py | 5 | Done |
+| **Total so far** | | **68 new tests** | **2/6 plans** |
 
-**Combined test suite: 1160 tests (1074 pass + 86 skipped)**
+**Combined test suite: 1185 tests (1099 pass + 86 skipped)**
 
 ## Accumulated Context
 
@@ -301,6 +303,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-27: [D-06-01-01] TRANSPOSE handled at DataFrame level by execute_transpose(), not per-variable in PATTERN_HANDLERS
 - 2026-02-27: [D-06-01-02] SUPPQUAL generation is deterministic post-processing, never LLM-generated (per PITFALLS.md C4)
 - 2026-02-27: [D-06-01-03] SuppVariable.qnam auto-uppercased and validated as alphanumeric-only per XPT constraints
+- 2026-02-28: [D-06-03-01] TSParameter auto-uppercases tsparmcd and validates max 8 chars (XPT constraint)
+- 2026-02-28: [D-06-03-02] FDA_REQUIRED_PARAMS contains 7 codes; SSTDTC derived from DM RFSTDTC, not config
+- 2026-02-28: [D-06-03-03] PE test uses ASSIGN for PETESTCD/PETEST (study only records performed flag, no body system detail)
 
 ### Pending Todos
 
@@ -338,6 +343,6 @@ CLI commands available: `astraea execute-domain`
 
 ## Session Continuity
 
-Last session: 2026-02-27
-Stopped at: Completed 06-01-PLAN.md (TRANSPOSE handler + SUPPQUAL generator)
+Last session: 2026-02-28
+Stopped at: Completed 06-03-PLAN.md (TS domain builder + PE execution)
 Resume file: None
