@@ -523,7 +523,7 @@ def test_multiple_domains(tmp_path: Path) -> None:
 
 
 def test_findings_value_list(tmp_path: Path) -> None:
-    """ValueListDef generated for Findings result variables with TRANSPOSE pattern."""
+    """ValueListDef on LBORRES (not LBTESTCD) with value-level ItemDefs."""
     out = tmp_path / "define.xml"
     vms = [
         _make_vm("STUDYID", "Study Identifier"),
@@ -562,9 +562,138 @@ def test_findings_value_list(tmp_path: Path) -> None:
     item_refs = vlds[0].findall("odm:ItemRef", NS)
     assert len(item_refs) == 3
 
+    # ItemRef OIDs reference result variable, not TESTCD
+    ir_oids = {ir.get("ItemOID") for ir in item_refs}
+    assert ir_oids == {
+        "IT.LB.LBORRES.ALT",
+        "IT.LB.LBORRES.AST",
+        "IT.LB.LBORRES.WBC",
+    }
+
     # WhereClauseDef elements -- 3 (one per test code per result variable)
     wcs = root.findall(".//def:WhereClauseDef", NS)
     assert len(wcs) == 3
+
+    # WhereClauseDef RangeCheck references TESTCD ItemDef (condition variable)
+    for wc in wcs:
+        rc = wc.find("odm:RangeCheck", NS)
+        assert rc is not None
+        assert rc.get(f"{{{DEFINE_NS}}}ItemOID") == "IT.LB.LBTESTCD"
+
+    # 3 value-level ItemDefs created (IT.LB.LBORRES.{testcd})
+    all_item_defs = root.findall(".//odm:ItemDef", NS)
+    vl_item_defs = [
+        it for it in all_item_defs if it.get("OID", "").startswith("IT.LB.LBORRES.")
+    ]
+    assert len(vl_item_defs) == 3
+    vl_oids = {it.get("OID") for it in vl_item_defs}
+    assert vl_oids == {
+        "IT.LB.LBORRES.ALT",
+        "IT.LB.LBORRES.AST",
+        "IT.LB.LBORRES.WBC",
+    }
+
+    # ItemRef in ItemGroupDef for LBORRES has ValueListOID
+    ig_refs = root.findall(".//odm:ItemGroupDef/odm:ItemRef", NS)
+    lborres_ref = [ir for ir in ig_refs if ir.get("ItemOID") == "IT.LB.LBORRES"]
+    assert len(lborres_ref) == 1
+    assert lborres_ref[0].get(f"{{{DEFINE_NS}}}ValueListOID") == "VL.LB.LBORRES"
+
+    # LBTESTCD ItemRef should NOT have ValueListOID
+    lbtestcd_ref = [ir for ir in ig_refs if ir.get("ItemOID") == "IT.LB.LBTESTCD"]
+    assert len(lbtestcd_ref) == 1
+    assert lbtestcd_ref[0].get(f"{{{DEFINE_NS}}}ValueListOID") is None
+
+
+def test_findings_multiple_result_vlds(tmp_path: Path) -> None:
+    """Multiple result variables get separate VLDs with unique OIDs."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm("STUDYID", "Study Identifier"),
+        _make_vm("LBTESTCD", "Lab Test Code", pattern=MappingPattern.TRANSPOSE),
+        _make_vm("LBORRES", "Original Result", pattern=MappingPattern.TRANSPOSE),
+        _make_vm("LBSTRESC", "Standardized Result (Char)", pattern=MappingPattern.TRANSPOSE),
+        _make_vm("LBSTRESN", "Standardized Result (Num)", dtype="Num",
+                  pattern=MappingPattern.TRANSPOSE),
+    ]
+    spec = _make_spec(
+        domain="LB",
+        label="Laboratory Test Results",
+        domain_class="Findings",
+        structure="One record per test per visit per subject",
+        mappings=vms,
+    )
+    dfs = {
+        "LB": pd.DataFrame({"LBTESTCD": ["ALT", "AST", "WBC"]}),
+    }
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out, generated_dfs=dfs)
+
+    tree = _parse(out)
+    root = tree.getroot()
+
+    # 3 VLD elements (one per result variable)
+    vlds = root.findall(".//def:ValueListDef", NS)
+    assert len(vlds) == 3
+    vld_oids = {v.get("OID") for v in vlds}
+    assert vld_oids == {"VL.LB.LBORRES", "VL.LB.LBSTRESC", "VL.LB.LBSTRESN"}
+
+    # Each VLD has 3 ItemRef entries
+    for vld in vlds:
+        item_refs = vld.findall("odm:ItemRef", NS)
+        assert len(item_refs) == 3, f"VLD {vld.get('OID')} has {len(item_refs)} ItemRefs"
+
+    # 9 WhereClauseDef elements total (3 result vars x 3 test codes)
+    wcs = root.findall(".//def:WhereClauseDef", NS)
+    assert len(wcs) == 9
+
+    # 9 value-level ItemDef elements
+    all_item_defs = root.findall(".//odm:ItemDef", NS)
+    # Value-level ItemDefs have OID pattern IT.LB.{result_var}.{testcd}
+    vl_item_defs = [
+        it for it in all_item_defs
+        if it.get("OID", "").count(".") == 3 and it.get("OID", "").startswith("IT.LB.")
+    ]
+    assert len(vl_item_defs) == 9
+
+
+def test_no_duplicate_oids(tmp_path: Path) -> None:
+    """All OIDs across all element types are unique in multi-domain define.xml."""
+    out = tmp_path / "define.xml"
+
+    dm = _make_spec()
+    lb_vms = [
+        _make_vm("STUDYID", "Study Identifier"),
+        _make_vm("LBTESTCD", "Lab Test Code", pattern=MappingPattern.TRANSPOSE),
+        _make_vm("LBORRES", "Original Result", pattern=MappingPattern.TRANSPOSE),
+        _make_vm("LBSTRESC", "Standardized Result (Char)", pattern=MappingPattern.TRANSPOSE),
+    ]
+    lb = _make_spec(
+        domain="LB",
+        label="Laboratory Test Results",
+        domain_class="Findings",
+        structure="One record per test per visit per subject",
+        mappings=lb_vms,
+    )
+    dfs = {
+        "LB": pd.DataFrame({"LBTESTCD": ["ALT", "AST"]}),
+    }
+    generate_define_xml([dm, lb], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out, generated_dfs=dfs)
+
+    tree = _parse(out)
+    root = tree.getroot()
+
+    # Collect ALL OIDs from all element types
+    all_oids: list[str] = []
+    for el in root.iter():
+        oid = el.get("OID")
+        if oid:
+            all_oids.append(oid)
+
+    # No duplicate OIDs
+    assert len(all_oids) == len(set(all_oids)), (
+        f"Duplicate OIDs found: "
+        f"{[oid for oid in all_oids if all_oids.count(oid) > 1]}"
+    )
 
 
 def test_leaf_elements(tmp_path: Path) -> None:

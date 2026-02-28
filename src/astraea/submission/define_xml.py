@@ -23,7 +23,7 @@ from astraea.models.sdtm import CoreDesignation
 from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
 
-# ── XML namespace constants ──────────────────────────────────────────
+# -- XML namespace constants --------------------------------------------------
 ODM_NS = "http://www.cdisc.org/ns/odm/v1.3"
 DEFINE_NS = "http://www.cdisc.org/ns/def/v2.0"
 XLINK_NS = "http://www.w3.org/1999/xlink"
@@ -39,6 +39,9 @@ _FINDINGS_CLASSES = {"Findings"}
 
 # DM is the only non-repeating domain
 _NON_REPEATING_DOMAINS = {"DM"}
+
+# Result variable suffixes that get ValueListDef in Findings domains
+_RESULT_SUFFIXES = ("ORRES", "STRESC", "STRESN")
 
 
 def generate_define_xml(
@@ -87,6 +90,9 @@ def generate_define_xml(
                 oid = f"COM.{spec.domain}.{vm.sdtm_variable}"
                 comment_oids[(spec.domain, vm.sdtm_variable)] = oid
 
+    # Pre-compute VLD variables for ValueListRef on ItemRef
+    vld_by_domain = _get_vld_variables(specs)
+
     # 1. ItemGroupDef per domain
     for spec in specs:
         # Look up key_variables from SDTM-IG reference if available
@@ -95,7 +101,14 @@ def generate_define_xml(
             domain_spec = sdtm_ref.get_domain_spec(spec.domain)
             if domain_spec and domain_spec.key_variables:
                 key_variables = domain_spec.key_variables
-        _add_item_group(mdv, spec, method_oids, comment_oids, key_variables=key_variables)
+        _add_item_group(
+            mdv,
+            spec,
+            method_oids,
+            comment_oids,
+            key_variables=key_variables,
+            vld_variables=vld_by_domain.get(spec.domain),
+        )
 
     # 2. ItemDef per variable (all domains)
     for spec in specs:
@@ -129,7 +142,7 @@ def generate_define_xml(
     return output_path
 
 
-# ── Root structure helpers ───────────────────────────────────────────
+# -- Root structure helpers ---------------------------------------------------
 
 
 def _create_odm_root(study_id: str) -> etree._Element:
@@ -163,7 +176,9 @@ def _add_study(root: etree._Element, study_id: str, study_name: str) -> etree._E
     return study
 
 
-def _add_metadata_version(study: etree._Element, study_id: str, ig_version: str) -> etree._Element:
+def _add_metadata_version(
+    study: etree._Element, study_id: str, ig_version: str
+) -> etree._Element:
     """Add MetaDataVersion element with define.xml attributes."""
     mdv = etree.SubElement(study, f"{{{ODM_NS}}}MetaDataVersion")
     mdv.set("OID", f"MDV.{study_id}")
@@ -174,7 +189,7 @@ def _add_metadata_version(study: etree._Element, study_id: str, ig_version: str)
     return mdv
 
 
-# ── ItemGroupDef ─────────────────────────────────────────────────────
+# -- ItemGroupDef -------------------------------------------------------------
 
 
 def _add_item_group(
@@ -184,8 +199,18 @@ def _add_item_group(
     comment_oids: dict[tuple[str, str], str],
     *,
     key_variables: list[str] | None = None,
+    vld_variables: set[str] | None = None,
 ) -> None:
-    """Add an ItemGroupDef element for one domain."""
+    """Add an ItemGroupDef element for one domain.
+
+    Args:
+        mdv: MetaDataVersion parent element.
+        spec: Domain mapping specification.
+        method_oids: Pre-computed MethodDef OID lookup.
+        comment_oids: Pre-computed CommentDef OID lookup.
+        key_variables: Ordered list of key variables for KeySequence attribute.
+        vld_variables: Set of variable names that have ValueListDef references.
+    """
     ig = etree.SubElement(mdv, f"{{{ODM_NS}}}ItemGroupDef")
     ig.set("OID", f"IG.{spec.domain}")
     ig.set("Name", spec.domain)
@@ -223,8 +248,15 @@ def _add_item_group(
         if key in comment_oids:
             ir.set(f"{{{DEFINE_NS}}}CommentOID", comment_oids[key])
 
+        # ValueListRef for Findings result variables with VLDs
+        if vld_variables and vm.sdtm_variable in vld_variables:
+            ir.set(
+                f"{{{DEFINE_NS}}}ValueListOID",
+                f"VL.{spec.domain}.{vm.sdtm_variable}",
+            )
 
-# ── ItemDef ──────────────────────────────────────────────────────────
+
+# -- ItemDef ------------------------------------------------------------------
 
 
 def _add_item_def(mdv: etree._Element, domain: str, vm: VariableMapping) -> None:
@@ -269,7 +301,7 @@ def _add_item_def(mdv: etree._Element, domain: str, vm: VariableMapping) -> None
         clr.set("CodeListOID", f"CL.{vm.codelist_code}")
 
 
-# ── CodeList ─────────────────────────────────────────────────────────
+# -- CodeList -----------------------------------------------------------------
 
 
 def _add_codelists(
@@ -316,7 +348,7 @@ def _add_codelists(
                 alias.set("Name", term.nci_code)
 
 
-# ── MethodDef ────────────────────────────────────────────────────────
+# -- MethodDef ----------------------------------------------------------------
 
 
 def _add_methods(mdv: etree._Element, specs: list[DomainMappingSpec]) -> None:
@@ -342,7 +374,7 @@ def _add_methods(mdv: etree._Element, specs: list[DomainMappingSpec]) -> None:
             fe.text = vm.computational_method
 
 
-# ── CommentDef ───────────────────────────────────────────────────────
+# -- CommentDef ---------------------------------------------------------------
 
 
 def _get_comment_text(spec: DomainMappingSpec, vm: VariableMapping) -> str | None:
@@ -380,10 +412,7 @@ def _add_comments(mdv: etree._Element, specs: list[DomainMappingSpec]) -> None:
             tt.text = comment_text
 
 
-# ── ValueListDef ─────────────────────────────────────────────────────
-
-# Result variable suffixes that get ValueListDef in Findings domains
-_RESULT_SUFFIXES = ("ORRES", "STRESC", "STRESN")
+# -- ValueListDef -------------------------------------------------------------
 
 
 def _get_vld_variables(
@@ -538,7 +567,7 @@ def _add_item_def_for_value_level(
     tt.text = f"{result_vm.sdtm_label} ({testcd})"
 
 
-# ── Leaf elements ────────────────────────────────────────────────────
+# -- Leaf elements ------------------------------------------------------------
 
 
 def _add_leaf_elements(mdv: etree._Element, specs: list[DomainMappingSpec]) -> None:
