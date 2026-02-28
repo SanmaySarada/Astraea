@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 4 complete).
+**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4 complete).
 
 ## Current Position
 
 Phase: 7 of 8 (Validation and Submission Readiness)
-Plan: 4 of N (Predict-and-Prevent Validation)
+Plan: 3 of N (Cross-Domain & FDA Validation Rules)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 07-04-PLAN.md (predict-and-prevent validation)
+Last activity: 2026-02-28 -- Completed 07-03-PLAN.md (cross-domain & FDA rules)
 
 Progress: [██████████████████████████████████████████████████████] ~97%
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 | 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
-| 07-validation-submission | 1/? | ~4 min | ~4.0 min |
+| 07-validation-submission | 3/? | ~14 min | ~4.7 min |
 
 ## Phase 1 Deliverables
 
@@ -219,9 +219,13 @@ CLI commands available: `astraea execute-domain`
 | Predict-and-prevent validation | src/astraea/validation/predict.py | 19 | Done |
 | DomainMappingSpec.predict_prevent_issues | src/astraea/models/mapping.py | -- | Done |
 | Mapping engine integration | src/astraea/mapping/engine.py | -- | Done |
-| **Total** | | **50 new tests** | **Plans 1, 4 complete** |
+| CT value + domain value rules | src/astraea/validation/rules/terminology.py | 15 | Done |
+| Required/expected/USUBJID rules | src/astraea/validation/rules/presence.py | 15 | Done |
+| Name/label/char length rules | src/astraea/validation/rules/limits.py | 17 | Done |
+| Date format/ASCII/naming rules | src/astraea/validation/rules/format.py | 17 | Done |
+| **Total** | | **114 new tests** | **Plans 1, 2, 4 complete** |
 
-**Combined test suite: 1351 tests (1232 pass + 119 skipped)**
+**Combined test suite: 1396 tests (1277 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -342,6 +346,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-28: [D-07-01-01] RuleSeverity uses uppercase enum values (ERROR/WARNING/NOTICE) with display_name property for human-friendly output
 - 2026-02-28: [D-07-01-02] register_defaults() uses try/except import for each rule category module, allowing engine to work before any rules are implemented
 - 2026-02-28: [D-07-01-03] Rule exceptions during validate_domain are caught and converted to WARNING-severity RuleResults (never crash the engine)
+- 2026-02-28: [D-07-02-01] CT validation uses ERROR for non-extensible codelist violations and WARNING for extensible -- matches SDTM-IG semantics
+- 2026-02-28: [D-07-02-02] fix_suggestion only provided for non-extensible codelist violations (up to 5 valid terms shown)
+- 2026-02-28: [D-07-02-03] FileNamingRule validates domain code format (2-8 alpha) not actual file existence -- allows SUPPQUAL domains
 
 ### Pending Todos
 
@@ -380,5 +387,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-04-PLAN.md (Predict-and-Prevent Validation)
+Stopped at: Completed 07-02-PLAN.md (Single-Domain Validation Rules)
 Resume file: None
