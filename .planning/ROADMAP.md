@@ -2,7 +2,7 @@
 
 **Project:** Astraea-SDTM
 **Created:** 2026-02-26
-**Phases:** 10
+**Phases:** 15
 
 ## Overview
 
@@ -369,6 +369,131 @@ Plans:
 
 ---
 
+### Phase 11: Execution Contract
+
+**Goal:** Make the execution pipeline actually produce valid SDTM data from LLM-generated mapping specs — defining a formal derivation rule vocabulary that both the LLM and executor agree on, implementing all rules in pattern_handlers, adding column name resolution (eCRF names → actual SAS column names), and fixing critical bugs in date conversion and false-positive matching.
+**Depends on:** Phase 10 (clean codebase baseline)
+**Requirements:** CRIT-01, CRIT-02, CRIT-03, HIGH-01, HIGH-02, HIGH-10, HIGH-17, MED-18
+**Blocked by:** Nothing (Phase 10 complete)
+**Blocks:** Phase 12 (validation fixes need working execution pipeline)
+
+**Success Criteria:**
+1. Formal derivation rule vocabulary defined (CONCAT, MIN_DATE, MAX_DATE, RACE_CHECKBOX, ISO8601_DATE, ISO8601_PARTIAL_DATE, LAST_DISPOSITION_DATE, etc.) with documentation for each rule
+2. All derivation rules implemented in pattern_handlers.py — executing DM mapping spec on real Fakedata/dm.sas7bdat produces non-NULL USUBJID and at least 14/18 columns populated
+3. Column name resolution layer maps eCRF field names (SSUBJID, SSITENUM, SCOUNTRY) to actual SAS column names (Subject, SiteNumber, etc.)
+4. LLM mapping prompts constrained to only use recognized derivation rules from the vocabulary
+5. known_false_positives.json wildcard `"*"` matching fixed (CRIT-01 — 1-line fix)
+6. `format_partial_iso8601` fixed for hour-without-minute case (HIGH-17)
+7. DDMonYYYY (no-space) date format supported (MED-18)
+8. USUBJID auto-fix classification bug fixed (HIGH-10)
+9. All existing 1567+ tests pass + new tests for each fix
+
+**Plans:** 4 plans
+
+Plans:
+- [ ] 11-01-PLAN.md -- Bug fixes: wildcard matching, ISO 8601 partial date, DDMonYYYY format, USUBJID auto-fix
+- [ ] 11-02-PLAN.md -- Derivation rule parser, column resolution helper, and all rule handler implementations
+- [ ] 11-03-PLAN.md -- LLM prompt vocabulary constraint and executor column name resolution
+- [ ] 11-04-PLAN.md -- DM real-data integration test and full test suite verification
+
+---
+
+### Phase 12: Validation and Severity Fixes
+
+**Goal:** Add missing validation rules and fix severity misclassifications so the validation engine catches real FDA submission issues and doesn't cry wolf on false positives.
+**Depends on:** Phase 11 (execution pipeline must produce valid data to validate)
+**Requirements:** HIGH-06, HIGH-07, HIGH-08, HIGH-09, HIGH-16, MED-01, MED-04, MED-05
+**Blocked by:** Phase 11
+**Blocks:** Phase 13
+
+**Success Criteria:**
+1. DM.SEX codelist validation rule added (C66731 non-extensible, HIGH-07)
+2. --SEQ uniqueness check added (P21 SD0007 equivalent, HIGH-08)
+3. DM one-record-per-subject validation rule added (MED-05)
+4. FDAB057 (ETHNIC) severity corrected to ERROR (HIGH-09)
+5. ASTR-F002 (ASCII) severity corrected to ERROR (MED-01)
+6. FDA-mandatory TS parameters expanded from 7 to 26+ (HIGH-06)
+7. TRC checks expanded beyond SSTDTC to include SDTMVER, STYPE, TITLE (HIGH-16)
+8. TRCPreCheck integrated into validate_all() (MED-04)
+9. All existing tests pass + new tests for each rule/fix
+
+**Plans:** TBD
+
+---
+
+### Phase 13: Define.xml and Findings Completeness
+
+**Goal:** Fix structural define.xml errors and add missing Findings domain derivations (standardized results, normal range indicators, date imputation flags) so generated datasets and metadata pass P21 define.xml validation.
+**Depends on:** Phase 12 (validation rules needed to verify fixes)
+**Requirements:** HIGH-03, HIGH-04, HIGH-05, HIGH-11, HIGH-12, HIGH-13, MED-06, MED-07, MED-08, MED-09, MED-10
+**Blocked by:** Phase 12
+**Blocks:** Phase 14
+
+**Success Criteria:**
+1. ValueListDef placed on result variables (--ORRES, --STRESC, --STRESN) not --TESTCD (HIGH-11)
+2. NCI C-codes emitted on CodeListItem elements (HIGH-12)
+3. Missing ItemDef for ValueListDef ItemRef targets created (HIGH-13)
+4. --DTF/--TMF date imputation flags generated in executor (HIGH-03)
+5. --STRESC/--STRESN/--STRESU standardized results derived for Findings domains (HIGH-04)
+6. --NRIND normal range indicator derived from reference ranges (HIGH-05)
+7. Define.xml attribute completeness: KeySequence, def:Label, integer DataType for --SEQ, def:Origin Source, ODM Originator/AsOfDateTime (MED-06 through MED-10)
+8. All existing tests pass + new tests for each fix
+
+**Plans:** TBD
+
+---
+
+### Phase 14: Reference Data and Transforms
+
+**Goal:** Fix remaining reference data errors and transform gaps — missing codelists, incorrect variable mappings, date format edge cases, and performance bottlenecks.
+**Depends on:** Phase 13 (Findings completeness needed for reference data context)
+**Requirements:** HIGH-14, HIGH-15, MED-02, MED-03, MED-15, MED-16, MED-17, MED-19, MED-20, MED-21, MED-22, MED-23, MED-24, MED-25
+**Blocked by:** Phase 13
+**Blocks:** Phase 15
+
+**Success Criteria:**
+1. C66738 (Trial Summary Parameter Code) codelist added to codelists.json (HIGH-14)
+2. PE and QS key_variables VISITNUM issue fixed (HIGH-15)
+3. C66789 variable_mapping corrected from LBSPEC to LBSPCND (MED-15)
+4. C66742 variable_mappings expanded with missing variables (MED-16)
+5. Reverse lookup collision bug in controlled_terms.py fixed (MED-17)
+6. iterrows() replaced with vectorized operations in FDAB009/FDAB030/ASTR-C005 (MED-02)
+7. ISO 8601 regex updated with timezone offset support (MED-03)
+8. Date format completeness: HH:MM:SS seconds (MED-19), ISO datetime passthrough (MED-20), imputation functions (MED-21)
+9. 200-byte max validation in char_length.py (MED-22)
+10. EPOCH overlap detection for SE elements (MED-23)
+11. SEX, RACE, ETHNIC convenience recoding wrappers (MED-25)
+12. All existing tests pass + new tests for each fix
+
+**Plans:** TBD
+
+---
+
+### Phase 15: Submission Readiness
+
+**Goal:** Close remaining submission artifact gaps — define.xml polish, cSDRG content, eCTD directory structure, LC domain support, and expanded FDA Business Rules — making the output genuinely submission-ready.
+**Depends on:** Phase 14 (reference data and transforms must be correct)
+**Requirements:** MED-06, MED-11, MED-12, MED-13, MED-14, MED-26, MED-27, MED-28, MED-29, LOW items
+**Blocked by:** Phase 14
+
+**Success Criteria:**
+1. SPLIT pattern implemented (currently stub returning None, MED-11)
+2. Multi-source merge supports key-based horizontal joins (MED-12)
+3. Specimen type (--SPEC), method (--METHOD), fasting (--FAST) handling added (MED-13)
+4. DM mapping prompts enforce Required DM variables ARM/ARMCD/ACTARM/ACTARMCD (MED-14)
+5. cSDRG Section 2 (Study Description) and Section 6 (Known Data Issues) populated (MED-26)
+6. eCTD directory structure enforcement (`m5/datasets/tabulations/sdtm/`, MED-27)
+7. cSDRG non-standard variable justification per variable (MED-28)
+8. Pre-mapped SDTM data detection (ecg_results, lab_results, MED-29)
+9. LC (Laboratory Conventional) domain support per SDTCG v5.7
+10. Expanded FDA Business Rules (target: 20+ of ~45 FDAB rules)
+11. All LOW items addressed as time permits
+12. All existing tests pass + new tests for each feature
+
+**Plans:** TBD
+
+---
+
 ## Progress
 
 | Phase | Status | Completed |
@@ -387,7 +512,12 @@ Plans:
 | 8 - Learning System | Complete | 2026-02-28 |
 | 9 - CLI Wiring — Close Audit Gaps | Complete | 2026-02-27 |
 | 10 - Tech Debt Cleanup | Complete | 2026-02-28 |
+| 11 - Execution Contract | Not Started | -- |
+| 12 - Validation and Severity Fixes | Not Started | -- |
+| 13 - Define.xml and Findings Completeness | Not Started | -- |
+| 14 - Reference Data and Transforms | Not Started | -- |
+| 15 - Submission Readiness | Not Started | -- |
 
 ---
 
-*Roadmap for milestone: v1.0*
+*Roadmap for milestone: v1.1*
