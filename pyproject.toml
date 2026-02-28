@@ -29,6 +29,8 @@ dependencies = [
     "pymupdf4llm>=0.3.4",
     "pdfplumber>=0.11",
     "tenacity>=9.0",
+    "lxml>=5.0",
+    "jinja2>=3.1",
 ]
 
 [project.optional-dependencies]
