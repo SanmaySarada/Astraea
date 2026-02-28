@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 8 IN PROGRESS -- Learning System (2/4 plans complete).
+**Current focus:** Phase 8 IN PROGRESS -- Learning System (3/4 plans complete).
 
 ## Current Position
 
 Phase: 8 of 8 (Learning System)
-Plan: 2 of 4 (Few-Shot Retriever + MappingEngine Integration)
+Plan: 3 of 4 (Ingestion Pipeline and Accuracy Metrics)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 08-02-PLAN.md (Few-shot retriever and MappingEngine integration)
+Last activity: 2026-02-28 -- Completed 08-03-PLAN.md (Ingestion pipeline and accuracy metrics)
 
 Progress: [███████████████████████████████████████████████████████████░] 98%
 
@@ -265,9 +265,11 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 | ChromaDB vector store | src/astraea/learning/vector_store.py | 6 | Done |
 | LearningRetriever | src/astraea/learning/retriever.py | 13 | Done |
 | MappingEngine learning integration | src/astraea/mapping/engine.py | 6 | Done |
-| **Total** | | **46 new tests** | **2/4 plans complete** |
+| Accuracy metrics computation | src/astraea/learning/metrics.py | 11 | Done |
+| Review-to-learning ingestion | src/astraea/learning/ingestion.py | 7 | Done |
+| **Total** | | **64 new tests** | **3/4 plans complete** |
 
-**Combined test suite: ~1584 tests**
+**Combined test suite: ~1602 tests**
 
 ## Accumulated Context
 
@@ -416,6 +418,9 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 - 2026-02-28: [D-08-02-01] TYPE_CHECKING guard for LearningRetriever import avoids chromadb as import-time dependency
 - 2026-02-28: [D-08-02-02] Corrections prioritized (up to 3) before approved examples in retrieval output
 - 2026-02-28: [D-08-02-03] Examples section injected between context prompt and user instructions for natural LLM prompt flow
+- 2026-02-28: [D-08-03-01] Deterministic example_id as f'{study_id}_{domain}_{sdtm_variable}' for idempotent ingestion
+- 2026-02-28: [D-08-03-02] was_corrected flag excludes REJECT and ADD correction types (only tracks actual corrections)
+- 2026-02-28: [D-08-03-03] ingest_session skips non-COMPLETED domain reviews rather than erroring
 
 ### Pending Todos
 
@@ -460,5 +465,5 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-02-PLAN.md (Few-shot retriever and MappingEngine integration)
+Stopped at: Completed 08-03-PLAN.md (Ingestion pipeline and accuracy metrics)
 Resume file: None
