@@ -5,21 +5,24 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** ALL PHASES COMPLETE -- v1.1 milestone ready for audit
+**Current focus:** Phase 15.1 — Fix wiring gaps and tech debt from v1.1 audit
 
 ## Current Position
 
-Phase: 15 of 15 (Submission Readiness)
-Plan: 6 of 6
-Status: Phase complete
-Last activity: 2026-02-28 -- Completed 15-06-PLAN.md (CLI Integration and Final Regression)
+Phase: 15.1 (Wiring Gaps and Tech Debt Closure)
+Plan: 1 of 2
+Status: In progress
+Last activity: 2026-02-28 -- Completed 15.1-01-PLAN.md (wiring gaps fix)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 100%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 ~99%
+
+### Roadmap Evolution
+- Phase 15.1 inserted after Phase 15: Fix wiring gaps (SUPPQUAL/ordering rule registration, review→validate filename mismatch) and remaining tech debt (URGENT)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 50
+- Total plans completed: 51
 - Average duration: ~3.4 minutes
 
 **By Phase:**
