@@ -12,7 +12,7 @@ See: .planning/PROJECT.md
 Phase: 13 of 15 (Define.xml and Findings Completeness)
 Plan: 4 of 4
 Status: In progress
-Last activity: 2026-02-28 -- Completed 13-04-PLAN.md (DTF/TMF Imputation Flags) -- 1696 tests passing
+Last activity: 2026-02-28 -- Completed 13-02-PLAN.md (Define.xml Attribute Additions) -- 802 unit tests passing
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 40%
 
@@ -494,6 +494,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-13-03-01] No unit conversion in v1 -- ORRESU copied directly to STRESU (unit standardization deferred)
 - 2026-02-28: [D-13-03-02] pd.isna() for null assertions since pandas coerces None to NaN in mixed-type DataFrame columns
 - 2026-02-28: [D-13-03-03] np.select + pd.array(dtype=object) for proper None preservation in NRIND derivation
+- 2026-02-28: [D-13-02-01] VariableOrigin import added to define_xml.py for Origin Source attribute dispatch
+- 2026-02-28: [D-13-02-02] CRF origin Source includes source_variable in parentheses (e.g., "CRF (GENDER)") for traceability
+- 2026-02-28: [D-13-02-03] Assigned origin Source uses "Sponsor defined" per CDISC define.xml conventions
 
 ### Pending Todos
 
@@ -538,5 +541,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 13-04-PLAN.md (DTF/TMF Imputation Flags)
+Stopped at: Completed 13-02-PLAN.md (Define.xml Attribute Additions)
 Resume file: None
