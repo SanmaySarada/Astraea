@@ -364,8 +364,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md -- Fix all ruff lint violations (139) and mypy type errors (122)
-- [ ] 10-02-PLAN.md -- Update REQUIREMENTS.md checkboxes + expand known_false_positives.json
+- [x] 10-01-PLAN.md -- Fix all ruff lint violations (139) and mypy type errors (122)
+- [x] 10-02-PLAN.md -- Update REQUIREMENTS.md checkboxes + expand known_false_positives.json
 
 ---
 
@@ -386,7 +386,7 @@ Plans:
 | 7.1 - Auto-Fix Validation Issues (INSERTED) | Complete | 2026-02-28 |
 | 8 - Learning System | Complete | 2026-02-28 |
 | 9 - CLI Wiring — Close Audit Gaps | Complete | 2026-02-27 |
-| 10 - Tech Debt Cleanup | Pending | — |
+| 10 - Tech Debt Cleanup | Complete | 2026-02-28 |
 
 ---
 
