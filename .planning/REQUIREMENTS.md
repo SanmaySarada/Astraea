@@ -85,11 +85,11 @@
 
 - [x] **HITL-01**: System presents proposed mappings to human reviewer at each domain, pausing for approval/correction
 - [x] **HITL-02**: System captures human corrections with structured metadata (what was wrong, what's correct, why)
-- [ ] **HITL-03**: System stores corrections in vector database (ChromaDB) for future retrieval
-- [ ] **HITL-04**: System retrieves similar past corrections when mapping new studies (few-shot RAG)
-- [ ] **HITL-05**: System optimizes prompts from accumulated corrections using DSPy
-- [ ] **HITL-06**: System builds cross-study template library from approved mappings
-- [ ] **HITL-07**: System improves accuracy measurably over successive studies
+- [x] **HITL-03**: System stores corrections in vector database (ChromaDB) for future retrieval
+- [x] **HITL-04**: System retrieves similar past corrections when mapping new studies (few-shot RAG)
+- [x] **HITL-05**: System optimizes prompts from accumulated corrections using DSPy
+- [x] **HITL-06**: System builds cross-study template library from approved mappings
+- [x] **HITL-07**: System improves accuracy measurably over successive studies
 
 ### CLI Interface
 
@@ -199,11 +199,11 @@
 | VAL-06 | Phase 7 | Complete |
 | VAL-07 | Phase 7 | Complete |
 | VAL-08 | Phase 7 | Complete |
-| HITL-03 | Phase 8 | Pending |
-| HITL-04 | Phase 8 | Pending |
-| HITL-05 | Phase 8 | Pending |
-| HITL-06 | Phase 8 | Pending |
-| HITL-07 | Phase 8 | Pending |
+| HITL-03 | Phase 8 | Complete |
+| HITL-04 | Phase 8 | Complete |
+| HITL-05 | Phase 8 | Complete |
+| HITL-06 | Phase 8 | Complete |
+| HITL-07 | Phase 8 | Complete |
 | CLI-01 | Phase 1 | Complete |
 | CLI-04 | Phase 1 | Complete |
 
@@ -214,4 +214,4 @@
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-02-28 after Phase 7 completion*
+*Last updated: 2026-02-28 after Phase 8 completion*

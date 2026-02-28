@@ -317,11 +317,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 08-01-PLAN.md -- Pydantic models, SQLite example store, ChromaDB vector store
-- [ ] 08-02-PLAN.md -- LearningRetriever and MappingEngine integration (few-shot RAG)
-- [ ] 08-03-PLAN.md -- Accuracy metrics tracker and review-to-learning ingestion pipeline
-- [ ] 08-04-PLAN.md -- Cross-study domain template library
-- [ ] 08-05-PLAN.md -- DSPy prompt optimizer and CLI commands (learn-ingest, learn-stats, learn-optimize)
+- [x] 08-01-PLAN.md -- Pydantic models, SQLite example store, ChromaDB vector store
+- [x] 08-02-PLAN.md -- LearningRetriever and MappingEngine integration (few-shot RAG)
+- [x] 08-03-PLAN.md -- Accuracy metrics tracker and review-to-learning ingestion pipeline
+- [x] 08-04-PLAN.md -- Cross-study domain template library
+- [x] 08-05-PLAN.md -- DSPy prompt optimizer and CLI commands (learn-ingest, learn-stats, learn-optimize)
 
 ---
 
@@ -340,7 +340,7 @@ Plans:
 | 6 - Findings Domains and Complex Transformations | Complete | 2026-02-27 |
 | 7 - Validation and Submission Readiness | Complete | 2026-02-28 |
 | 7.1 - Auto-Fix Validation Issues (INSERTED) | Complete | 2026-02-28 |
-| 8 - Learning System | Not started | -- |
+| 8 - Learning System | Complete | 2026-02-28 |
 
 ---
 
