@@ -9,10 +9,10 @@ See: .planning/PROJECT.md
 
 ## Current Position
 
-Phase: 14 of 15 (next: Reference Data and Transforms)
-Plan: 0 of TBD
-Status: Phase 13 COMPLETE -- Phase 14 NOT STARTED
-Last activity: 2026-02-28 -- Completed Phase 13 (Define.xml and Findings Completeness) -- all 4 plans executed, 804 unit tests passing
+Phase: 14 of 15 (Reference Data and Transforms)
+Plan: 2 of 4
+Status: In progress
+Last activity: 2026-02-28 -- Completed 14-02-PLAN.md (Date/Time Fixes)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 53%
 
@@ -520,6 +520,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-13-01-01] ValueListDef OID uses VL.{domain}.{result_var} not VL.{domain}.{testcd} per define.xml 2.0
 - 2026-02-28: [D-13-01-02] WhereClauseDef OID includes result variable: WC.{domain}.{result_var}.{testcd} for uniqueness
 - 2026-02-28: [D-13-01-03] Pre-computed vld_variables dict passed to _add_item_group as keyword arg for ValueListRef
+- 2026-02-28: [D-14-02-01] ISO datetime passthrough check placed before YYYY-MM-DD check to match more specific pattern first
+- 2026-02-28: [D-14-02-02] impute_partial_date returns date-only for YYYY/YYYY-MM inputs (no time appended unless partial time present)
+- 2026-02-28: [D-14-02-03] Timezone group placed inside T-group in validation regex so date-only strings cannot have timezone
 
 ### Pending Todos
 
@@ -564,5 +567,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed Phase 13 (Define.xml and Findings Completeness) -- all 4 plans executed
+Stopped at: Completed 14-02-PLAN.md (Date/Time Fixes)
 Resume file: None
