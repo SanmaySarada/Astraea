@@ -65,3 +65,7 @@ class DatasetProfile(BaseModel):
         default_factory=list, description="Names of variables detected as dates"
     )
     edc_columns: list[str] = Field(default_factory=list, description="Names of EDC system columns")
+    is_sdtm_preformatted: bool = Field(
+        default=False,
+        description="Whether this dataset appears to be already in SDTM Findings format",
+    )

@@ -174,6 +174,58 @@ def _compute_top_values(
     ]
 
 
+# SDTM Findings domain prefixes and their characteristic variable suffixes.
+_FINDINGS_PREFIXES: tuple[str, ...] = ("LB", "EG", "VS", "PE", "QS")
+_FINDINGS_SUFFIXES: frozenset[str] = frozenset({"TESTCD", "TEST", "ORRES", "STRESC", "STRESN"})
+
+# Valid SDTM domain codes for DOMAIN column detection.
+_VALID_SDTM_DOMAINS: frozenset[str] = frozenset(
+    {
+        "DM", "AE", "CE", "DS", "DV", "MH",
+        "CM", "EX", "SU", "EC",
+        "LB", "VS", "EG", "PE", "QS", "SC", "FA", "IE", "RS", "TR", "TU",
+        "SV", "SE", "TV", "TA", "TE", "TI", "TS",
+    }
+)
+
+
+def detect_sdtm_format(profile: DatasetProfile) -> bool:
+    """Detect if a profiled dataset is already in SDTM Findings format.
+
+    Checks for characteristic Findings domain variable patterns
+    (e.g., LBTESTCD, LBTEST, LBORRES) and the presence of a DOMAIN
+    column with a valid SDTM domain code.
+
+    Args:
+        profile: A profiled dataset.
+
+    Returns:
+        True if the dataset appears to be pre-mapped SDTM data.
+    """
+    # Get non-EDC column names in uppercase
+    col_names = {
+        v.name.upper() for v in profile.variables if not v.is_edc_column
+    }
+
+    # Check for Findings domain patterns
+    for prefix in _FINDINGS_PREFIXES:
+        matches = sum(
+            1 for suffix in _FINDINGS_SUFFIXES
+            if f"{prefix}{suffix}" in col_names
+        )
+        if matches >= 3:
+            return True
+
+    # Check for DOMAIN column with valid SDTM code
+    if "DOMAIN" in col_names:
+        for v in profile.variables:
+            if v.name.upper() == "DOMAIN" and v.sample_values:
+                if any(sv.strip().upper() in _VALID_SDTM_DOMAINS for sv in v.sample_values):
+                    return True
+
+    return False
+
+
 def profile_dataset(df: pd.DataFrame, meta: DatasetMetadata) -> DatasetProfile:
     """Profile a raw SAS dataset, producing rich statistical summaries.
 
@@ -268,11 +320,15 @@ def profile_dataset(df: pd.DataFrame, meta: DatasetMetadata) -> DatasetProfile:
         edc_columns=edc_columns,
     )
 
+    # Detect pre-mapped SDTM Findings datasets (MED-29)
+    profile.is_sdtm_preformatted = detect_sdtm_format(profile)
+
     logger.info(
-        "Profiled {}: {} EDC columns, {} date variables",
+        "Profiled {}: {} EDC columns, {} date variables, sdtm_preformatted={}",
         meta.filename,
         len(edc_columns),
         len(date_variables),
+        profile.is_sdtm_preformatted,
     )
 
     return profile
