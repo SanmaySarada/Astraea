@@ -7,7 +7,7 @@ known false-positive documentation.
 
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -15,7 +15,7 @@ from jinja2 import Template
 
 from astraea.models.mapping import DomainMappingSpec
 from astraea.validation.report import ValidationReport
-from astraea.validation.rules.base import RuleSeverity
+from astraea.validation.rules.base import RuleResult, RuleSeverity
 
 _CSDRG_TEMPLATE = """\
 # Clinical Study Data Reviewer's Guide
@@ -36,7 +36,7 @@ mapping rationale, and any known data issues or deviations.
 
 ## 2. Study Description
 
-[Placeholder: Add study description, trial design, objectives, endpoints]
+{{ study_description }}
 
 ---
 
@@ -119,8 +119,7 @@ per SDTM conventions.
 
 ### Known Data Issues
 
-[Placeholder: Document any known data quality issues, protocol deviations
-affecting data, or other concerns for the reviewer.]
+{{ known_data_issues }}
 
 ---
 
@@ -162,17 +161,141 @@ from the effective error and warning counts.
 ## 8. Non-Standard Variables
 
 {% if all_suppqual_candidates -%}
-The following source variables are recommended for SUPPQUAL domains:
+The following source variables are placed in supplemental qualifier domains
+because they do not map to standard SDTM variables per SDTM-IG v{{ sdtm_ig_version }}.
 
-| Domain | Variable | Notes |
-|--------|----------|-------|
+| Domain | Variable | Justification | Origin |
+|--------|----------|---------------|--------|
 {% for item in all_suppqual_candidates -%}
-| {{ item.domain }} | {{ item.variable }} | {{ item.notes }} |
+| {{ item.domain }} | {{ item.variable }} | {{ item.justification }} | {{ item.origin }} |
 {% endfor %}
 {% else -%}
 No non-standard variables requiring SUPPQUAL placement were identified.
 {% endif %}
 """
+
+
+def _generate_study_description(ts_params: dict[str, str]) -> str:
+    """Build a study description paragraph from TS (Trial Summary) parameters.
+
+    Uses standard TS parameter codes: TITLE, TPHASE, INDIC, TBLIND,
+    TCNTRL, NARMS, PLANSUB, OBJPRIM.  Missing parameters fall back
+    to "[Not specified]".
+
+    Args:
+        ts_params: Mapping of TS parameter codes to values.
+
+    Returns:
+        Formatted study description string.
+    """
+
+    def _get(key: str) -> str:
+        return ts_params.get(key, "[Not specified]")
+
+    title = _get("TITLE")
+    tphase = _get("TPHASE")
+    tblind = _get("TBLIND")
+    tcntrl = _get("TCNTRL")
+    indic = _get("INDIC")
+    narms = _get("NARMS")
+    plansub = _get("PLANSUB")
+    objprim = _get("OBJPRIM")
+
+    return (
+        f"{title}\n\n"
+        f"This is a {tphase}, {tblind}, {tcntrl} study investigating "
+        f"{indic}. The study was designed with {narms} treatment arm(s) "
+        f"and a planned enrollment of {plansub} subjects. "
+        f"Primary objective: {objprim}."
+    )
+
+
+def _generate_known_data_issues(
+    validation_report: ValidationReport,
+) -> str:
+    """Build the Known Data Issues narrative from validation findings.
+
+    Groups unresolved ERROR-level findings by domain and lists them.
+
+    Args:
+        validation_report: The study validation report.
+
+    Returns:
+        Formatted known data issues string.
+    """
+    # Collect ERROR-level, non-false-positive findings grouped by domain
+    domain_issues: dict[str, list[RuleResult]] = defaultdict(list)
+    for r in validation_report.results:
+        if r.severity == RuleSeverity.ERROR and not r.known_false_positive:
+            domain_key = r.domain or "General"
+            domain_issues[domain_key].append(r)
+
+    if not domain_issues:
+        return "No unresolved data quality issues were identified."
+
+    lines: list[str] = []
+    for domain in sorted(domain_issues):
+        lines.append(f"**{domain}:**\n")
+        for issue in domain_issues[domain]:
+            var_info = f" ({issue.variable})" if issue.variable else ""
+            count_info = (
+                f" [{issue.affected_count} record(s)]"
+                if issue.affected_count > 0
+                else ""
+            )
+            lines.append(f"- [{issue.rule_id}]{var_info}: {issue.message}{count_info}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def _build_suppqual_justifications(
+    specs: list[DomainMappingSpec],
+    sdtm_ig_version: str,
+) -> list[dict[str, str]]:
+    """Build per-variable SUPPQUAL justification entries.
+
+    For each SUPPQUAL candidate, provides: domain, variable name,
+    justification text, and data origin (CRF/Derived).
+
+    Args:
+        specs: Domain mapping specifications.
+        sdtm_ig_version: IG version string for the justification text.
+
+    Returns:
+        List of dicts with domain, variable, justification, origin keys.
+    """
+    entries: list[dict[str, str]] = []
+    for spec in specs:
+        for var in spec.suppqual_candidates:
+            # Try to find matching variable mapping for origin info
+            origin = "CRF"
+            source_ds = ", ".join(spec.source_datasets)
+            for vm in spec.variable_mappings:
+                notes_lower = vm.notes.lower()
+                if (
+                    vm.source_variable
+                    and vm.source_variable.upper() == var.upper()
+                ) or (var.upper() in notes_lower):
+                    origin = vm.origin.value if vm.origin else "CRF"
+                    if vm.source_dataset:
+                        source_ds = vm.source_dataset
+                    break
+
+            justification = (
+                f"Variable {var} from source dataset {source_ds} does not map "
+                f"to a standard {spec.domain} variable per SDTM-IG v{sdtm_ig_version}. "
+                f"Placed in SUPP{spec.domain} to preserve data for regulatory review."
+            )
+            entries.append(
+                {
+                    "domain": spec.domain,
+                    "variable": var,
+                    "justification": justification,
+                    "origin": origin,
+                }
+            )
+    return entries
 
 
 def generate_csdrg(
@@ -183,6 +306,7 @@ def generate_csdrg(
     *,
     sdtm_ig_version: str = "3.4",
     ct_version: str | None = None,
+    ts_params: dict[str, str] | None = None,
 ) -> Path:
     """Generate a cSDRG (Clinical Study Data Reviewer's Guide) Markdown document.
 
@@ -197,6 +321,9 @@ def generate_csdrg(
         output_path: Path to write the generated Markdown file.
         sdtm_ig_version: SDTM-IG version string (default "3.4").
         ct_version: Controlled Terminology version string.
+        ts_params: Optional TS (Trial Summary) parameters for Section 2
+            study description generation.  Keys are standard TS parameter
+            codes (TITLE, TPHASE, INDIC, etc.).
 
     Returns:
         The output_path where the cSDRG was written.
@@ -221,17 +348,20 @@ def generate_csdrg(
                 ns_vars.append(vm.sdtm_variable)
         non_standard_vars[spec.domain] = ns_vars
 
-    # Build SUPPQUAL candidates across all domains
-    all_suppqual_candidates: list[dict[str, str]] = []
-    for spec in specs:
-        for var in spec.suppqual_candidates:
-            all_suppqual_candidates.append(
-                {
-                    "domain": spec.domain,
-                    "variable": var,
-                    "notes": f"Source variable from {', '.join(spec.source_datasets)}",
-                }
-            )
+    # Build SUPPQUAL candidates with per-variable justification
+    all_suppqual_candidates = _build_suppqual_justifications(specs, sdtm_ig_version)
+
+    # Generate Section 2 -- Study Description
+    if ts_params:
+        study_description = _generate_study_description(ts_params)
+    else:
+        study_description = (
+            "[Placeholder: Add study description, trial design, "
+            "objectives, endpoints]"
+        )
+
+    # Generate Section 6 -- Known Data Issues
+    known_data_issues = _generate_known_data_issues(validation_report)
 
     # Build overview rows for the dataset table
     overview_rows = [
@@ -297,6 +427,8 @@ def generate_csdrg(
         known_fps=known_fps,
         fp_rows=fp_rows,
         all_suppqual_candidates=all_suppqual_candidates,
+        study_description=study_description,
+        known_data_issues=known_data_issues,
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
