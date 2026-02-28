@@ -314,7 +314,14 @@ Plans:
 3. System builds a cross-study template library from approved mappings that can be applied to new studies
 4. System accuracy improves measurably between the first and third study processed (tracked metric)
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 5 plans
+
+Plans:
+- [ ] 08-01-PLAN.md -- Pydantic models, SQLite example store, ChromaDB vector store
+- [ ] 08-02-PLAN.md -- LearningRetriever and MappingEngine integration (few-shot RAG)
+- [ ] 08-03-PLAN.md -- Accuracy metrics tracker and review-to-learning ingestion pipeline
+- [ ] 08-04-PLAN.md -- Cross-study domain template library
+- [ ] 08-05-PLAN.md -- DSPy prompt optimizer and CLI commands (learn-ingest, learn-stats, learn-optimize)
 
 ---
 
