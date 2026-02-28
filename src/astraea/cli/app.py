@@ -735,7 +735,11 @@ def validate_cmd(
     from astraea.models.mapping import DomainMappingSpec
 
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
+    spec_files = (
+        sorted(search_dir.glob("*_spec.json"))
+        + sorted(search_dir.glob("*_mapping.json"))
+        + sorted(search_dir.glob("*_reviewed.json"))
+    )
     domain_specs: dict[str, DomainMappingSpec] = {}
     for spec_path in spec_files:
         try:
@@ -868,7 +872,11 @@ def generate_define_cmd(
     # Load mapping specs
     console.print("[bold blue][1/3][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
+    spec_files = (
+        sorted(search_dir.glob("*_spec.json"))
+        + sorted(search_dir.glob("*_mapping.json"))
+        + sorted(search_dir.glob("*_reviewed.json"))
+    )
     specs: list[DomainMappingSpec] = []
     for spec_path in spec_files:
         try:
@@ -966,7 +974,11 @@ def generate_csdrg_cmd(
     # Load mapping specs
     console.print("[bold blue][1/2][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
+    spec_files = (
+        sorted(search_dir.glob("*_spec.json"))
+        + sorted(search_dir.glob("*_mapping.json"))
+        + sorted(search_dir.glob("*_reviewed.json"))
+    )
     specs: list[DomainMappingSpec] = []
     for spec_path in spec_files:
         try:
@@ -1095,7 +1107,11 @@ def auto_fix_cmd(
     # Step 2: Load mapping specs
     console.print("[bold blue][2/4][/bold blue] Loading mapping specs...")
     search_dir = specs_dir or output_dir
-    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(search_dir.glob("*_mapping.json"))
+    spec_files = (
+        sorted(search_dir.glob("*_spec.json"))
+        + sorted(search_dir.glob("*_mapping.json"))
+        + sorted(search_dir.glob("*_reviewed.json"))
+    )
     domain_specs: dict[str, DomainMappingSpec] = {}
     for spec_path in spec_files:
         try:
