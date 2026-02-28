@@ -10,9 +10,9 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 12 of 15 (Validation and Severity Fixes)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In progress
-Last activity: 2026-02-28 -- Completed 12-01-PLAN.md (Severity fixes + new validation rules)
+Last activity: 2026-02-28 -- Completed 12-02-PLAN.md (TS Parameter Expansion + TRC Enhancement)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 20%
 
@@ -469,6 +469,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-12-01-01] FDAB057 (ETHNIC) promoted to ERROR: C66790 is non-extensible, invalid values are submission errors
 - 2026-02-28: [D-12-01-02] ASTR-F002 (ASCII) promoted to ERROR: non-ASCII characters cause XPT data corruption
 - 2026-02-28: [D-12-01-03] SeqUniquenessRule uses domain[:2] prefix (AE->AESEQ, LB->LBSEQ) matching existing FDAB039 pattern
+- 2026-02-28: [D-12-02-01] FDA_REQUIRED_PARAMS expanded to 26 entries covering all CDER-mandated TS codes
+- 2026-02-28: [D-12-02-02] _TRC_REQUIRED_TS_PARAMS separates 4 rejection-critical params from 26 warning-level params
+- 2026-02-28: [D-12-02-03] TRC rule_ids use FDA-TRC-{PARAM} format for new params (FDA-TRC-SDTMVER, FDA-TRC-STYPE, FDA-TRC-TITLE)
 
 ### Pending Todos
 
@@ -513,5 +516,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 12-01-PLAN.md (Severity fixes + new validation rules)
+Stopped at: Completed 12-02-PLAN.md (TS Parameter Expansion + TRC Enhancement)
 Resume file: None
