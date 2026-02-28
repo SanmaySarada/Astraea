@@ -523,7 +523,7 @@ def test_multiple_domains(tmp_path: Path) -> None:
 
 
 def test_findings_value_list(tmp_path: Path) -> None:
-    """ValueListDef generated for Findings domains with TRANSPOSE pattern."""
+    """ValueListDef generated for Findings result variables with TRANSPOSE pattern."""
     out = tmp_path / "define.xml"
     vms = [
         _make_vm("STUDYID", "Study Identifier"),
@@ -553,16 +553,16 @@ def test_findings_value_list(tmp_path: Path) -> None:
     tree = _parse(out)
     root = tree.getroot()
 
-    # ValueListDef
+    # ValueListDef -- placed on result variable (LBORRES), not TESTCD
     vlds = root.findall(".//def:ValueListDef", NS)
     assert len(vlds) == 1
-    assert vlds[0].get("OID") == "VL.LB.LBTESTCD"
+    assert vlds[0].get("OID") == "VL.LB.LBORRES"
 
     # 3 unique test codes -> 3 ItemRef entries
     item_refs = vlds[0].findall("odm:ItemRef", NS)
     assert len(item_refs) == 3
 
-    # WhereClauseDef elements
+    # WhereClauseDef elements -- 3 (one per test code per result variable)
     wcs = root.findall(".//def:WhereClauseDef", NS)
     assert len(wcs) == 3
 
@@ -704,3 +704,93 @@ def test_seq_integer_datatype(tmp_path: Path) -> None:
 
     assert item_map["AESEQ"].get("DataType") == "integer"
     assert item_map["AGE"].get("DataType") == "float"
+
+
+# ── MED-09/10 Tests ─────────────────────────────────────────────────
+
+
+def test_origin_source_crf(tmp_path: Path) -> None:
+    """MED-09: CRF origin includes Source='CRF (source_variable)'."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm(
+            "SEX",
+            "Sex",
+            origin=VariableOrigin.CRF,
+            source_variable="GENDER",
+        ),
+    ]
+    spec = _make_spec(mappings=vms)
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    item = tree.getroot().find(".//odm:ItemDef", NS)
+    assert item is not None
+    origin_el = item.find("def:Origin", NS)
+    assert origin_el is not None
+    assert origin_el.get("Type") == "CRF"
+    assert origin_el.get("Source") == "CRF (GENDER)"
+
+
+def test_origin_source_derived(tmp_path: Path) -> None:
+    """MED-09: Derived origin includes Source='Derived'."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm(
+            "AGE",
+            "Age",
+            dtype="Num",
+            origin=VariableOrigin.DERIVED,
+            computational_method="floor((RFSTDTC - BRTHDTC) / 365.25)",
+        ),
+    ]
+    spec = _make_spec(mappings=vms)
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    item = tree.getroot().find(".//odm:ItemDef", NS)
+    assert item is not None
+    origin_el = item.find("def:Origin", NS)
+    assert origin_el is not None
+    assert origin_el.get("Type") == "Derived"
+    assert origin_el.get("Source") == "Derived"
+
+
+def test_origin_source_assigned(tmp_path: Path) -> None:
+    """MED-09: Assigned origin includes Source='Sponsor defined'."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm(
+            "STUDYID",
+            "Study Identifier",
+            origin=VariableOrigin.ASSIGNED,
+        ),
+    ]
+    spec = _make_spec(mappings=vms)
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    item = tree.getroot().find(".//odm:ItemDef", NS)
+    assert item is not None
+    origin_el = item.find("def:Origin", NS)
+    assert origin_el is not None
+    assert origin_el.get("Type") == "Assigned"
+    assert origin_el.get("Source") == "Sponsor defined"
+
+
+def test_odm_originator(tmp_path: Path) -> None:
+    """MED-10: ODM root has Originator and valid AsOfDateTime."""
+    out = tmp_path / "define.xml"
+    spec = _make_spec()
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    root = tree.getroot()
+
+    assert root.get("Originator") == "Astraea-SDTM"
+    as_of = root.get("AsOfDateTime")
+    assert as_of is not None
+    # Validate ISO datetime format: YYYY-MM-DDTHH:MM:SS
+    assert len(as_of) == 19
+    assert as_of[4] == "-"
+    assert as_of[10] == "T"

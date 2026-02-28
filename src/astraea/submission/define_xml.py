@@ -17,6 +17,7 @@ from astraea.models.mapping import (
     DomainMappingSpec,
     MappingPattern,
     VariableMapping,
+    VariableOrigin,
 )
 from astraea.models.sdtm import CoreDesignation
 from astraea.reference.controlled_terms import CTReference
@@ -138,6 +139,8 @@ def _create_odm_root(study_id: str) -> etree._Element:
     root.set("FileOID", f"DEFINE.{study_id}")
     root.set("CreationDateTime", datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S"))
     root.set("ODMVersion", "1.3.2")
+    root.set("Originator", "Astraea-SDTM")
+    root.set("AsOfDateTime", datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S"))
     return root
 
 
@@ -249,10 +252,16 @@ def _add_item_def(mdv: etree._Element, domain: str, vm: VariableMapping) -> None
     tt.set(f"{{{XML_NS}}}lang", "en")
     tt.text = vm.sdtm_label
 
-    # Origin
+    # Origin with Source attribute
     if vm.origin:
         origin_el = etree.SubElement(it, f"{{{DEFINE_NS}}}Origin")
         origin_el.set("Type", vm.origin.value)
+        if vm.origin == VariableOrigin.CRF and vm.source_variable:
+            origin_el.set("Source", f"CRF ({vm.source_variable})")
+        elif vm.origin == VariableOrigin.DERIVED:
+            origin_el.set("Source", "Derived")
+        elif vm.origin == VariableOrigin.ASSIGNED:
+            origin_el.set("Source", "Sponsor defined")
 
     # CodeListRef
     if vm.codelist_code:
@@ -373,24 +382,64 @@ def _add_comments(mdv: etree._Element, specs: list[DomainMappingSpec]) -> None:
 
 # ── ValueListDef ─────────────────────────────────────────────────────
 
+# Result variable suffixes that get ValueListDef in Findings domains
+_RESULT_SUFFIXES = ("ORRES", "STRESC", "STRESN")
+
+
+def _get_vld_variables(
+    specs: list[DomainMappingSpec],
+) -> dict[str, set[str]]:
+    """Pre-compute which variables have ValueListDefs, keyed by domain.
+
+    Returns a dict of domain -> set of variable names with VLDs.
+    Used by _add_item_group to add def:ValueListRef on ItemRef elements.
+    """
+    result: dict[str, set[str]] = {}
+    for spec in specs:
+        if spec.domain_class not in _FINDINGS_CLASSES:
+            continue
+
+        # Must have TESTCD and TRANSPOSE pattern
+        has_testcd = any(vm.sdtm_variable.endswith("TESTCD") for vm in spec.variable_mappings)
+        has_transpose = any(
+            vm.mapping_pattern == MappingPattern.TRANSPOSE for vm in spec.variable_mappings
+        )
+        if not has_testcd or not has_transpose:
+            continue
+
+        # Find result variables
+        vld_vars = {
+            vm.sdtm_variable
+            for vm in spec.variable_mappings
+            if any(vm.sdtm_variable.endswith(s) for s in _RESULT_SUFFIXES)
+        }
+        if vld_vars:
+            result[spec.domain] = vld_vars
+
+    return result
+
 
 def _add_value_lists(
     mdv: etree._Element,
     specs: list[DomainMappingSpec],
     generated_dfs: dict[str, pd.DataFrame] | None,
 ) -> None:
-    """Add ValueListDef elements for Findings domains with TRANSPOSE pattern."""
+    """Add ValueListDef elements for Findings result variables.
+
+    Per define.xml 2.0, ValueListDef is placed on each result variable
+    (--ORRES, --STRESC, --STRESN), parameterized by --TESTCD values
+    via WhereClauseDef. This replaces the pre-2.0 pattern of placing
+    VLD on --TESTCD.
+    """
     for spec in specs:
         if spec.domain_class not in _FINDINGS_CLASSES:
             continue
 
-        # Find TESTCD variable
-        testcd_var = None
-        for vm in spec.variable_mappings:
-            if vm.sdtm_variable.endswith("TESTCD"):
-                testcd_var = vm
-                break
-
+        # Find TESTCD variable for this domain
+        testcd_var = next(
+            (vm for vm in spec.variable_mappings if vm.sdtm_variable.endswith("TESTCD")),
+            None,
+        )
         if testcd_var is None:
             continue
 
@@ -399,6 +448,15 @@ def _add_value_lists(
             vm.mapping_pattern == MappingPattern.TRANSPOSE for vm in spec.variable_mappings
         )
         if not has_transpose:
+            continue
+
+        # Identify result variables
+        result_vars = [
+            vm
+            for vm in spec.variable_mappings
+            if any(vm.sdtm_variable.endswith(s) for s in _RESULT_SUFFIXES)
+        ]
+        if not result_vars:
             continue
 
         # Get unique test codes from actual data if available
@@ -410,36 +468,74 @@ def _add_value_lists(
                 test_codes = sorted(df[testcd_col].dropna().unique().tolist())
 
         if not test_codes:
-            # No data available -- create a placeholder VLD
-            vld = etree.SubElement(mdv, f"{{{DEFINE_NS}}}ValueListDef")
-            vld.set("OID", f"VL.{spec.domain}.{testcd_var.sdtm_variable}")
+            # No data available -- create placeholder VLDs for each result variable
+            for result_vm in result_vars:
+                vld = etree.SubElement(mdv, f"{{{DEFINE_NS}}}ValueListDef")
+                vld.set("OID", f"VL.{spec.domain}.{result_vm.sdtm_variable}")
             continue
 
-        vld = etree.SubElement(mdv, f"{{{DEFINE_NS}}}ValueListDef")
-        vld.set("OID", f"VL.{spec.domain}.{testcd_var.sdtm_variable}")
+        # Create VLD for EACH result variable (not TESTCD)
+        for result_vm in result_vars:
+            vld = etree.SubElement(mdv, f"{{{DEFINE_NS}}}ValueListDef")
+            vld.set("OID", f"VL.{spec.domain}.{result_vm.sdtm_variable}")
 
-        for idx, tc in enumerate(test_codes, start=1):
-            ir = etree.SubElement(vld, f"{{{ODM_NS}}}ItemRef")
-            ir.set("ItemOID", f"IT.{spec.domain}.{testcd_var.sdtm_variable}.{tc}")
-            ir.set("OrderNumber", str(idx))
-            ir.set("Mandatory", "No")
+            for idx, tc in enumerate(test_codes, start=1):
+                ir = etree.SubElement(vld, f"{{{ODM_NS}}}ItemRef")
+                ir.set("ItemOID", f"IT.{spec.domain}.{result_vm.sdtm_variable}.{tc}")
+                ir.set("OrderNumber", str(idx))
+                ir.set("Mandatory", "No")
 
-            # WhereClauseDef
-            wc_oid = f"WC.{spec.domain}.{tc}"
-            ir.set(f"{{{DEFINE_NS}}}WhereClauseOID", wc_oid)
+                wc_oid = f"WC.{spec.domain}.{result_vm.sdtm_variable}.{tc}"
+                ir.set(f"{{{DEFINE_NS}}}WhereClauseOID", wc_oid)
 
-        # Add WhereClauseDef elements after ValueListDef
-        for tc in test_codes:
-            wc = etree.SubElement(mdv, f"{{{DEFINE_NS}}}WhereClauseDef")
-            wc.set("OID", f"WC.{spec.domain}.{tc}")
+        # WhereClauseDef elements -- one per (result_var, test_code) combination
+        for result_vm in result_vars:
+            for tc in test_codes:
+                wc = etree.SubElement(mdv, f"{{{DEFINE_NS}}}WhereClauseDef")
+                wc.set("OID", f"WC.{spec.domain}.{result_vm.sdtm_variable}.{tc}")
 
-            rc = etree.SubElement(wc, f"{{{ODM_NS}}}RangeCheck")
-            rc.set("Comparator", "EQ")
-            rc.set("SoftHard", "Soft")
-            rc.set(f"{{{DEFINE_NS}}}ItemOID", f"IT.{spec.domain}.{testcd_var.sdtm_variable}")
+                rc = etree.SubElement(wc, f"{{{ODM_NS}}}RangeCheck")
+                rc.set("Comparator", "EQ")
+                rc.set("SoftHard", "Soft")
+                # Always reference TESTCD ItemDef -- the condition variable
+                rc.set(
+                    f"{{{DEFINE_NS}}}ItemOID",
+                    f"IT.{spec.domain}.{testcd_var.sdtm_variable}",
+                )
 
-            cv = etree.SubElement(rc, f"{{{ODM_NS}}}CheckValue")
-            cv.text = tc
+                cv = etree.SubElement(rc, f"{{{ODM_NS}}}CheckValue")
+                cv.text = tc
+
+        # Create value-level ItemDefs for each (result_var, test_code)
+        for result_vm in result_vars:
+            for tc in test_codes:
+                _add_item_def_for_value_level(mdv, spec.domain, result_vm, tc)
+
+
+def _add_item_def_for_value_level(
+    mdv: etree._Element,
+    domain: str,
+    result_vm: VariableMapping,
+    testcd: str,
+) -> None:
+    """Create ItemDef for a value-level reference (test-code-specific result)."""
+    it = etree.SubElement(mdv, f"{{{ODM_NS}}}ItemDef")
+    it.set("OID", f"IT.{domain}.{result_vm.sdtm_variable}.{testcd}")
+    it.set("Name", result_vm.sdtm_variable)
+    it.set("SASFieldName", result_vm.sdtm_variable)
+
+    # Data type from the result variable
+    if result_vm.sdtm_data_type == "Char":
+        it.set("DataType", "text")
+        it.set("Length", str(result_vm.length or 200))
+    else:
+        it.set("DataType", "float")
+        it.set("Length", str(result_vm.length or 8))
+
+    desc = etree.SubElement(it, f"{{{ODM_NS}}}Description")
+    tt = etree.SubElement(desc, f"{{{ODM_NS}}}TranslatedText")
+    tt.set(f"{{{XML_NS}}}lang", "en")
+    tt.text = f"{result_vm.sdtm_label} ({testcd})"
 
 
 # ── Leaf elements ────────────────────────────────────────────────────
