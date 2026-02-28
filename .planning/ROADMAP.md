@@ -417,7 +417,12 @@ Plans:
 8. TRCPreCheck integrated into validate_all() (MED-04)
 9. All existing tests pass + new tests for each rule/fix
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md -- Severity fixes (FDAB057, ASTR-F002) + new rules (SEX, SEQ, DM one-record)
+- [ ] 12-02-PLAN.md -- TS parameter expansion (7 to 26+) + TRC check expansion (SDTMVER, STYPE, TITLE)
+- [ ] 12-03-PLAN.md -- TRCPreCheck integration into validate_all() + full regression verification
 
 ---
 
