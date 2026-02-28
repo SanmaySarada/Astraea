@@ -263,19 +263,23 @@ class FDAB009Rule(ValidationRule):
 
         results: list[RuleResult] = []
 
-        # Check TESTCD -> TEST (one TESTCD should map to exactly one TEST)
-        testcd_to_test: dict[str, set[str]] = {}
-        for _, row in df.iterrows():
-            cd = row.get(testcd_col)
-            test = row.get(test_col)
-            if pd.notna(cd) and pd.notna(test):
-                cd_str = str(cd)
-                testcd_to_test.setdefault(cd_str, set()).add(str(test))
+        # Vectorized: extract valid (non-null) pairs as strings
+        valid = df[[testcd_col, test_col]].dropna().astype(str)
+        if valid.empty:
+            return results
 
-        violations_cd = {cd: tests for cd, tests in testcd_to_test.items() if len(tests) > 1}
-        if violations_cd:
+        # Forward check: TESTCD -> TEST (one TESTCD should map to exactly one TEST)
+        fwd_counts = valid.groupby(testcd_col)[test_col].nunique()
+        fwd_violations = fwd_counts[fwd_counts > 1].index.tolist()
+        if fwd_violations:
+            fwd_details = (
+                valid[valid[testcd_col].isin(fwd_violations)]
+                .groupby(testcd_col)[test_col]
+                .apply(lambda x: sorted(x.unique().tolist()))
+                .to_dict()
+            )
             details = "; ".join(
-                f"{cd} -> {sorted(tests)}" for cd, tests in sorted(violations_cd.items())
+                f"{cd} -> {tests}" for cd, tests in sorted(fwd_details.items())
             )
             results.append(
                 RuleResult(
@@ -286,27 +290,26 @@ class FDAB009Rule(ValidationRule):
                     domain=domain,
                     variable=testcd_col,
                     message=(
-                        f"{testcd_col} has {len(violations_cd)} code(s) mapping to "
+                        f"{testcd_col} has {len(fwd_violations)} code(s) mapping to "
                         f"multiple TEST values: {details}"
                     ),
-                    affected_count=len(violations_cd),
+                    affected_count=len(fwd_violations),
                     fix_suggestion="Ensure each TESTCD maps to exactly one TEST",
                 )
             )
 
-        # Check TEST -> TESTCD (one TEST should map to exactly one TESTCD)
-        test_to_testcd: dict[str, set[str]] = {}
-        for _, row in df.iterrows():
-            cd = row.get(testcd_col)
-            test = row.get(test_col)
-            if pd.notna(cd) and pd.notna(test):
-                test_str = str(test)
-                test_to_testcd.setdefault(test_str, set()).add(str(cd))
-
-        violations_test = {test: cds for test, cds in test_to_testcd.items() if len(cds) > 1}
-        if violations_test:
+        # Reverse check: TEST -> TESTCD (one TEST should map to exactly one TESTCD)
+        rev_counts = valid.groupby(test_col)[testcd_col].nunique()
+        rev_violations = rev_counts[rev_counts > 1].index.tolist()
+        if rev_violations:
+            rev_details = (
+                valid[valid[test_col].isin(rev_violations)]
+                .groupby(test_col)[testcd_col]
+                .apply(lambda x: sorted(x.unique().tolist()))
+                .to_dict()
+            )
             details = "; ".join(
-                f"{test} -> {sorted(cds)}" for test, cds in sorted(violations_test.items())
+                f"{test} -> {cds}" for test, cds in sorted(rev_details.items())
             )
             results.append(
                 RuleResult(
@@ -317,10 +320,10 @@ class FDAB009Rule(ValidationRule):
                     domain=domain,
                     variable=test_col,
                     message=(
-                        f"{test_col} has {len(violations_test)} test name(s) mapping to "
+                        f"{test_col} has {len(rev_violations)} test name(s) mapping to "
                         f"multiple TESTCD values: {details}"
                     ),
-                    affected_count=len(violations_test),
+                    affected_count=len(rev_violations),
                     fix_suggestion="Ensure each TEST maps to exactly one TESTCD",
                 )
             )
@@ -358,15 +361,23 @@ class FDAB030Rule(ValidationRule):
         if testcd_col not in df.columns or stresu_col not in df.columns:
             return []
 
-        # Group STRESU values by TESTCD
-        testcd_units: dict[str, set[str]] = {}
-        for _, row in df.iterrows():
-            cd = row.get(testcd_col)
-            unit = row.get(stresu_col)
-            if pd.notna(cd) and pd.notna(unit):
-                testcd_units.setdefault(str(cd), set()).add(str(unit))
+        # Vectorized: group STRESU values by TESTCD
+        valid = df[[testcd_col, stresu_col]].dropna().astype(str)
+        if valid.empty:
+            return []
 
-        violations = {cd: units for cd, units in testcd_units.items() if len(units) > 1}
+        unit_counts = valid.groupby(testcd_col)[stresu_col].nunique()
+        violation_codes = unit_counts[unit_counts > 1].index.tolist()
+
+        if not violation_codes:
+            return []
+
+        violations = (
+            valid[valid[testcd_col].isin(violation_codes)]
+            .groupby(testcd_col)[stresu_col]
+            .apply(lambda x: sorted(x.unique().tolist()))
+            .to_dict()
+        )
 
         if not violations:
             return []
