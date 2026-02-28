@@ -1,8 +1,13 @@
-"""Trial design models for SDTM Trial Summary (TS) domain.
+"""Trial design models for SDTM domains.
 
-Provides TSParameter and TSConfig Pydantic models for specifying
-study-level metadata that populates the TS domain -- a mandatory
-dataset for FDA submissions.
+Provides Pydantic models for:
+- TSParameter / TSConfig: Trial Summary (TS) domain metadata
+- ArmDef / ElementDef / VisitDef / IEDef / TrialDesignConfig:
+  Trial design domain configuration (TA, TE, TV, TI)
+
+TS is a mandatory FDA submission dataset. Trial design domains
+(TA, TE, TV, TI) describe study structure and are required for
+submission completeness.
 """
 
 from __future__ import annotations
@@ -85,4 +90,139 @@ class TSConfig(BaseModel):
     additional_params: list[TSParameter] = Field(
         default_factory=list,
         description="Additional study-specific TS parameters",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Trial Design Models (TA, TE, TV, TI)
+# ---------------------------------------------------------------------------
+
+
+class ArmDef(BaseModel):
+    """Definition of a single trial arm.
+
+    Attributes:
+        armcd: Planned arm code (max 8 chars, e.g., "DRUG").
+        arm: Description of the arm (e.g., "Drug 1000 IU").
+        taetord: Order of element within the arm (1-based).
+        etcd: Element code for this position in the arm.
+    """
+
+    armcd: str = Field(..., min_length=1, max_length=8, description="Arm code")
+    arm: str = Field(..., min_length=1, description="Arm description")
+    taetord: int = Field(..., ge=1, description="Element order within arm")
+    etcd: str = Field(..., min_length=1, max_length=8, description="Element code")
+
+    @field_validator("armcd")
+    @classmethod
+    def _uppercase_armcd(cls, v: str) -> str:
+        return v.strip().upper()
+
+
+class ElementDef(BaseModel):
+    """Definition of a single trial element.
+
+    Attributes:
+        etcd: Element code (max 8 chars, e.g., "SCRN").
+        element: Element description (e.g., "Screening").
+        testrl: Rule for start of element (e.g., "Informed consent signed").
+        teenrl: Rule for end of element.
+        tedur: Planned duration of element (ISO 8601, e.g., "P14D").
+    """
+
+    etcd: str = Field(..., min_length=1, max_length=8, description="Element code")
+    element: str = Field(..., min_length=1, description="Element description")
+    testrl: str = Field(default="", description="Start rule for element")
+    teenrl: str = Field(default="", description="End rule for element")
+    tedur: str = Field(default="", description="Planned duration (ISO 8601)")
+
+    @field_validator("etcd")
+    @classmethod
+    def _uppercase_etcd(cls, v: str) -> str:
+        return v.strip().upper()
+
+
+class VisitDef(BaseModel):
+    """Definition of a single planned visit.
+
+    Attributes:
+        visitnum: Planned visit number (integer or decimal for unplanned).
+        visit: Visit name (e.g., "Screening", "Week 4").
+        visitdy: Planned study day of visit.
+        armcd: Arm code this visit belongs to (for arm-specific schedules).
+        tvstrl: Rule for start of visit window.
+        tvenrl: Rule for end of visit window.
+    """
+
+    visitnum: float = Field(..., ge=0, description="Visit number")
+    visit: str = Field(..., min_length=1, description="Visit name")
+    visitdy: int | None = Field(default=None, description="Planned study day")
+    armcd: str = Field(..., min_length=1, max_length=8, description="Arm code")
+    tvstrl: str = Field(default="", description="Visit window start rule")
+    tvenrl: str = Field(default="", description="Visit window end rule")
+
+    @field_validator("armcd")
+    @classmethod
+    def _uppercase_armcd(cls, v: str) -> str:
+        return v.strip().upper()
+
+
+class IEDef(BaseModel):
+    """Definition of a single inclusion/exclusion criterion.
+
+    Attributes:
+        ietestcd: I/E criterion short name (max 8 chars, e.g., "INCL01").
+        ietest: I/E criterion full text.
+        iecat: Category -- "INCLUSION" or "EXCLUSION".
+        tirl: Rule for evaluating the criterion.
+    """
+
+    ietestcd: str = Field(
+        ..., min_length=1, max_length=8, description="I/E criterion code"
+    )
+    ietest: str = Field(..., min_length=1, description="I/E criterion text")
+    iecat: str = Field(..., description="INCLUSION or EXCLUSION")
+    tirl: str = Field(default="", description="Evaluation rule")
+
+    @field_validator("ietestcd")
+    @classmethod
+    def _uppercase_ietestcd(cls, v: str) -> str:
+        return v.strip().upper()
+
+    @field_validator("iecat")
+    @classmethod
+    def _validate_iecat(cls, v: str) -> str:
+        v = v.strip().upper()
+        if v not in ("INCLUSION", "EXCLUSION"):
+            msg = f"iecat must be 'INCLUSION' or 'EXCLUSION', got '{v}'"
+            raise ValueError(msg)
+        return v
+
+
+class TrialDesignConfig(BaseModel):
+    """Configuration for building trial design domains (TA, TE, TV, TI).
+
+    Contains all study structural definitions needed to produce the
+    TA (Trial Arms), TE (Trial Elements), TV (Trial Visits), and
+    TI (Trial Inclusion/Exclusion) domains.
+
+    Attributes:
+        arms: Arm definitions for TA domain (one entry per element per arm).
+        elements: Element definitions for TE domain.
+        visits: Visit definitions for TV domain.
+        inclusion_exclusion: I/E criteria for TI domain. None = no TI data.
+    """
+
+    arms: list[ArmDef] = Field(
+        ..., min_length=1, description="Arm-element definitions for TA"
+    )
+    elements: list[ElementDef] = Field(
+        ..., min_length=1, description="Element definitions for TE"
+    )
+    visits: list[VisitDef] = Field(
+        ..., min_length=1, description="Visit definitions for TV"
+    )
+    inclusion_exclusion: list[IEDef] | None = Field(
+        default=None,
+        description="I/E criteria for TI domain (None = empty TI)",
     )
