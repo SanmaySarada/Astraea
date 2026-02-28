@@ -493,19 +493,29 @@ def handle_assign(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) 
 def handle_direct(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
     """Copy the source column directly (no transformation).
 
+    If the source variable is not found in the DataFrame, checks for a
+    ``resolved_source`` in kwargs (set by the executor via column alias
+    resolution).
+
     Raises:
         ValueError: If mapping.source_variable is None.
-        KeyError: If source_variable not found in df.columns.
+        KeyError: If source_variable not found in df.columns (even after alias resolution).
     """
     if mapping.source_variable is None:
         msg = f"DIRECT pattern for {mapping.sdtm_variable} has no source_variable"
         raise ValueError(msg)
 
-    if mapping.source_variable not in df.columns:
-        msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
-        raise KeyError(msg)
+    col = mapping.source_variable
+    if col not in df.columns:
+        # Try resolved alias from executor
+        resolved: str | None = kwargs.get("resolved_source")  # type: ignore[assignment]
+        if resolved and resolved in df.columns:
+            col = resolved
+        else:
+            msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
+            raise KeyError(msg)
 
-    return df[mapping.source_variable].copy()
+    return df[col].copy()
 
 
 def handle_rename(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
@@ -542,21 +552,27 @@ def handle_reformat(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object
         msg = f"REFORMAT pattern for {mapping.sdtm_variable} has no source_variable"
         raise ValueError(msg)
 
-    if mapping.source_variable not in df.columns:
-        msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
-        raise KeyError(msg)
+    col = mapping.source_variable
+    if col not in df.columns:
+        # Try resolved alias from executor
+        resolved: str | None = kwargs.get("resolved_source")  # type: ignore[assignment]
+        if resolved and resolved in df.columns:
+            col = resolved
+        else:
+            msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
+            raise KeyError(msg)
 
     transform_fn = get_transform(mapping.derivation_rule) if mapping.derivation_rule else None
 
     if transform_fn is not None:
-        return df[mapping.source_variable].map(transform_fn)
+        return df[col].map(transform_fn)
 
     logger.warning(
         "No transform found for derivation_rule='{}' on {}; passing through source column",
         mapping.derivation_rule,
         mapping.sdtm_variable,
     )
-    return df[mapping.source_variable].copy()
+    return df[col].copy()
 
 
 def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
@@ -579,9 +595,15 @@ def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: o
         msg = f"LOOKUP_RECODE pattern for {mapping.sdtm_variable} has no source_variable"
         raise ValueError(msg)
 
-    if mapping.source_variable not in df.columns:
-        msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
-        raise KeyError(msg)
+    col = mapping.source_variable
+    if col not in df.columns:
+        # Try resolved alias from executor
+        resolved: str | None = kwargs.get("resolved_source")  # type: ignore[assignment]
+        if resolved and resolved in df.columns:
+            col = resolved
+        else:
+            msg = f"Source variable '{mapping.source_variable}' not found in DataFrame columns"
+            raise KeyError(msg)
 
     ct_reference: CTReference | None = kwargs.get("ct_reference")  # type: ignore[assignment]
 
@@ -598,7 +620,7 @@ def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: o
                 # Also map submission_value to itself (identity)
                 recode_dict[submission_value] = submission_value
 
-            source_col = df[mapping.source_variable]
+            source_col = df[col]
             return source_col.map(lambda v: recode_dict.get(str(v), v) if pd.notna(v) else v)
 
     logger.warning(
@@ -606,7 +628,7 @@ def handle_lookup_recode(df: pd.DataFrame, mapping: VariableMapping, **kwargs: o
         mapping.sdtm_variable,
         mapping.codelist_code,
     )
-    return df[mapping.source_variable].copy()
+    return df[col].copy()
 
 
 def handle_derivation(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:

@@ -125,11 +125,26 @@ class DatasetExecutor:
         result_df = pd.DataFrame(index=merged_df.index)
         mapped_vars: set[str] = set()
 
+        # Build column alias map for eCRF -> SAS name resolution
+        column_aliases = self._build_column_aliases(merged_df)
+
+        # Build cross-domain DataFrames dict for handlers that need them
+        cross_domain_dfs: dict[str, pd.DataFrame] = {}
+        if len(raw_dfs) > 1:
+            primary_keys = set()
+            for ds_name in spec.source_datasets:
+                primary_keys.add(ds_name)
+            for ds_name, ds_df in raw_dfs.items():
+                if ds_name not in primary_keys:
+                    cross_domain_dfs[ds_name] = ds_df
+
         handler_kwargs = {
             "ct_reference": self.ct_ref,
             "study_id": study_id or spec.study_id,
             "site_col": site_col,
             "subject_col": subject_col,
+            "column_aliases": column_aliases,
+            "cross_domain_dfs": cross_domain_dfs,
         }
 
         for pattern_group in _PATTERN_ORDER:
@@ -278,6 +293,26 @@ class DatasetExecutor:
 
         return errors
 
+    @staticmethod
+    def _build_column_aliases(df: pd.DataFrame) -> dict[str, str]:
+        """Build alias map from eCRF/IRT names to actual SAS column names.
+
+        Maps common EDC field names (SSUBJID, SSITENUM, etc.) to the actual
+        column names present in the DataFrame. Only includes aliases for
+        columns that actually exist.
+        """
+        edc_aliases = {
+            "SSUBJID": "Subject",
+            "SSITENUM": "SiteNumber",
+            "SSITE": "Site",
+            "SSITEGROUP": "SiteGroup",
+        }
+        aliases: dict[str, str] = {}
+        for ecrf_name, sas_name in edc_aliases.items():
+            if sas_name in df.columns:
+                aliases[ecrf_name] = sas_name
+        return aliases
+
     def _merge_raw(self, raw_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
         """Merge multiple source DataFrames into one, working on copies."""
         if not raw_dfs:
@@ -297,7 +332,13 @@ class DatasetExecutor:
         mapped_vars: set[str],
         handler_kwargs: dict[str, Any],
     ) -> None:
-        """Apply a single mapping, handling errors gracefully."""
+        """Apply a single mapping, handling errors gracefully.
+
+        Before calling the handler, resolves the source variable name through
+        the column alias map if the original name is not in the DataFrame.
+        The resolved name is passed via ``kwargs["resolved_source"]`` so handlers
+        can use it without mutating the mapping object.
+        """
         handler = PATTERN_HANDLERS.get(mapping.mapping_pattern)
         if handler is None:
             logger.error(
@@ -307,8 +348,25 @@ class DatasetExecutor:
             )
             return
 
+        # Resolve source variable through column aliases
+        resolved_source: str | None = None
+        if mapping.source_variable and mapping.source_variable not in source_df.columns:
+            aliases: dict[str, str] = handler_kwargs.get("column_aliases", {})
+            alias_target = aliases.get(mapping.source_variable)
+            if alias_target and alias_target in source_df.columns:
+                resolved_source = alias_target
+                logger.debug(
+                    "Resolved '{}' -> '{}' via column alias for {}",
+                    mapping.source_variable,
+                    resolved_source,
+                    mapping.sdtm_variable,
+                )
+
+        # Pass resolved name to handler
+        call_kwargs = {**handler_kwargs, "resolved_source": resolved_source}
+
         try:
-            series = handler(source_df, mapping, **handler_kwargs)
+            series = handler(source_df, mapping, **call_kwargs)
             result_df[mapping.sdtm_variable] = series
             mapped_vars.add(mapping.sdtm_variable)
         except Exception as exc:
