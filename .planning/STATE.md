@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 8 IN PROGRESS -- Learning System (1/4 plans complete).
+**Current focus:** Phase 8 IN PROGRESS -- Learning System (2/4 plans complete).
 
 ## Current Position
 
 Phase: 8 of 8 (Learning System)
-Plan: 1 of 4 (Data Models and Storage)
+Plan: 2 of 4 (Few-Shot Retriever + MappingEngine Integration)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 08-01-PLAN.md (Learning system data models and storage)
+Last activity: 2026-02-28 -- Completed 08-02-PLAN.md (Few-shot retriever and MappingEngine integration)
 
-Progress: [██████████████████████████████████████████████████████████░░] 97%
+Progress: [███████████████████████████████████████████████████████████░] 98%
 
 ## Performance Metrics
 
@@ -263,9 +263,11 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 | Learning data models | src/astraea/learning/models.py | 11 | Done |
 | SQLite example store | src/astraea/learning/example_store.py | 10 | Done |
 | ChromaDB vector store | src/astraea/learning/vector_store.py | 6 | Done |
-| **Total** | | **27 new tests** | **1/4 plans complete** |
+| LearningRetriever | src/astraea/learning/retriever.py | 13 | Done |
+| MappingEngine learning integration | src/astraea/mapping/engine.py | 6 | Done |
+| **Total** | | **46 new tests** | **2/4 plans complete** |
 
-**Combined test suite: ~1565 tests**
+**Combined test suite: ~1584 tests**
 
 ## Accumulated Context
 
@@ -411,6 +413,9 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 - 2026-02-28: [D-08-01-01] ChromaDB metadata stores booleans as lowercase strings ('true'/'false') per ChromaDB type constraints
 - 2026-02-28: [D-08-01-02] Two separate ChromaDB collections (approved_mappings, corrections) for differential weighting during retrieval
 - 2026-02-28: [D-08-01-03] ExampleStore uses INSERT OR REPLACE for idempotent upserts (same pattern as SessionStore)
+- 2026-02-28: [D-08-02-01] TYPE_CHECKING guard for LearningRetriever import avoids chromadb as import-time dependency
+- 2026-02-28: [D-08-02-02] Corrections prioritized (up to 3) before approved examples in retrieval output
+- 2026-02-28: [D-08-02-03] Examples section injected between context prompt and user instructions for natural LLM prompt flow
 
 ### Pending Todos
 
@@ -455,5 +460,5 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-01-PLAN.md (Learning system data models and storage)
+Stopped at: Completed 08-02-PLAN.md (Few-shot retriever and MappingEngine integration)
 Resume file: None
