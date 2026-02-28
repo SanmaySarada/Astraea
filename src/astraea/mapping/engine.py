@@ -193,7 +193,38 @@ class MappingEngine:
             missing_required_variables=missing_required,
         )
 
-        # Step 8: Log summary
+        # Step 8: Run predict-and-prevent validation
+        try:
+            from astraea.validation.predict import (
+                predict_and_prevent,
+                results_to_issue_dicts,
+            )
+
+            pp_results = predict_and_prevent(
+                spec, domain_spec, self._ct
+            )
+            spec.predict_prevent_issues = results_to_issue_dicts(
+                pp_results
+            )
+            error_count = sum(
+                1
+                for r in pp_results
+                if r.severity.value == "ERROR"
+            )
+            if error_count:
+                logger.warning(
+                    "Predict-and-prevent found {count} errors "
+                    "for {domain}",
+                    count=error_count,
+                    domain=spec.domain,
+                )
+        except ImportError:
+            logger.debug(
+                "Predict-and-prevent module not available, "
+                "skipping spec-level validation"
+            )
+
+        # Step 9: Log summary
         logger.info(
             "Mapping complete for {domain} | total={total} "
             "high={high} medium={med} low={low}",
