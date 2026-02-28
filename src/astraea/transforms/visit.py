@@ -44,40 +44,109 @@ def assign_visit(
     if raw_visit_col not in df.columns:
         raise KeyError(f"Missing required column: '{raw_visit_col}'")
 
-    visitnum_values: list[float | None] = []
-    visit_values: list[str | None] = []
-    unmatched: set[str] = set()
+    # Vectorized: map raw visit values through the mapping dict
+    raw_vals = df[raw_visit_col].astype(str).str.strip()
+    # Mark NaN entries
+    is_na = df[raw_visit_col].isna()
 
-    for _, row in df.iterrows():
-        raw_val = row[raw_visit_col]
-        if pd.isna(raw_val):
-            visitnum_values.append(None)
-            visit_values.append(None)
-            continue
+    visitnum_mapped = raw_vals.map(
+        lambda v: visit_mapping[v][0] if v in visit_mapping else None
+    )
+    visit_mapped = raw_vals.map(
+        lambda v: visit_mapping[v][1] if v in visit_mapping else None
+    )
 
-        raw_str = str(raw_val).strip()
-        mapping = visit_mapping.get(raw_str)
+    # Restore NaN for originally-null values
+    visitnum_mapped = visitnum_mapped.where(~is_na, other=None)
+    visit_mapped = visit_mapped.where(~is_na, other=None)
 
-        if mapping is not None:
-            visitnum_values.append(mapping[0])
-            visit_values.append(mapping[1])
-        else:
-            visitnum_values.append(None)
-            visit_values.append(None)
-            if raw_str:
-                unmatched.add(raw_str)
-
-    if unmatched:
+    # Log unmatched values
+    non_na_raw = raw_vals[~is_na]
+    matched = non_na_raw.isin(visit_mapping.keys())
+    unmatched_vals = set(non_na_raw[~matched].unique())
+    # Filter out empty strings
+    unmatched_vals.discard("")
+    if unmatched_vals:
         logger.warning(
             "Unmatched raw visit values ({}): {}",
-            len(unmatched),
-            sorted(unmatched)[:10],
+            len(unmatched_vals),
+            sorted(unmatched_vals)[:10],
         )
 
-    visitnum_series = pd.array(visitnum_values, dtype="Float64")
-    visit_series = pd.array(visit_values, dtype="object")
-
-    return (
-        pd.Series(visitnum_series, index=df.index, dtype="Float64"),
-        pd.Series(visit_series, index=df.index, dtype="object"),
+    visitnum_series = pd.Series(
+        pd.array(visitnum_mapped.tolist(), dtype="Float64"),
+        index=df.index,
+        dtype="Float64",
     )
+    visit_series = pd.Series(
+        pd.array(visit_mapped.tolist(), dtype="object"),
+        index=df.index,
+        dtype="object",
+    )
+
+    return visitnum_series, visit_series
+
+
+def build_visit_mapping_from_tv(
+    tv_df: pd.DataFrame,
+    armcd: str | None = None,
+) -> dict[str, tuple[float, str]]:
+    """Build a visit mapping dict from a TV (Trial Visits) domain DataFrame.
+
+    Reads TV domain data and produces a mapping from VISIT name to
+    (VISITNUM, VISIT) tuple suitable for use with ``assign_visit()``.
+
+    Args:
+        tv_df: Trial Visits (TV) domain DataFrame. Expected columns:
+            VISITNUM, VISIT, and optionally ARMCD.
+        armcd: If provided, filter TV rows to this ARMCD value. If None
+            and TV has ARMCD column, uses the first arm found.
+
+    Returns:
+        Dict mapping VISIT name -> (VISITNUM, VISIT). Empty dict if
+        required columns are missing or TV is empty.
+    """
+    if tv_df.empty:
+        return {}
+
+    required_cols = ["VISITNUM", "VISIT"]
+    missing = [c for c in required_cols if c not in tv_df.columns]
+    if missing:
+        logger.warning(
+            "TV DataFrame missing required columns {}, returning empty mapping",
+            missing,
+        )
+        return {}
+
+    working = tv_df.copy()
+
+    # Filter by ARMCD if applicable
+    if "ARMCD" in working.columns:
+        if armcd is not None:
+            working = working[working["ARMCD"] == armcd]
+        else:
+            # Use the first arm
+            first_arm = working["ARMCD"].iloc[0]
+            working = working[working["ARMCD"] == first_arm]
+
+    if working.empty:
+        return {}
+
+    # Build mapping: VISIT -> (VISITNUM, VISIT)
+    # Drop duplicates on VISIT to avoid overwriting
+    deduped = working.drop_duplicates(subset=["VISIT"], keep="first")
+    mapping: dict[str, tuple[float, str]] = {}
+    for rec in deduped.to_dict("records"):
+        visit_name = str(rec["VISIT"]).strip()
+        try:
+            visitnum = float(rec["VISITNUM"])
+        except (ValueError, TypeError):
+            continue
+        if visit_name:
+            mapping[visit_name] = (visitnum, visit_name)
+
+    logger.debug(
+        "Built visit mapping from TV with {} entries",
+        len(mapping),
+    )
+    return mapping

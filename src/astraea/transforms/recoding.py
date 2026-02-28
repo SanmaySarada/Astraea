@@ -42,3 +42,117 @@ def numeric_to_yn(value: object) -> str | None:
         return "N"
 
     return None
+
+
+# --- SEX recoding (C66731) ---
+
+_SEX_MAP: dict[str, str] = {
+    "male": "M",
+    "m": "M",
+    "1": "M",
+    "female": "F",
+    "f": "F",
+    "2": "F",
+    "unknown": "U",
+    "u": "U",
+    "undifferentiated": "UNDIFFERENTIATED",
+}
+
+
+def recode_sex(value: object) -> str | None:
+    """Recode raw sex values to C66731 submission values (M/F/U/UNDIFFERENTIATED).
+
+    Handles case-insensitive text, single-letter abbreviations, and numeric codes.
+
+    Args:
+        value: Raw value from source data.
+
+    Returns:
+        CDISC CT submission value, or None for missing/unrecognized values.
+    """
+    if value is None or pd.isna(value):
+        return None
+    key = str(value).strip().lower()
+    return _SEX_MAP.get(key)
+
+
+# --- RACE recoding (C74457) ---
+
+_RACE_MAP: dict[str, str] = {
+    "white": "WHITE",
+    "caucasian": "WHITE",
+    "1": "WHITE",
+    "black": "BLACK OR AFRICAN AMERICAN",
+    "black or african american": "BLACK OR AFRICAN AMERICAN",
+    "african american": "BLACK OR AFRICAN AMERICAN",
+    "2": "BLACK OR AFRICAN AMERICAN",
+    "asian": "ASIAN",
+    "3": "ASIAN",
+    "american indian": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "american indian or alaska native": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "native american": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "alaska native": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "4": "AMERICAN INDIAN OR ALASKA NATIVE",
+    "native hawaiian": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+    "native hawaiian or other pacific islander": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+    "pacific islander": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+    "5": "NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER",
+    "other": "OTHER",
+    "6": "OTHER",
+    "multiple": "MULTIPLE",
+    "mixed": "MULTIPLE",
+    "7": "MULTIPLE",
+}
+
+
+def recode_race(value: object) -> str | None:
+    """Recode raw race values to C74457 submission values.
+
+    Handles case-insensitive text, common aliases, and numeric codes.
+
+    Args:
+        value: Raw value from source data.
+
+    Returns:
+        CDISC CT submission value, or None for missing/unrecognized values.
+    """
+    if value is None or pd.isna(value):
+        return None
+    key = str(value).strip().lower()
+    return _RACE_MAP.get(key)
+
+
+# --- ETHNIC recoding (C66790) ---
+
+_ETHNIC_MAP: dict[str, str] = {
+    "hispanic": "HISPANIC OR LATINO",
+    "hispanic or latino": "HISPANIC OR LATINO",
+    "latino": "HISPANIC OR LATINO",
+    "1": "HISPANIC OR LATINO",
+    "not hispanic": "NOT HISPANIC OR LATINO",
+    "not hispanic or latino": "NOT HISPANIC OR LATINO",
+    "2": "NOT HISPANIC OR LATINO",
+    "unknown": "UNKNOWN",
+    "u": "UNKNOWN",
+    "3": "UNKNOWN",
+    "not reported": "NOT REPORTED",
+    "nr": "NOT REPORTED",
+    "4": "NOT REPORTED",
+}
+
+
+def recode_ethnic(value: object) -> str | None:
+    """Recode raw ethnicity values to C66790 submission values.
+
+    Handles case-insensitive text, short forms, and numeric codes.
+
+    Args:
+        value: Raw value from source data.
+
+    Returns:
+        CDISC CT submission value, or None for missing/unrecognized values.
+    """
+    if value is None or pd.isna(value):
+        return None
+    key = str(value).strip().lower()
+    return _ETHNIC_MAP.get(key)
