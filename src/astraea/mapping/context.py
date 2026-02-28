@@ -75,6 +75,10 @@ class MappingContextBuilder:
         # 1. SDTM Domain section
         sections.append(_format_domain_section(domain_spec))
 
+        # 1b. DM-specific ARM variable enforcement (MED-14)
+        if domain.upper() == "DM":
+            sections.append(_format_dm_arm_enforcement())
+
         # 2. Source Data section
         sections.append(_format_source_data_section(source_profiles))
 
@@ -255,6 +259,26 @@ def _format_cross_domain_section(
         lines.append(f"- {label} [{profile.filename}]: {var_summary}{extra}")
 
     return "\n".join(lines)
+
+
+def _format_dm_arm_enforcement() -> str:
+    """Format the DM-specific ARM variable enforcement block."""
+    return (
+        "## DM Domain: Required Treatment Arm Variables\n"
+        "\n"
+        "The following variables are REQUIRED for DM per SDTM-IG v3.4 and FDA submission:\n"
+        "- ARM (Description of Planned Arm) -- Required\n"
+        "- ARMCD (Planned Arm Code) -- Required\n"
+        "- ACTARM (Description of Actual Arm) -- Required\n"
+        "- ACTARMCD (Actual Arm Code) -- Required\n"
+        "\n"
+        "ACTARM/ACTARMCD must be independently derived from source data reflecting the "
+        "ACTUAL treatment received, not copied from ARM/ARMCD. If the source data does "
+        "not distinguish planned vs actual treatment, map both ARM and ACTARM from the "
+        "same source but flag for human review.\n"
+        "\n"
+        "Do NOT omit these variables. They are a top FDA finding when missing."
+    )
 
 
 def _format_study_metadata_section(study_metadata: StudyMetadata) -> str:

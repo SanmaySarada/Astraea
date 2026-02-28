@@ -333,6 +333,144 @@ class DMOneRecordPerSubjectRule(ValidationRule):
         return []
 
 
+class DMArmPresenceRule(ValidationRule):
+    """Check that DM contains all four ARM variables.
+
+    ARM, ARMCD, ACTARM, and ACTARMCD are Required per SDTM-IG v3.4
+    for the DM domain. Missing treatment arm variables are a top FDA
+    finding and will cause rejection.
+    """
+
+    rule_id: str = "ASTR-P010"
+    description: str = "DM must contain ARM, ARMCD, ACTARM, and ACTARMCD"
+    category: RuleCategory = RuleCategory.PRESENCE
+    severity: RuleSeverity = RuleSeverity.ERROR
+
+    _ARM_VARIABLES: tuple[str, ...] = ("ARM", "ARMCD", "ACTARM", "ACTARMCD")
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        """Check for missing ARM variables in DM."""
+        if domain != "DM":
+            return []
+
+        df_cols = {str(c).upper() for c in df.columns}
+        missing = [v for v in self._ARM_VARIABLES if v not in df_cols]
+
+        if missing:
+            return [
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=RuleSeverity.ERROR,
+                    domain=domain,
+                    message=(
+                        f"DM is missing required ARM variable(s): {', '.join(missing)}. "
+                        f"These are Required per SDTM-IG v3.4 and a top FDA finding."
+                    ),
+                    affected_count=len(df),
+                    fix_suggestion=(
+                        "Add ARM, ARMCD, ACTARM, ACTARMCD to DM mapping specification. "
+                        "These are Required per SDTM-IG v3.4."
+                    ),
+                )
+            ]
+        return []
+
+
+class DMArmCopyPasteRule(ValidationRule):
+    """Check that ACTARM/ACTARMCD are not blindly copied from ARM/ARMCD.
+
+    ACTARM should reflect actual treatment received, which may differ
+    from the planned arm. If ACTARM == ARM for every row, the values
+    may have been copied rather than independently derived. This is a
+    WARNING because values can legitimately be equal when all patients
+    received their planned treatment.
+    """
+
+    rule_id: str = "ASTR-P011"
+    description: str = "ACTARM/ACTARMCD should be independently derived, not copied from ARM/ARMCD"
+    category: RuleCategory = RuleCategory.PRESENCE
+    severity: RuleSeverity = RuleSeverity.WARNING
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        """Check for ACTARM == ARM copy-paste pattern."""
+        if domain != "DM":
+            return []
+
+        results: list[RuleResult] = []
+        df_cols = {str(c).upper() for c in df.columns}
+
+        # Only check if all four columns exist
+        if not {"ARM", "ARMCD", "ACTARM", "ACTARMCD"}.issubset(df_cols):
+            return []
+
+        if len(df) == 0:
+            return []
+
+        # Check ACTARM == ARM for all rows
+        if (df["ACTARM"] == df["ARM"]).all():
+            results.append(
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=RuleSeverity.WARNING,
+                    domain=domain,
+                    variable="ACTARM",
+                    message=(
+                        "ACTARM equals ARM for all rows. Verify that ACTARM was "
+                        "independently derived from source data reflecting actual "
+                        "treatment received, not copied from planned arm."
+                    ),
+                    affected_count=len(df),
+                    fix_suggestion=(
+                        "Review source data for actual treatment assignment. "
+                        "If values are legitimately equal, document in cSDRG."
+                    ),
+                )
+            )
+
+        # Check ACTARMCD == ARMCD for all rows
+        if (df["ACTARMCD"] == df["ARMCD"]).all():
+            results.append(
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=RuleSeverity.WARNING,
+                    domain=domain,
+                    variable="ACTARMCD",
+                    message=(
+                        "ACTARMCD equals ARMCD for all rows. Verify that ACTARMCD was "
+                        "independently derived from source data reflecting actual "
+                        "treatment received, not copied from planned arm code."
+                    ),
+                    affected_count=len(df),
+                    fix_suggestion=(
+                        "Review source data for actual treatment assignment. "
+                        "If values are legitimately equal, document in cSDRG."
+                    ),
+                )
+            )
+
+        return results
+
+
 def get_presence_rules() -> list[ValidationRule]:
     """Return all presence validation rule instances."""
     return [
@@ -342,4 +480,6 @@ def get_presence_rules() -> list[ValidationRule]:
         USUBJIDPresentRule(),
         SeqUniquenessRule(),
         DMOneRecordPerSubjectRule(),
+        DMArmPresenceRule(),
+        DMArmCopyPasteRule(),
     ]
