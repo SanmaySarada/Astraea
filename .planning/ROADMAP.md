@@ -420,9 +420,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 12-01-PLAN.md -- Severity fixes (FDAB057, ASTR-F002) + new rules (SEX, SEQ, DM one-record)
-- [ ] 12-02-PLAN.md -- TS parameter expansion (7 to 26+) + TRC check expansion (SDTMVER, STYPE, TITLE)
-- [ ] 12-03-PLAN.md -- TRCPreCheck integration into validate_all() + full regression verification
+- [x] 12-01-PLAN.md -- Severity fixes (FDAB057, ASTR-F002) + new rules (SEX, SEQ, DM one-record)
+- [x] 12-02-PLAN.md -- TS parameter expansion (7 to 26+) + TRC check expansion (SDTMVER, STYPE, TITLE)
+- [x] 12-03-PLAN.md -- TRCPreCheck integration into validate_all() + full regression verification
 
 ---
 
@@ -518,7 +518,7 @@ Plans:
 | 9 - CLI Wiring — Close Audit Gaps | Complete | 2026-02-27 |
 | 10 - Tech Debt Cleanup | Complete | 2026-02-28 |
 | 11 - Execution Contract | Complete | 2026-02-28 |
-| 12 - Validation and Severity Fixes | Not Started | -- |
+| 12 - Validation and Severity Fixes | Complete | 2026-02-28 |
 | 13 - Define.xml and Findings Completeness | Not Started | -- |
 | 14 - Reference Data and Transforms | Not Started | -- |
 | 15 - Submission Readiness | Not Started | -- |

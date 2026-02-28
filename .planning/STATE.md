@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 12 -- Validation and Severity Fixes (next phase after Execution Contract)
+**Current focus:** Phase 13 -- Define.xml and Findings Completeness (next phase after Validation and Severity Fixes)
 
 ## Current Position
 
-Phase: 12 of 15 (Validation and Severity Fixes)
-Plan: 3 of 3
-Status: Phase complete
-Last activity: 2026-02-28 -- Completed 12-03-PLAN.md (TRC Engine Integration + Full Regression)
+Phase: 13 of 15 (next: Define.xml and Findings Completeness)
+Plan: 0 of TBD
+Status: Phase 12 COMPLETE -- Phase 13 NOT STARTED
+Last activity: 2026-02-28 -- Completed Phase 12 (Validation and Severity Fixes) -- all 3 plans executed, 1685 tests passing
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 30%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 40%
 
 ## Performance Metrics
 
@@ -294,6 +294,22 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 | **Total** | | **~93 new tests** | **4/4 plans COMPLETE** |
 
 **Combined test suite: 1660 tests (1541 pass + 119 skipped)**
+
+## Phase 12 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| FDAB057 severity fix (WARNING->ERROR) | src/astraea/validation/rules/fda_business.py | 1 | Done |
+| ASTR-F002 severity fix (WARNING->ERROR) | src/astraea/validation/rules/format.py | 1 | Done |
+| FDAB015 DM.SEX codelist rule | src/astraea/validation/rules/fda_business.py | 5 | Done |
+| ASTR-P005 SEQ uniqueness rule | src/astraea/validation/rules/presence.py | 4 | Done |
+| ASTR-P006 DM one-record rule | src/astraea/validation/rules/presence.py | 4 | Done |
+| FDA_REQUIRED_PARAMS expansion (7->26) | src/astraea/execution/trial_summary.py | 3 | Done |
+| TRC check expansion (4 params) | src/astraea/validation/rules/fda_trc.py | 5 | Done |
+| TRCPreCheck in validate_all() | src/astraea/validation/engine.py | 3 | Done |
+| **Total** | | **~26 new tests** | **3/3 plans COMPLETE** |
+
+**Combined test suite: 1685 tests (1566 pass + 119 skipped)**
 
 ## Accumulated Context
 
