@@ -1,11 +1,17 @@
 """FDA Business Rules for SDTM validation.
 
-Implements FDA Business Rules FDAB057, FDAB055, FDAB039, FDAB009, FDAB030
-as ValidationRule subclasses. These check demographic coding compliance
-and Findings domain data integrity requirements.
+Implements FDA Business Rules covering:
+- Demographic coding: FDAB057 (ETHNIC), FDAB055 (RACE), FDAB015 (SEX), FDAB016 (COUNTRY)
+- AE domain: FDAB001 (AESER), FDAB002 (AEREL), FDAB003 (AEOUT), FDAB004 (AEACN), FDAB005 (dates)
+- Findings integrity: FDAB039 (normal ranges), FDAB009 (TESTCD/TEST), FDAB030 (STRESU)
+- Intervention domains: FDAB025 (CMTRT), FDAB026 (EXTRT)
+- Cross-domain: FDAB020 (VISITNUM), FDAB021 (DY), FDAB022 (DTC), FDAB035/036 (paired results)
+- Population flags: FDAB-POP
 """
 
 from __future__ import annotations
+
+import re
 
 import pandas as pd
 
@@ -20,6 +26,32 @@ from astraea.validation.rules.base import (
 )
 
 _FINDINGS_DOMAINS = {"LB", "VS", "EG", "PE", "QS", "SC", "FA"}
+
+# ISO 8601 pattern for SDTM --DTC columns:
+# YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DDTHH:MM, YYYY-MM-DDTHH:MM:SS
+# with optional timezone offset (+/-HH:MM or Z)
+_ISO_8601_PATTERN = re.compile(
+    r"^\d{4}"
+    r"(?:-\d{2}"
+    r"(?:-\d{2}"
+    r"(?:T\d{2}:\d{2}"
+    r"(?::\d{2}"
+    r")?(?:[+-]\d{2}:\d{2}|Z)?"
+    r")?"
+    r")?"
+    r")?$"
+)
+
+# Common ISO 3166-1 alpha-3 country codes (top ~60)
+_ISO_3166_ALPHA3 = {
+    "AFG", "ALB", "DZA", "ARG", "AUS", "AUT", "BEL", "BRA", "BGR", "CAN",
+    "CHL", "CHN", "COL", "HRV", "CZE", "DNK", "EGY", "EST", "FIN", "FRA",
+    "DEU", "GRC", "HKG", "HUN", "ISL", "IND", "IDN", "IRN", "IRQ", "IRL",
+    "ISR", "ITA", "JPN", "KAZ", "KEN", "KOR", "LVA", "LTU", "LUX", "MYS",
+    "MEX", "NLD", "NZL", "NGA", "NOR", "PAK", "PER", "PHL", "POL", "PRT",
+    "ROU", "RUS", "SAU", "SGP", "SVK", "SVN", "ZAF", "ESP", "SWE", "CHE",
+    "TWN", "THA", "TUR", "UKR", "ARE", "GBR", "USA", "VNM",
+}
 
 
 class FDAB057Rule(ValidationRule):
@@ -472,6 +504,63 @@ class FDAB015Rule(ValidationRule):
         return results
 
 
+class FDABLC01Rule(ValidationRule):
+    """FDAB-LC01: LC domain unit conversion validation.
+
+    Checks whether the LC domain was generated with actual unit conversion
+    from SI to conventional units. If not, fires a WARNING indicating that
+    manual review is required before submission. This implements the FDA
+    SDTCG v5.7 requirement for dual lab domains (LB for SI, LC for
+    conventional).
+    """
+
+    rule_id: str = "FDAB-LC01"
+    description: str = (
+        "LC domain must contain conventional units distinct from LB SI units"
+    )
+    category: RuleCategory = RuleCategory.FDA_BUSINESS
+    severity: RuleSeverity = RuleSeverity.WARNING
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        if domain != "LC":
+            return []
+
+        # Check the metadata flag set by generate_lc_from_lb
+        unit_conversion_performed = df.attrs.get("lc_unit_conversion_performed", False)
+
+        if not unit_conversion_performed:
+            return [
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=self.severity,
+                    domain=domain,
+                    variable="LCORRES",
+                    message=(
+                        "LC domain contains identical values to LB. "
+                        "SDTCG v5.7 requires conventional units in LC. "
+                        "Unit conversion from SI to conventional was not performed. "
+                        "Manual review required before submission."
+                    ),
+                    affected_count=len(df),
+                    fix_suggestion=(
+                        "Implement unit conversion from SI to conventional units "
+                        "for the LC domain, or document the rationale in the cSDRG"
+                    ),
+                )
+            ]
+
+        return []
+
+
 def get_fda_business_rules() -> list[ValidationRule]:
     """Return all FDA Business Rule instances for engine registration."""
     return [
@@ -481,4 +570,5 @@ def get_fda_business_rules() -> list[ValidationRule]:
         FDAB039Rule(),
         FDAB009Rule(),
         FDAB030Rule(),
+        FDABLC01Rule(),
     ]
