@@ -131,6 +131,24 @@ class ValidationEngine:
         except (ImportError, AttributeError):
             logger.debug("No FDA TRC rules available yet")
 
+        # SUPPQUAL integrity rules
+        try:
+            from astraea.validation.rules.suppqual_validation import get_suppqual_rules
+
+            for rule in get_suppqual_rules():
+                self.register(rule)
+        except (ImportError, AttributeError):
+            logger.debug("No SUPPQUAL integrity rules available yet")
+
+        # Variable ordering rules
+        try:
+            from astraea.validation.rules.ordering import get_ordering_rules
+
+            for rule in get_ordering_rules():
+                self.register(rule)
+        except (ImportError, AttributeError):
+            logger.debug("No variable ordering rules available yet")
+
     def validate_domain(
         self,
         domain: str,
