@@ -223,9 +223,13 @@ CLI commands available: `astraea execute-domain`
 | Required/expected/USUBJID rules | src/astraea/validation/rules/presence.py | 15 | Done |
 | Name/label/char length rules | src/astraea/validation/rules/limits.py | 17 | Done |
 | Date format/ASCII/naming rules | src/astraea/validation/rules/format.py | 17 | Done |
-| **Total** | | **114 new tests** | **Plans 1, 2, 4 complete** |
+| Cross-domain consistency rules | src/astraea/validation/rules/consistency.py | 20 | Done |
+| FDA Business Rules (FDAB*) | src/astraea/validation/rules/fda_business.py | 31 | Done |
+| FDA TRC pre-checks | src/astraea/validation/rules/fda_trc.py | -- | Done |
+| Engine cross-domain + test fixes | src/astraea/validation/engine.py | -- | Done |
+| **Total** | | **165 new tests** | **Plans 1, 2, 3, 4 complete** |
 
-**Combined test suite: 1396 tests (1277 pass + 119 skipped)**
+**Combined test suite: 1447 tests (1328 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -349,6 +353,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-28: [D-07-02-01] CT validation uses ERROR for non-extensible codelist violations and WARNING for extensible -- matches SDTM-IG semantics
 - 2026-02-28: [D-07-02-02] fix_suggestion only provided for non-extensible codelist violations (up to 5 valid terms shown)
 - 2026-02-28: [D-07-02-03] FileNamingRule validates domain code format (2-8 alpha) not actual file existence -- allows SUPPQUAL domains
+- 2026-02-28: [D-07-03-01] CrossDomainValidator is standalone class (not ValidationRule subclass) because it needs multi-domain access
+- 2026-02-28: [D-07-03-02] TRCPreCheck is standalone -- checks submission-level artifacts (define.xml, file naming), not per-domain data
+- 2026-02-28: [D-07-03-03] get_consistency_rules() and get_fda_trc_rules() return empty lists since their validators are invoked directly by the engine
 
 ### Pending Todos
 
@@ -387,5 +394,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-02-PLAN.md (Single-Domain Validation Rules)
+Stopped at: Completed 07-03-PLAN.md (Cross-Domain & FDA Validation Rules)
 Resume file: None
