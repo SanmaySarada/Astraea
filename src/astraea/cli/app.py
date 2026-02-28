@@ -5,8 +5,9 @@ specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
 classifying raw datasets to SDTM domains, reviewing mapping specifications,
 executing mapping specs to produce SDTM XPT files, running SDTM validation,
 auto-fixing deterministic validation issues, generating submission
-artifacts (define.xml, cSDRG), managing the learning system, and generating
-trial design domains (TS, TA, TE, TV, TI, SV).
+artifacts (define.xml, cSDRG), assembling eCTD submission packages,
+managing the learning system, and generating trial design domains
+(TS, TA, TE, TV, TI, SV).
 
 Usage:
     astraea profile <data-folder>
@@ -1682,6 +1683,109 @@ def _try_load_learning_retriever(
             rich_console.print(f"  [yellow]Warning: Could not load learning DB: {e}[/yellow]")
 
     return None
+
+
+@app.command(name="package-submission")
+def package_submission_cmd(
+    source_dir: Annotated[
+        Path,
+        typer.Option("--source-dir", help="Directory containing .xpt files"),
+    ] = ...,
+    output_dir: Annotated[
+        Path,
+        typer.Option("--output-dir", help="Root output directory for eCTD package"),
+    ] = ...,
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = ...,
+    define_xml: Annotated[
+        Path | None,
+        typer.Option("--define-xml", help="Path to define.xml file"),
+    ] = None,
+    csdrg: Annotated[
+        Path | None,
+        typer.Option("--csdrg", help="Path to cSDRG document"),
+    ] = None,
+) -> None:
+    """Assemble an eCTD submission package from generated SDTM datasets.
+
+    Creates the standard eCTD module 5 directory tree
+    (m5/datasets/tabulations/sdtm/) and copies XPT datasets, define.xml,
+    and cSDRG into the correct locations. File names are validated and
+    auto-corrected to FDA naming conventions (lowercase, alphanumeric).
+    """
+    from rich.table import Table
+
+    from astraea.submission.ectd import assemble_ectd_package, validate_xpt_filename
+
+    # Validate source directory
+    if not source_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Source directory not found: {source_dir}")
+        raise typer.Exit(code=1)
+
+    xpt_files = list(source_dir.glob("*.xpt"))
+    if not xpt_files:
+        console.print(f"[bold red]Error:[/bold red] No .xpt files found in {source_dir}")
+        raise typer.Exit(code=1)
+
+    console.print(
+        f"\n[bold blue]Assembling eCTD package for study {study_id}...[/bold blue]"
+    )
+
+    # Show file naming corrections preview
+    corrections: list[tuple[str, str]] = []
+    for xpt in xpt_files:
+        is_valid, corrected = validate_xpt_filename(xpt.name)
+        if not is_valid:
+            corrections.append((xpt.name, corrected))
+
+    if corrections:
+        console.print("\n[yellow]File naming corrections:[/yellow]")
+        for original, corrected in corrections:
+            console.print(f"  {original} -> {corrected}")
+
+    # Assemble package
+    try:
+        sdtm_dir = assemble_ectd_package(
+            source_dir=source_dir,
+            output_dir=output_dir,
+            study_id=study_id,
+            define_xml_path=define_xml,
+            csdrg_path=csdrg,
+        )
+    except FileNotFoundError as e:
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Display summary
+    packaged_files = sorted(sdtm_dir.glob("*"))
+    summary = Table(title="eCTD Package Summary")
+    summary.add_column("File", style="cyan")
+    summary.add_column("Size", justify="right")
+    summary.add_column("Location")
+
+    for f in packaged_files:
+        size_kb = f.stat().st_size / 1024
+        rel_path = str(f.relative_to(output_dir))
+        summary.add_row(f.name, f"{size_kb:.1f} KB", rel_path)
+
+    # Also check tabulations level for cSDRG
+    tabulations_dir = sdtm_dir.parent
+    for f in sorted(tabulations_dir.glob("*")):
+        if f.is_file():
+            size_kb = f.stat().st_size / 1024
+            rel_path = str(f.relative_to(output_dir))
+            summary.add_row(f.name, f"{size_kb:.1f} KB", rel_path)
+
+    console.print()
+    console.print(summary)
+    console.print(
+        f"\n[bold green]Package assembled:[/bold green] {sdtm_dir}"
+    )
+    console.print(f"  XPT files: {len(xpt_files)}")
+    console.print(f"  Define.xml: {'Yes' if define_xml else 'No'}")
+    console.print(f"  cSDRG: {'Yes' if csdrg else 'No'}")
 
 
 @app.command(name="parse-ecrf")

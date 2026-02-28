@@ -24,11 +24,13 @@ class RuleSeverity(StrEnum):
     ERROR: Must fix before submission -- will cause FDA rejection.
     WARNING: Should fix, or explain in cSDRG if not fixed.
     NOTICE: Informational best-practice recommendation.
+    INFORMATIONAL: Non-actionable metadata for documentation purposes.
     """
 
     ERROR = "ERROR"
     WARNING = "WARNING"
     NOTICE = "NOTICE"
+    INFORMATIONAL = "INFORMATIONAL"
 
     @property
     def display_name(self) -> str:
