@@ -180,19 +180,73 @@ def normalize_vs_columns(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     return result
 
 
+def _horizontal_merge(dfs: dict[str, pd.DataFrame], domain: str) -> pd.DataFrame:
+    """Merge multiple DataFrames horizontally on common key columns.
+
+    Identifies common key columns across all DataFrames and performs an
+    outer join. Overlapping non-key columns are suffixed with the source name
+    to avoid collisions.
+
+    Args:
+        dfs: Dictionary of source_name -> DataFrame.
+        domain: SDTM domain code for domain-specific key detection.
+
+    Returns:
+        Horizontally merged DataFrame.
+    """
+    # Candidate key columns: common identifiers + domain-specific test code
+    candidate_keys = {"STUDYID", "USUBJID", "VISITNUM", "VISIT", "Subject", "SiteNumber"}
+    testcd_col = f"{domain.upper()}TESTCD"
+    candidate_keys.add(testcd_col)
+
+    # Find key columns present in ALL DataFrames
+    all_col_sets = [set(df.columns) for df in dfs.values()]
+    common_cols = set.intersection(*all_col_sets) if all_col_sets else set()
+    key_cols = sorted(candidate_keys & common_cols)
+
+    if not key_cols:
+        # No common keys -- fall back to concat
+        logger.warning(
+            "Horizontal merge for {} found no common key columns; falling back to concat",
+            domain,
+        )
+        aligned = align_multi_source_columns(dfs, {})
+        return pd.concat(list(aligned.values()), ignore_index=True)
+
+    logger.debug("Horizontal merge for {} using keys: {}", domain, key_cols)
+
+    items = list(dfs.items())
+    merged = items[0][1].copy()
+    for name, df in items[1:]:
+        merged = pd.merge(
+            merged,
+            df,
+            on=key_cols,
+            how="outer",
+            suffixes=("", f"_{name}"),
+        )
+
+    return merged
+
+
 def merge_findings_sources(
     dfs: dict[str, pd.DataFrame],
     domain: str,
+    *,
+    merge_mode: str = "concat",
 ) -> tuple[pd.DataFrame, list[str]]:
     """Merge multiple normalized Findings source DataFrames.
 
-    Aligns columns across sources and concatenates into a single DataFrame.
-    Identifies supplemental candidate columns that are not standard SDTM
-    variables for the given domain.
+    Supports two merge modes:
+    - ``"concat"`` (default): Aligns columns and vertically concatenates.
+    - ``"join"``: Key-based horizontal merge on common key columns
+      (STUDYID, USUBJID, VISITNUM, plus domain-specific keys like --TESTCD).
 
     Args:
         dfs: Dictionary of source_name -> normalized DataFrame.
         domain: SDTM domain code (e.g., "LB", "EG", "VS").
+        merge_mode: ``"concat"`` for vertical stack or ``"join"`` for
+            horizontal key-based merge.
 
     Returns:
         Tuple of (merged_df, supplemental_candidate_columns).
@@ -204,6 +258,8 @@ def merge_findings_sources(
 
     if len(dfs) == 1:
         merged = next(iter(dfs.values())).copy()
+    elif merge_mode == "join":
+        merged = _horizontal_merge(dfs, domain)
     else:
         # Use align_multi_source_columns with empty rename maps (already normalized)
         aligned = align_multi_source_columns(dfs, {})
@@ -358,6 +414,66 @@ def derive_nrind(df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
     return df
 
 
+def _pass_through_findings_metadata(
+    df: pd.DataFrame,
+    domain_prefix: str,
+    source_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Copy specimen type, method, and fasting status from source when present.
+
+    Looks for common source column name patterns (case-insensitive) and copies
+    them to the standard SDTM Findings variable names:
+    - ``{prefix}SPEC`` from SPEC, SPECIMEN, SAMPLE
+    - ``{prefix}METHOD`` from METHOD, TESTMETHOD
+    - ``{prefix}FAST`` from FAST, FASTING
+
+    Only creates columns when a matching source column exists. These are
+    Expected (not Required) variables, so absence is acceptable.
+
+    Args:
+        df: Executed Findings DataFrame.
+        domain_prefix: Two-letter SDTM domain prefix (e.g., "LB").
+        source_df: Merged source DataFrame to search for metadata columns.
+
+    Returns:
+        DataFrame with metadata columns added where source data exists.
+    """
+    # Build case-insensitive lookup for source columns
+    lower_map: dict[str, str] = {c.lower(): c for c in source_df.columns}
+
+    # (target_suffix, list_of_source_name_patterns)
+    metadata_vars: list[tuple[str, list[str]]] = [
+        ("SPEC", ["spec", "specimen", "sample"]),
+        ("METHOD", ["method", "testmethod"]),
+        ("FAST", ["fast", "fasting"]),
+    ]
+
+    for suffix, patterns in metadata_vars:
+        target_col = f"{domain_prefix}{suffix}"
+        # Skip if already exists in the output
+        if target_col in df.columns:
+            continue
+        # Find matching source column
+        for pattern in patterns:
+            src_col = lower_map.get(pattern)
+            if src_col is not None:
+                # Only copy if lengths align (same source merge produced the output)
+                if len(source_df) == len(df):
+                    df[target_col] = source_df[src_col].values
+                else:
+                    # Length mismatch -- log and skip
+                    logger.debug(
+                        "Cannot pass through {} (length mismatch: source={}, output={})",
+                        target_col,
+                        len(source_df),
+                        len(df),
+                    )
+                logger.debug("Passed through {} from source column '{}'", target_col, src_col)
+                break
+
+    return df
+
+
 class FindingsExecutor:
     """Orchestrator for multi-source Findings domain execution.
 
@@ -380,22 +496,30 @@ class FindingsExecutor:
         self.ct_ref = ct_ref
         self._executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
 
-    def _derive_findings_variables(self, df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
+    def _derive_findings_variables(
+        self,
+        df: pd.DataFrame,
+        domain_prefix: str,
+        source_df: pd.DataFrame | None = None,
+    ) -> pd.DataFrame:
         """Derive standardized results and normal range indicator for a Findings domain.
 
         Calls derive_standardized_results (STRESC/STRESN/STRESU) then derive_nrind (NRIND)
-        in sequence. Should be called AFTER DatasetExecutor.execute() but BEFORE SUPPQUAL
-        generation.
+        in sequence, followed by pass-through of specimen/method/fasting metadata
+        from source data when present.
 
         Args:
             df: Executed Findings DataFrame.
             domain_prefix: Two-letter SDTM domain prefix (e.g., "LB", "EG", "VS").
+            source_df: Optional merged source DataFrame for metadata pass-through.
 
         Returns:
             DataFrame with derived Findings variables added.
         """
         df = derive_standardized_results(df, domain_prefix)
         df = derive_nrind(df, domain_prefix)
+        if source_df is not None:
+            df = _pass_through_findings_metadata(df, domain_prefix, source_df)
         return df
 
     def execute_lb(
@@ -445,7 +569,7 @@ class FindingsExecutor:
         )
 
         # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
-        lb_df = self._derive_findings_variables(lb_df, "LB")
+        lb_df = self._derive_findings_variables(lb_df, "LB", source_df=merged)
 
         # Generate SUPPLB if requested
         supplb_df = None
@@ -516,7 +640,7 @@ class FindingsExecutor:
         )
 
         # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
-        eg_df = self._derive_findings_variables(eg_df, "EG")
+        eg_df = self._derive_findings_variables(eg_df, "EG", source_df=merged)
 
         # Generate SUPPEG if requested
         suppeg_df = None
@@ -581,7 +705,7 @@ class FindingsExecutor:
         )
 
         # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
-        vs_df = self._derive_findings_variables(vs_df, "VS")
+        vs_df = self._derive_findings_variables(vs_df, "VS", source_df=merged)
 
         # Generate SUPPVS if requested
         suppvs_df = None

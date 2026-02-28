@@ -727,7 +727,10 @@ def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -
         if keyword == "SUBSTRING" and len(args) >= 3:
             col = _resolve_column(df, args[0], kwargs)
             if col is None:
-                logger.warning("SPLIT/SUBSTRING: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                logger.warning(
+                    "SPLIT/SUBSTRING: column '{}' not found for {}",
+                    args[0], mapping.sdtm_variable,
+                )
                 return pd.Series(None, index=df.index, dtype="object")
             start = int(args[1])
             end = int(args[2])
@@ -736,7 +739,10 @@ def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -
         if keyword == "DELIMITER_PART" and len(args) >= 3:
             col = _resolve_column(df, args[0], kwargs)
             if col is None:
-                logger.warning("SPLIT/DELIMITER_PART: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                logger.warning(
+                    "SPLIT/DELIMITER_PART: column '{}' not found for {}",
+                    args[0], mapping.sdtm_variable,
+                )
                 return pd.Series(None, index=df.index, dtype="object")
             delimiter = args[1]
             index = int(args[2])
@@ -745,14 +751,20 @@ def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -
         if keyword == "REGEX_GROUP" and len(args) >= 2:
             col = _resolve_column(df, args[0], kwargs)
             if col is None:
-                logger.warning("SPLIT/REGEX_GROUP: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                logger.warning(
+                    "SPLIT/REGEX_GROUP: column '{}' not found for {}",
+                    args[0], mapping.sdtm_variable,
+                )
                 return pd.Series(None, index=df.index, dtype="object")
             pattern = args[1]
             group_index = int(args[2]) if len(args) >= 3 else 0
             extracted = df[col].astype(str).str.extract(pattern)
             if group_index < len(extracted.columns):
                 return extracted.iloc[:, group_index]
-            logger.warning("SPLIT/REGEX_GROUP: group_index {} out of range for {}", group_index, mapping.sdtm_variable)
+            logger.warning(
+                "SPLIT/REGEX_GROUP: group_index {} out of range for {}",
+                group_index, mapping.sdtm_variable,
+            )
             return pd.Series(None, index=df.index, dtype="object")
 
         # Unrecognized rule -- fall through to source column fallback
