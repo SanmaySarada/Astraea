@@ -476,7 +476,13 @@ Plans:
 11. SEX, RACE, ETHNIC convenience recoding wrappers (MED-25)
 12. All existing tests pass + new tests for each fix
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 14-01-PLAN.md -- Reference data fixes: C66738 codelist, C66789/C66742 corrections, PE/QS VISITNUM, collision-safe reverse lookup
+- [ ] 14-02-PLAN.md -- Date/time fixes: timezone offset validation, ISO datetime passthrough, HH:MM:SS, date imputation functions
+- [ ] 14-03-PLAN.md -- Transform utilities: 200-byte validation, epoch overlap detection, SEX/RACE/ETHNIC recoding, TV visit mapping
+- [ ] 14-04-PLAN.md -- Validation performance: vectorize FDAB009/FDAB030/ASTR-C005 (replace iterrows with groupby/merge)
 
 ---
 
