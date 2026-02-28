@@ -264,7 +264,16 @@ Plans:
 9. Dataset size validation: total submission size checked against 5GB FDA limit with split recommendations for large domains
 10. All file naming conventions enforced (lowercase domain codes, .xpt extension)
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 7 plans
+
+Plans:
+- [ ] 07-01-PLAN.md -- Validation framework: rule models, engine orchestrator, report model
+- [ ] 07-02-PLAN.md -- Terminology, Presence, Limit, Format rules (VAL-01, VAL-02, VAL-04, VAL-05)
+- [ ] 07-03-PLAN.md -- Cross-domain consistency rules (VAL-03), FDA Business Rules, FDA TRC pre-checks
+- [ ] 07-04-PLAN.md -- Predict-and-prevent validation (VAL-06) wired into mapping engine
+- [ ] 07-05-PLAN.md -- define.xml 2.0 generator from DomainMappingSpec (VAL-08)
+- [ ] 07-06-PLAN.md -- cSDRG template generator, submission package assembly, validation report export
+- [ ] 07-07-PLAN.md -- CLI commands (validate, generate-define, generate-csdrg) and integration tests
 
 ---
 
