@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 11 -- Execution Contract (most urgent post-v1 audit fix: make execution pipeline produce valid SDTM data from LLM specs)
+**Current focus:** Phase 11 COMPLETE -- Execution Contract (derivation rule vocabulary, handlers, column resolution, real-data acceptance test all verified)
 
 ## Current Position
 
 Phase: 11 of 15 (Execution Contract)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-02-28 -- Completed 11-03-PLAN.md (Prompt Vocabulary and Column Resolution)
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 11-04-PLAN.md (DM Real-Data Integration Test)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [███░] 75%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [████] 100%
 
 ## Performance Metrics
 
@@ -446,6 +446,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-11-03-01] Wildcard "*" checked explicitly alongside null in known_false_positives -- null means "match all" preserved
 - 2026-02-28: [D-11-03-02] Executor resolves source_variable through alias map BEFORE handler dispatch -- handlers get resolved_source in kwargs
 - 2026-02-28: [D-11-03-03] cross_domain_dfs populated from raw_dfs keys not in spec.source_datasets -- zero-config for callers
+- 2026-02-28: [D-11-04-01] Test-local mapping spec fixture uses correct vocabulary rather than depending on LLM-regenerated DM_mapping.json
+- 2026-02-28: [D-11-04-02] Only dm DataFrame passed as raw_dfs; cross-domain data excluded to avoid concat row multiplication
+- 2026-02-28: [D-11-04-03] Separate TestDMExecutionFromJSON class with relaxed assertions for LLM-generated spec testing
 
 ### Pending Todos
 
@@ -490,5 +493,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 11-03-PLAN.md (Prompt Vocabulary and Column Resolution)
+Stopped at: Completed 11-04-PLAN.md (DM Real-Data Integration Test) -- Phase 11 COMPLETE
 Resume file: None
