@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 13 -- Define.xml and Findings Completeness (next phase after Validation and Severity Fixes)
+**Current focus:** Phase 14 -- Reference Data and Transforms (next phase after Define.xml and Findings Completeness)
 
 ## Current Position
 
-Phase: 13 of 15 (Define.xml and Findings Completeness)
-Plan: 1 of 4
-Status: In progress
-Last activity: 2026-02-28 -- Completed 13-01-PLAN.md (Define.xml Structural Fixes) -- 804 unit tests passing
+Phase: 14 of 15 (next: Reference Data and Transforms)
+Plan: 0 of TBD
+Status: Phase 13 COMPLETE -- Phase 14 NOT STARTED
+Last activity: 2026-02-28 -- Completed Phase 13 (Define.xml and Findings Completeness) -- all 4 plans executed, 804 unit tests passing
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 40%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 53%
 
 ## Performance Metrics
 
@@ -311,6 +311,26 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 
 **Combined test suite: 1685 tests (1566 pass + 119 skipped)**
 
+## Phase 13 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| ValueListDef on result vars | src/astraea/submission/define_xml.py | 3 | Done |
+| NCI C-code Alias on CodeListItem | src/astraea/submission/define_xml.py | 2 | Done |
+| Value-level ItemDef generation | src/astraea/submission/define_xml.py | 2 | Done |
+| CodelistTerm.nci_code field | src/astraea/models/controlled_terms.py | -- | Done |
+| KeySequence on ItemRef | src/astraea/submission/define_xml.py | 1 | Done |
+| def:Label on ItemGroupDef | src/astraea/submission/define_xml.py | 1 | Done |
+| Integer DataType for --SEQ | src/astraea/submission/define_xml.py | 1 | Done |
+| Origin Source attribute | src/astraea/submission/define_xml.py | 3 | Done |
+| ODM Originator/AsOfDateTime | src/astraea/submission/define_xml.py | 1 | Done |
+| derive_standardized_results (STRESC/STRESN/STRESU) | src/astraea/execution/findings.py | 8 | Done |
+| derive_nrind (normal range indicator) | src/astraea/execution/findings.py | 8 | Done |
+| DTF/TMF imputation flag generation | src/astraea/execution/executor.py | 6 | Done |
+| **Total** | | **~44 new tests** | **4/4 plans COMPLETE** |
+
+**Combined test suite: ~1729 tests (804 unit pass + 119 skipped + integration)**
+
 ## Accumulated Context
 
 ### Decisions
@@ -544,5 +564,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 13-01-PLAN.md (Define.xml Structural Fixes)
+Stopped at: Completed Phase 13 (Define.xml and Findings Completeness) -- all 4 plans executed
 Resume file: None

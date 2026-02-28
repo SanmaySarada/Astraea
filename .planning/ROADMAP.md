@@ -447,10 +447,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 13-01-PLAN.md -- Define.xml structural fixes: ValueListDef on result vars, NCI C-code Alias, value-level ItemDefs
-- [ ] 13-02-PLAN.md -- Define.xml attribute completeness: KeySequence, def:Label, integer --SEQ, Origin Source, Originator
-- [ ] 13-03-PLAN.md -- Findings derivations: STRESC/STRESN/STRESU standardized results + NRIND normal range indicator
-- [ ] 13-04-PLAN.md -- Date imputation flag (DTF) wiring + full regression verification
+- [x] 13-01-PLAN.md -- Define.xml structural fixes: ValueListDef on result vars, NCI C-code Alias, value-level ItemDefs
+- [x] 13-02-PLAN.md -- Define.xml attribute completeness: KeySequence, def:Label, integer --SEQ, Origin Source, Originator
+- [x] 13-03-PLAN.md -- Findings derivations: STRESC/STRESN/STRESU standardized results + NRIND normal range indicator
+- [x] 13-04-PLAN.md -- Date imputation flag (DTF) wiring + full regression verification
 
 ---
 
@@ -525,7 +525,7 @@ Plans:
 | 10 - Tech Debt Cleanup | Complete | 2026-02-28 |
 | 11 - Execution Contract | Complete | 2026-02-28 |
 | 12 - Validation and Severity Fixes | Complete | 2026-02-28 |
-| 13 - Define.xml and Findings Completeness | Not Started | -- |
+| 13 - Define.xml and Findings Completeness | Complete | 2026-02-28 |
 | 14 - Reference Data and Transforms | Not Started | -- |
 | 15 - Submission Readiness | Not Started | -- |
 
