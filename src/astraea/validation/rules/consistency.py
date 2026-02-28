@@ -169,53 +169,51 @@ class CrossDomainValidator:
         if "RFSTDTC" not in dm_df.columns or "USUBJID" not in dm_df.columns:
             return results
 
-        # Build USUBJID -> RFSTDTC lookup
-        rfstdtc_map: dict[str, str] = {}
-        for _, row in dm_df.iterrows():
-            usubjid = row.get("USUBJID")
-            rfstdtc = row.get("RFSTDTC")
-            if pd.notna(usubjid) and pd.notna(rfstdtc) and str(rfstdtc).strip():
-                rfstdtc_map[str(usubjid)] = str(rfstdtc)
-
-        if not rfstdtc_map:
+        # Vectorized: Build USUBJID -> RFSTDTC lookup
+        dm_lookup = dm_df[["USUBJID", "RFSTDTC"]].dropna().copy()
+        dm_lookup["RFSTDTC"] = dm_lookup["RFSTDTC"].astype(str)
+        dm_lookup = dm_lookup[dm_lookup["RFSTDTC"].str.strip() != ""]
+        if dm_lookup.empty:
             return results
+
+        rfstdtc_map = dm_lookup.set_index("USUBJID")["RFSTDTC"].to_dict()
 
         # Check EX domain if present
         if "EX" in domains:
             ex_df = domains["EX"]
             if "EXSTDTC" in ex_df.columns and "USUBJID" in ex_df.columns:
-                mismatches = 0
-                for usubjid, rfstdtc in rfstdtc_map.items():
-                    subj_ex = ex_df[ex_df["USUBJID"] == usubjid]
-                    if subj_ex.empty:
-                        continue
-                    ex_dates = subj_ex["EXSTDTC"].dropna().astype(str)
-                    ex_dates_sorted = sorted(
-                        [d for d in ex_dates if d.strip()],
-                    )
-                    if ex_dates_sorted and ex_dates_sorted[0] != rfstdtc:
-                        mismatches += 1
+                # Get earliest EXSTDTC per subject via vectorized groupby
+                ex_valid = ex_df[["USUBJID", "EXSTDTC"]].dropna().copy()
+                ex_valid["EXSTDTC"] = ex_valid["EXSTDTC"].astype(str)
+                ex_valid = ex_valid[ex_valid["EXSTDTC"].str.strip() != ""]
+                if not ex_valid.empty:
+                    earliest_ex = ex_valid.groupby("USUBJID")["EXSTDTC"].min()
+                    # Compare with rfstdtc_map
+                    mismatches = 0
+                    for usubjid, earliest_date in earliest_ex.items():
+                        if usubjid in rfstdtc_map and earliest_date != rfstdtc_map[usubjid]:
+                            mismatches += 1
 
-                if mismatches > 0:
-                    results.append(
-                        RuleResult(
-                            rule_id="ASTR-C003",
-                            rule_description="RFSTDTC vs earliest EXSTDTC consistency",
-                            category=RuleCategory.CONSISTENCY,
-                            severity=RuleSeverity.WARNING,
-                            domain="DM",
-                            variable="RFSTDTC",
-                            message=(
-                                f"{mismatches} subject(s) have RFSTDTC that does not "
-                                f"match their earliest EXSTDTC"
-                            ),
-                            affected_count=mismatches,
-                            fix_suggestion=(
-                                "Verify RFSTDTC is set to the earliest exposure date "
-                                "for each subject"
-                            ),
+                    if mismatches > 0:
+                        results.append(
+                            RuleResult(
+                                rule_id="ASTR-C003",
+                                rule_description="RFSTDTC vs earliest EXSTDTC consistency",
+                                category=RuleCategory.CONSISTENCY,
+                                severity=RuleSeverity.WARNING,
+                                domain="DM",
+                                variable="RFSTDTC",
+                                message=(
+                                    f"{mismatches} subject(s) have RFSTDTC that does not "
+                                    f"match their earliest EXSTDTC"
+                                ),
+                                affected_count=mismatches,
+                                fix_suggestion=(
+                                    "Verify RFSTDTC is set to the earliest exposure date "
+                                    "for each subject"
+                                ),
+                            )
                         )
-                    )
 
         return results
 
@@ -269,16 +267,14 @@ class CrossDomainValidator:
         if "RFSTDTC" not in dm_df.columns or "USUBJID" not in dm_df.columns:
             return results
 
-        # Build USUBJID -> RFSTDTC lookup
-        rfstdtc_map: dict[str, str] = {}
-        for _, row in dm_df.iterrows():
-            usubjid = row.get("USUBJID")
-            rfstdtc = row.get("RFSTDTC")
-            if pd.notna(usubjid) and pd.notna(rfstdtc) and str(rfstdtc).strip():
-                rfstdtc_map[str(usubjid)] = str(rfstdtc)[:10]  # date part only
-
-        if not rfstdtc_map:
+        # Vectorized: Build RFSTDTC reference from DM
+        dm_lookup = dm_df[["USUBJID", "RFSTDTC"]].dropna().copy()
+        dm_lookup["RFSTDTC"] = dm_lookup["RFSTDTC"].astype(str)
+        dm_lookup = dm_lookup[dm_lookup["RFSTDTC"].str.strip() != ""]
+        if dm_lookup.empty:
             return results
+
+        dm_lookup["_rfstdtc_date"] = dm_lookup["RFSTDTC"].str[:10]
 
         for domain_code, df in domains.items():
             if domain_code == "DM":
@@ -288,35 +284,44 @@ class CrossDomainValidator:
 
             # Find --DY columns and their corresponding --DTC columns
             dy_cols = [c for c in df.columns if c.endswith("DY")]
+            if not dy_cols:
+                continue
+
+            # Merge RFSTDTC into domain DataFrame once
+            merged = df.merge(
+                dm_lookup[["USUBJID", "_rfstdtc_date"]], on="USUBJID", how="left"
+            )
+
             for dy_col in dy_cols:
                 # Corresponding DTC column: replace DY suffix with DTC
                 dtc_col = dy_col[:-2] + "DTC"
-                if dtc_col not in df.columns:
+                if dtc_col not in merged.columns:
                     continue
 
-                inconsistent_count = 0
-                for _, row in df.iterrows():
-                    usubjid = row.get("USUBJID")
-                    dy_val = row.get(dy_col)
-                    dtc_val = row.get(dtc_col)
+                # Filter to rows with all required values
+                mask = (
+                    merged[dy_col].notna()
+                    & merged[dtc_col].notna()
+                    & merged["_rfstdtc_date"].notna()
+                )
+                subset = merged.loc[mask].copy()
+                if subset.empty:
+                    continue
 
-                    if pd.isna(dy_val) or pd.isna(dtc_val) or pd.isna(usubjid):
-                        continue
-                    if str(usubjid) not in rfstdtc_map:
-                        continue
+                subset["_dtc_date"] = subset[dtc_col].astype(str).str[:10]
+                subset["_dy_num"] = pd.to_numeric(subset[dy_col], errors="coerce")
 
-                    rfstdtc = rfstdtc_map[str(usubjid)]
-                    dtc_date = str(dtc_val)[:10]
+                # Drop rows where DY couldn't be converted to numeric
+                subset = subset.dropna(subset=["_dy_num"])
+                if subset.empty:
+                    continue
 
-                    try:
-                        dy_num = int(float(dy_val))
-                    except (ValueError, TypeError):
-                        continue
-
-                    # Positive DY should be on/after RFSTDTC;
-                    # Negative DY should be before RFSTDTC
-                    if (dy_num > 0 and dtc_date < rfstdtc) or (dy_num < 0 and dtc_date > rfstdtc):
-                        inconsistent_count += 1
+                # Vectorized sign consistency check
+                inconsistent = (
+                    ((subset["_dy_num"] > 0) & (subset["_dtc_date"] < subset["_rfstdtc_date"]))
+                    | ((subset["_dy_num"] < 0) & (subset["_dtc_date"] > subset["_rfstdtc_date"]))
+                )
+                inconsistent_count = int(inconsistent.sum())
 
                 if inconsistent_count > 0:
                     results.append(
