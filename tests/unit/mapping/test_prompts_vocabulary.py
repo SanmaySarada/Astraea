@@ -2,7 +2,6 @@
 
 from astraea.mapping.prompts import MAPPING_SYSTEM_PROMPT, MAPPING_USER_INSTRUCTIONS
 
-
 # All 10 derivation rule keywords that the execution engine recognizes
 DERIVATION_KEYWORDS = [
     "GENERATE_USUBJID",

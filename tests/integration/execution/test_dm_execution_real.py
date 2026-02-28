@@ -515,9 +515,13 @@ class TestDMExecutionReal:
         )
         # Without cross-domain data (EX, DS, IE), RFSTDTC/RFENDTC/RFXSTDTC/RFXENDTC/
         # RFICDTC/RFPENDTC may be NULL. But the core 14 should be populated.
+        null_cols = [
+            c for c in result.columns
+            if not result[c].notna().any() or (result[c] == "").all()
+        ]
         assert populated >= 14, (
-            f"Only {populated}/{len(result.columns)} columns populated (expected >= 14). "
-            f"NULL columns: {[c for c in result.columns if not result[c].notna().any() or (result[c] == '').all()]}"
+            f"Only {populated}/{len(result.columns)} columns "
+            f"populated (expected >= 14). NULL columns: {null_cols}"
         )
 
     def test_no_raw_sas_numeric_dates(

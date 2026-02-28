@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from astraea.transforms.dates import (
     detect_date_format,
     format_partial_iso8601,

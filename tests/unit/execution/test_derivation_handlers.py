@@ -7,7 +7,6 @@ import pytest
 
 from astraea.execution.pattern_handlers import (
     _DERIVATION_DISPATCH,
-    _dispatch_derivation_rule,
     handle_combine,
     handle_derivation,
     handle_reformat,

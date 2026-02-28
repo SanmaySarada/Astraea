@@ -1,7 +1,6 @@
 """Tests for column name resolution and cross-domain DataFrame passing in DatasetExecutor."""
 
 import pandas as pd
-import pytest
 
 from astraea.execution.executor import DatasetExecutor
 from astraea.models.mapping import (

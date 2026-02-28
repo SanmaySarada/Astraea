@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
-
-import pytest
 
 from astraea.validation.report import ValidationReport
 from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity
