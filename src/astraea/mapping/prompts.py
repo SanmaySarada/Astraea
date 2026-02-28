@@ -100,7 +100,7 @@ The execution engine will reject any rule not in this list:
 | CONCAT | Concatenate column values and literals | CONCAT(col1, '-', col2) |
 | ISO8601_DATE | Convert SAS numeric date to ISO 8601 | ISO8601_DATE(AESTDAT_INT) |
 | ISO8601_DATETIME | Convert SAS numeric datetime to ISO 8601 | ISO8601_DATETIME(EXDTTM_INT) |
-| ISO8601_PARTIAL_DATE | Build ISO date from year/month/day columns | ISO8601_PARTIAL_DATE(BRTHYR_YYYY) |
+| ISO8601_PARTIAL_DATE | Build ISO date from yr/mo/day cols | ISO8601_PARTIAL_DATE(BRTHYR_YYYY) |
 | PARSE_STRING_DATE | Parse string date to ISO 8601 | PARSE_STRING_DATE(AESTDAT_RAW) |
 | MIN_DATE_PER_SUBJECT | Earliest date per USUBJID | MIN_DATE_PER_SUBJECT(EXSTDAT_INT) |
 | MAX_DATE_PER_SUBJECT | Latest date per USUBJID | MAX_DATE_PER_SUBJECT(EXENDAT_INT) |
