@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 12 of 15 (Validation and Severity Fixes)
-Plan: 2 of 3
-Status: In progress
-Last activity: 2026-02-28 -- Completed 12-02-PLAN.md (TS Parameter Expansion + TRC Enhancement)
+Plan: 3 of 3
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 12-03-PLAN.md (TRC Engine Integration + Full Regression)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 20%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 30%
 
 ## Performance Metrics
 
@@ -472,6 +472,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-12-02-01] FDA_REQUIRED_PARAMS expanded to 26 entries covering all CDER-mandated TS codes
 - 2026-02-28: [D-12-02-02] _TRC_REQUIRED_TS_PARAMS separates 4 rejection-critical params from 26 warning-level params
 - 2026-02-28: [D-12-02-03] TRC rule_ids use FDA-TRC-{PARAM} format for new params (FDA-TRC-SDTMVER, FDA-TRC-STYPE, FDA-TRC-TITLE)
+- 2026-02-28: [D-12-03-01] TRCPreCheck import is lazy (inside if block) matching engine's existing lazy import pattern
+- 2026-02-28: [D-12-03-02] Both output_dir AND study_id required for TRC -- neither alone triggers checks
+- 2026-02-28: [D-12-03-03] TS integration test updated with 16 additional_params to match expanded FDA_REQUIRED_PARAMS
 
 ### Pending Todos
 
@@ -516,5 +519,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 12-02-PLAN.md (TS Parameter Expansion + TRC Enhancement)
+Stopped at: Completed 12-03-PLAN.md (TRC Engine Integration + Full Regression) -- Phase 12 COMPLETE
 Resume file: None
