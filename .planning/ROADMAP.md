@@ -507,7 +507,15 @@ Plans:
 11. All LOW items addressed as time permits
 12. All existing tests pass + new tests for each feature
 
-**Plans:** TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 15-01-PLAN.md -- Execution pipeline: SPLIT pattern, key-based merge, specimen/method/fasting
+- [ ] 15-02-PLAN.md -- cSDRG content (Sections 2, 6, 8) + eCTD directory structure assembly
+- [ ] 15-03-PLAN.md -- DM ARM variable enforcement + pre-mapped SDTM data detection
+- [ ] 15-04-PLAN.md -- LC (Laboratory Conventional) domain generation from LB
+- [ ] 15-05-PLAN.md -- Expanded FDA Business Rules (6 to 20+ FDAB rules)
+- [ ] 15-06-PLAN.md -- CLI wiring, LOW items, integration tests, full regression
 
 ---
 
