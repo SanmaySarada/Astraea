@@ -219,9 +219,12 @@ def detect_sdtm_format(profile: DatasetProfile) -> bool:
     # Check for DOMAIN column with valid SDTM code
     if "DOMAIN" in col_names:
         for v in profile.variables:
-            if v.name.upper() == "DOMAIN" and v.sample_values:
-                if any(sv.strip().upper() in _VALID_SDTM_DOMAINS for sv in v.sample_values):
-                    return True
+            if (
+                v.name.upper() == "DOMAIN"
+                and v.sample_values
+                and any(sv.strip().upper() in _VALID_SDTM_DOMAINS for sv in v.sample_values)
+            ):
+                return True
 
     return False
 

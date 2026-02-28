@@ -343,7 +343,7 @@ class TestGetPresenceRules:
 
     def test_returns_all_rules(self) -> None:
         rules = get_presence_rules()
-        assert len(rules) == 6
+        assert len(rules) == 8
         rule_ids = {r.rule_id for r in rules}
         assert "ASTR-P001" in rule_ids
         assert "ASTR-P002" in rule_ids
@@ -351,3 +351,5 @@ class TestGetPresenceRules:
         assert "ASTR-P004" in rule_ids
         assert "ASTR-P005" in rule_ids
         assert "ASTR-P006" in rule_ids
+        assert "ASTR-P010" in rule_ids
+        assert "ASTR-P011" in rule_ids
