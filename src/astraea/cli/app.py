@@ -5,7 +5,8 @@ specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
 classifying raw datasets to SDTM domains, reviewing mapping specifications,
 executing mapping specs to produce SDTM XPT files, running SDTM validation,
 auto-fixing deterministic validation issues, generating submission
-artifacts (define.xml, cSDRG), and managing the learning system.
+artifacts (define.xml, cSDRG), managing the learning system, and generating
+trial design domains (TS, TA, TE, TV, TI, SV).
 
 Usage:
     astraea profile <data-folder>
@@ -25,6 +26,7 @@ Usage:
     astraea learn-ingest --session-db PATH --learning-db PATH
     astraea learn-stats [--learning-db PATH]
     astraea learn-optimize --learning-db PATH --output PATH
+    astraea generate-trial-design <config-path>
 """
 
 from __future__ import annotations
@@ -276,6 +278,16 @@ def map_domain(
         Path | None,
         typer.Option("--cache-dir", help="Directory for caching eCRF extraction"),
     ] = None,
+    learning_db: Annotated[
+        Path | None,
+        typer.Option(
+            "--learning-db",
+            help=(
+                "Path to learning database directory (ChromaDB). "
+                "Auto-detected from .astraea/learning/ if not specified."
+            ),
+        ),
+    ] = None,
 ) -> None:
     """Map a raw SAS dataset to an SDTM domain.
 
@@ -386,6 +398,9 @@ def map_domain(
                             ecrf_forms.append(form)
                             break
 
+    # Step 3.5: Load learning retriever (auto-detect or explicit)
+    learning_retriever = _try_load_learning_retriever(learning_db, console)
+
     # Step 4: Run mapping engine
     console.print(
         f"[bold blue][4/5][/bold blue] Mapping domain [bold]{domain_upper}[/bold]..."
@@ -394,7 +409,9 @@ def map_domain(
         sdtm_ref = load_sdtm_reference()
         ct_ref = load_ct_reference()
         llm_client = AstraeaLLMClient()
-        engine = MappingEngine(llm_client, sdtm_ref, ct_ref)
+        engine = MappingEngine(
+            llm_client, sdtm_ref, ct_ref, learning_retriever=learning_retriever
+        )
 
         study_meta = StudyMetadata(study_id=study_id)
         spec = engine.map_domain(
@@ -1344,6 +1361,50 @@ def _check_api_key() -> bool:
         )
         return False
     return True
+
+
+def _try_load_learning_retriever(
+    learning_db: Path | None,
+    rich_console: Console,
+) -> object | None:
+    """Attempt to load a LearningRetriever from a learning database directory.
+
+    Auto-detects the learning DB from ``.astraea/learning/`` if no explicit
+    path is provided. Returns ``None`` when no DB exists or when chromadb
+    is not installed.
+
+    Args:
+        learning_db: Explicit path to ChromaDB learning directory, or None
+            to auto-detect from ``.astraea/learning/``.
+        rich_console: Rich console for status messages.
+
+    Returns:
+        A ``LearningRetriever`` instance, or ``None`` if unavailable.
+    """
+    if learning_db is not None:
+        _learning_db_path = learning_db
+    elif Path(".astraea/learning").is_dir():
+        _learning_db_path = Path(".astraea/learning")
+    else:
+        _learning_db_path = None
+
+    if _learning_db_path is not None and _learning_db_path.is_dir():
+        try:
+            from astraea.learning.retriever import LearningRetriever
+            from astraea.learning.vector_store import LearningVectorStore
+
+            vector_store = LearningVectorStore(_learning_db_path)
+            retriever = LearningRetriever(vector_store)
+            rich_console.print(
+                f"  [green]Learning DB loaded from {_learning_db_path}[/green]"
+            )
+            return retriever
+        except Exception as e:
+            rich_console.print(
+                f"  [yellow]Warning: Could not load learning DB: {e}[/yellow]"
+            )
+
+    return None
 
 
 @app.command(name="parse-ecrf")
