@@ -546,8 +546,4 @@ mypy src/
 | Findings | LB, VS, EG, PE |
 | Trial Design | TS, TA, TE, TV, TI |
 
----
 
-## License
-
-MIT
