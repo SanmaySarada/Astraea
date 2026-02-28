@@ -83,6 +83,14 @@ class RuleResult(BaseModel):
         default=None,
         description="Equivalent Pinnacle 21 rule ID if applicable",
     )
+    known_false_positive: bool = Field(
+        default=False,
+        description="True if this result matches a known false-positive whitelist entry",
+    )
+    known_false_positive_reason: str | None = Field(
+        default=None,
+        description="Reason from the whitelist explaining why this is a known false positive",
+    )
 
 
 class ValidationRule(BaseModel):

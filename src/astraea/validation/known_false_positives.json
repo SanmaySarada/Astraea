@@ -1,0 +1,12 @@
+{
+  "description": "Known false positives from P21/CORE validation. Matching RuleResults are flagged as known_false_positive=true in report output.",
+  "version": "1.0",
+  "entries": [
+    {
+      "rule_id": "SD1076",
+      "domain": "LB",
+      "variable": "LBSTRESC",
+      "reason": "P21 v2405.2 known issue: false positive for numeric LBSTRESC values"
+    }
+  ]
+}
