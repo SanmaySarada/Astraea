@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 9 -- CLI Wiring Gap Closure (3/3 plans complete). Phase 10 remaining.
+**Current focus:** Phase 9 COMPLETE -- CLI Wiring Gap Closure (3/3 plans complete). Phase 10 remaining.
 
 ## Current Position
 
 Phase: 9 of 10 (CLI Wiring Gap Closure)
-Plan: 3 of 3 (Route Findings through FindingsExecutor in execute-domain)
-Status: Phase 9 complete (plans 2-3), plan 1 pending
-Last activity: 2026-02-28 -- Completed 09-03-PLAN.md (Findings routing in execute-domain)
+Plan: 3 of 3
+Status: Phase 9 COMPLETE
+Last activity: 2026-02-28 -- Completed 09-01-PLAN.md (Trial Design CLI Wiring)
 
-Progress: [████████████████████████████████████████████████████████████] ~98%
+Progress: [█████████████████████████████████████████████████████████████] ~98%
 
 ## Performance Metrics
 
@@ -434,6 +434,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-08-05-01] DSPy imports guarded with try/except ImportError so learning system works even without dspy installed
 - 2026-02-28: [D-08-05-02] SDTMMapperModule wraps internal _DSPyMapperModule via composition (not direct dspy.Module subclass in public API)
 - 2026-02-28: [D-08-05-03] learn-optimize requires both ANTHROPIC_API_KEY and minimum 10 examples before attempting compilation
+- 2026-02-28: [D-09-01-01] TABESSION renamed to TABRSESS (8 chars max for XPT v5 compliance)
+- 2026-02-28: [D-09-01-02] SV label truncated to 'Desc of Unplanned Visit' for 40-char XPT label limit
+- 2026-02-28: [D-09-01-03] TA label truncated to 'Planned Order of Element in Arm' for 40-char XPT label limit
 
 ### Pending Todos
 
@@ -478,5 +481,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 09-03-PLAN.md (Findings routing in execute-domain) -- Phase 9 plans 2-3 complete
+Stopped at: Completed 09-01-PLAN.md (Trial Design CLI Wiring) -- Phase 9 ALL plans complete
 Resume file: .planning/phases/10-tech-debt/10-01-PLAN.md
