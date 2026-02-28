@@ -98,6 +98,10 @@ _PATTERN_MON_YYYY = re.compile(
 _PATTERN_YYYY_MM_DD = re.compile(r"^\s*(\d{4})-(\d{2})-(\d{2})\s*$")
 _PATTERN_YYYY_MM = re.compile(r"^\s*(\d{4})-(\d{2})\s*$")
 _PATTERN_YYYY = re.compile(r"^\s*(\d{4})\s*$")
+_PATTERN_DDMONYYYY = re.compile(
+    r"^\s*(\d{1,2})(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)(\d{4})\s*$",
+    re.IGNORECASE,
+)
 _PATTERN_SLASH_DMY_OR_MDY = re.compile(r"^\s*(\d{1,2})/(\d{1,2})/(\d{4})\s*$")
 
 
@@ -246,6 +250,17 @@ def parse_string_date_to_iso(date_str: str | None) -> str:
             return ""
         return f"{year:04d}-{month:02d}-{day:02d}"
 
+    # "DDMonYYYY" -- no spaces (e.g., "30MAR2022")
+    m = _PATTERN_DDMONYYYY.match(s)
+    if m:
+        day = int(m.group(1))
+        month = _MONTH_ABBREV[m.group(2).lower()]
+        year = int(m.group(3))
+        if not _validate_date_components(year=year, month=month, day=day):
+            logger.warning("Invalid date: '{}'", s)
+            return ""
+        return f"{year:04d}-{month:02d}-{day:02d}"
+
     # "YYYY-MM-DD" -- pass through (with validation)
     m = _PATTERN_YYYY_MM_DD.match(s)
     if m:
@@ -376,13 +391,9 @@ def format_partial_iso8601(
         return result
     result += f"-{day:02d}"
 
-    if hour is None:
+    if hour is None or minute is None:
         return result
-    result += f"T{hour:02d}"
-
-    if minute is None:
-        return result
-    result += f":{minute:02d}"
+    result += f"T{hour:02d}:{minute:02d}"
 
     if second is None:
         return result
@@ -416,6 +427,8 @@ def detect_date_format(samples: list[str]) -> str | None:
 
         if _PATTERN_DD_MON_YYYY.match(s):
             format_counts["DD Mon YYYY"] = format_counts.get("DD Mon YYYY", 0) + 1
+        elif _PATTERN_DDMONYYYY.match(s):
+            format_counts["DDMonYYYY"] = format_counts.get("DDMonYYYY", 0) + 1
         elif _PATTERN_YYYY_MM_DD.match(s):
             format_counts["YYYY-MM-DD"] = format_counts.get("YYYY-MM-DD", 0) + 1
         elif _PATTERN_SLASH_DMY_OR_MDY.match(s):

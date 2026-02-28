@@ -272,7 +272,8 @@ class TestFormatPartialIso8601:
         assert format_partial_iso8601(2023, 3, 15, 10, 30, 0) == "2023-03-15T10:30:00"
 
     def test_date_with_hour(self):
-        assert format_partial_iso8601(2023, 3, 15, 10) == "2023-03-15T10"
+        # Hour without minute truncates time entirely (ISO 8601: "T10" alone is invalid)
+        assert format_partial_iso8601(2023, 3, 15, 10) == "2023-03-15"
 
     def test_date_with_hour_minute(self):
         assert format_partial_iso8601(2023, 3, 15, 10, 30) == "2023-03-15T10:30"
@@ -285,8 +286,8 @@ class TestFormatPartialIso8601:
         assert format_partial_iso8601(2023, None, 15) == "2023"
 
     def test_gap_in_time(self):
-        """Date + hour + gap + second should truncate at minute=None."""
-        assert format_partial_iso8601(2023, 3, 15, 10, None, 30) == "2023-03-15T10"
+        """Date + hour + gap + second should truncate at day (hour without minute is invalid)."""
+        assert format_partial_iso8601(2023, 3, 15, 10, None, 30) == "2023-03-15"
 
     def test_midnight(self):
         assert format_partial_iso8601(2023, 1, 1, 0, 0, 0) == "2023-01-01T00:00:00"
