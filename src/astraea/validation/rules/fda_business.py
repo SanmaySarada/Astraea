@@ -25,7 +25,7 @@ from astraea.validation.rules.base import (
     ValidationRule,
 )
 
-_FINDINGS_DOMAINS = {"LB", "VS", "EG", "PE", "QS", "SC", "FA"}
+_FINDINGS_DOMAINS = {"LB", "LC", "VS", "EG", "PE", "QS", "SC", "FA"}
 
 # ISO 8601 pattern for SDTM --DTC columns:
 # YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DDTHH:MM, YYYY-MM-DDTHH:MM:SS

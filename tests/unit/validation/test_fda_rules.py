@@ -357,11 +357,13 @@ class TestFDAB030:
 
 
 class TestGetFDABusinessRules:
-    def test_returns_six_rules(self) -> None:
+    def test_returns_seven_rules(self) -> None:
         rules = get_fda_business_rules()
-        assert len(rules) == 6
+        assert len(rules) == 7
         rule_ids = {r.rule_id for r in rules}
-        assert rule_ids == {"FDAB057", "FDAB055", "FDAB015", "FDAB039", "FDAB009", "FDAB030"}
+        assert rule_ids == {
+            "FDAB057", "FDAB055", "FDAB015", "FDAB039", "FDAB009", "FDAB030", "FDAB-LC01",
+        }
 
 
 # ---------------------------------------------------------------------------

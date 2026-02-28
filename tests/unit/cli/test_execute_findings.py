@@ -227,10 +227,11 @@ def test_execute_domain_lb_with_suppqual(mock_read_sas, mock_ct, mock_sdtm, tmp_
             ],
         )
         assert result.exit_code == 0, result.output
-        # Two writes: lb.xpt and supplb.xpt
-        assert len(write_calls) == 2
+        # Three writes: lb.xpt, supplb.xpt, and lc.xpt (auto-generated)
+        assert len(write_calls) == 3
         assert any("lb.xpt" in c for c in write_calls)
         assert any("supplb.xpt" in c for c in write_calls)
+        assert any("lc.xpt" in c for c in write_calls)
 
 
 @patch(_PATCH_LOAD_SDTM)
@@ -269,7 +270,8 @@ def test_execute_domain_lb_no_suppqual(mock_read_sas, mock_ct, mock_sdtm, tmp_pa
             ],
         )
         assert result.exit_code == 0, result.output
-        # Only one write: lb.xpt (no supplb.xpt)
-        assert len(write_calls) == 1
-        assert "lb.xpt" in write_calls[0]
-        assert "supplb.xpt" not in write_calls[0]
+        # Two writes: lb.xpt and lc.xpt (auto-generated), no supplb.xpt
+        assert len(write_calls) == 2
+        assert any("lb.xpt" in c for c in write_calls)
+        assert any("lc.xpt" in c for c in write_calls)
+        assert not any("supplb.xpt" in c for c in write_calls)

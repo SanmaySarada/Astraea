@@ -604,6 +604,37 @@ def execute_domain(
                     table_label=f"Supplemental Qualifiers for {domain}",
                 )
                 console.print(f"  SUPPQUAL: {len(supp_df)} rows -> {supp_xpt_path}")
+
+            # Auto-generate LC domain when executing LB
+            if domain == "LB":
+                from astraea.execution.lc_domain import generate_lc_from_lb
+
+                console.print(
+                    "\n[bold blue]Auto-generating LC domain from LB...[/bold blue]"
+                )
+                lc_df, lc_warnings = generate_lc_from_lb(main_df, spec.study_id)
+                for lc_warn in lc_warnings:
+                    console.print(f"  [yellow]WARNING:[/yellow] {lc_warn}")
+
+                # Build LC column labels from LB labels with prefix rename
+                lc_column_labels: dict[str, str] = {}
+                for col in lc_df.columns:
+                    if col.startswith("LC"):
+                        lb_col = "LB" + col[2:]
+                        if lb_col in column_labels:
+                            lc_column_labels[col] = column_labels[lb_col]
+
+                lc_xpt_path = output_dir_path / "lc.xpt"
+                write_xpt_v5(
+                    lc_df,
+                    lc_xpt_path,
+                    table_name="LC",
+                    column_labels=lc_column_labels,
+                    table_label="Laboratory Test Results - Conventional Units",
+                )
+                console.print(
+                    f"  [green]LC domain:[/green] {len(lc_df)} rows -> {lc_xpt_path}"
+                )
         else:
             executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
             executor.execute_to_xpt(

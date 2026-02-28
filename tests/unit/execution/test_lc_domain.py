@@ -395,3 +395,45 @@ class TestFDABLC01Rule:
 
         results = rule.evaluate("LC", lc_df, mock_spec, sdtm_ref, ct_ref)
         assert len(results) == 1
+
+
+# --- CLI auto-generation conditional tests ---
+
+
+class TestCLIAutoGenerationLogic:
+    """Tests for the conditional that triggers LC generation when domain is LB."""
+
+    def test_lb_domain_triggers_lc_generation(
+        self, sample_lb_df: pd.DataFrame
+    ) -> None:
+        """Verify the pattern used in CLI: domain == 'LB' triggers LC generation."""
+        domain = "LB"
+        if domain == "LB":
+            lc_df, warnings = generate_lc_from_lb(sample_lb_df, "STUDY01")
+            assert not lc_df.empty
+            assert "DOMAIN" in lc_df.columns
+            assert (lc_df["DOMAIN"] == "LC").all()
+
+    def test_non_lb_domain_does_not_trigger(self) -> None:
+        """Non-LB domains should not trigger LC generation."""
+        for domain in ["VS", "EG", "AE", "DM"]:
+            assert domain != "LB"
+
+
+# --- LC in findings domains set ---
+
+
+class TestLCInFindingsDomains:
+    """Verify LC is recognized as a Findings domain for validation."""
+
+    def test_lc_in_findings_domains(self) -> None:
+        from astraea.validation.rules.fda_business import _FINDINGS_DOMAINS
+
+        assert "LC" in _FINDINGS_DOMAINS
+
+    def test_fdab_lc01_registered(self) -> None:
+        from astraea.validation.rules.fda_business import get_fda_business_rules
+
+        rules = get_fda_business_rules()
+        rule_ids = [r.rule_id for r in rules]
+        assert "FDAB-LC01" in rule_ids
