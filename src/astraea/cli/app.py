@@ -1552,7 +1552,7 @@ def generate_trial_design(
             "TAETORD": "Planned Order of Element in Arm",
             "ETCD": "Element Code",
             "ELEMENT": "Description of Element",
-            "TABESSION": "Planned Arm Branch Session",
+            "TABRSESS": "Planned Arm Branch Session",
             "EPOCH": "Epoch",
         },
         "te": {
