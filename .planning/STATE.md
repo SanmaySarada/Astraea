@@ -9,10 +9,10 @@ See: .planning/PROJECT.md
 
 ## Current Position
 
-Phase: 12 of 15 (next: Validation and Severity Fixes)
-Plan: 0 of TBD
-Status: Phase 11 COMPLETE -- Phase 12 NOT STARTED
-Last activity: 2026-02-28 -- Completed Phase 11 (Execution Contract) -- all 4 plans executed, 1660 tests passing
+Phase: 12 of 15 (Validation and Severity Fixes)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-02-28 -- Completed 12-01-PLAN.md (Severity fixes + new validation rules)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 20%
 
@@ -466,6 +466,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-11-04-01] Test-local mapping spec fixture uses correct vocabulary rather than depending on LLM-regenerated DM_mapping.json
 - 2026-02-28: [D-11-04-02] Only dm DataFrame passed as raw_dfs; cross-domain data excluded to avoid concat row multiplication
 - 2026-02-28: [D-11-04-03] Separate TestDMExecutionFromJSON class with relaxed assertions for LLM-generated spec testing
+- 2026-02-28: [D-12-01-01] FDAB057 (ETHNIC) promoted to ERROR: C66790 is non-extensible, invalid values are submission errors
+- 2026-02-28: [D-12-01-02] ASTR-F002 (ASCII) promoted to ERROR: non-ASCII characters cause XPT data corruption
+- 2026-02-28: [D-12-01-03] SeqUniquenessRule uses domain[:2] prefix (AE->AESEQ, LB->LBSEQ) matching existing FDAB039 pattern
 
 ### Pending Todos
 
@@ -510,5 +513,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 11-04-PLAN.md (DM Real-Data Integration Test) -- Phase 11 COMPLETE
+Stopped at: Completed 12-01-PLAN.md (Severity fixes + new validation rules)
 Resume file: None
