@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7.1 IN PROGRESS -- Auto-Fix Validation Issues (1/3 plans complete).
+**Current focus:** Phase 7.1 IN PROGRESS -- Auto-Fix Validation Issues (2/3 plans complete).
 
 ## Current Position
 
 Phase: 7.1 of 8 (Auto-Fix Validation Issues)
-Plan: 1 of 3 (AutoFixer Core with Issue Classification)
+Plan: 2 of 3 (Validate-Fix-Revalidate Loop Engine)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 07.1-01-PLAN.md (AutoFixer core, issue classification, fix functions)
+Last activity: 2026-02-28 -- Completed 07.1-02-PLAN.md (FixLoopEngine, validate-fix-revalidate cycle)
 
-Progress: [█████████████████████████████████████████████████████████░░] 95%
+Progress: [██████████████████████████████████████████████████████████░] 97%
 
 ## Performance Metrics
 
@@ -378,6 +378,10 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 - 2026-02-28: [D-07-07-02] display_validation_summary and display_validation_issues use top-level imports (not lazy) -- display-only helpers
 - 2026-02-28: [D-07-07-03] generate-csdrg creates empty ValidationReport if no existing validation_report.json found
 
+- 2026-02-28: [D-07.1-02-01] FixLoopEngine updates domains dict in-place (replacing DataFrames and specs) so each iteration builds on previous fixes
+- 2026-02-28: [D-07.1-02-02] _write_fixed_datasets uses pyreadstat.write_xport directly (not xpt_writer) to avoid strict validation blocking partially-fixed datasets
+- 2026-02-28: [D-07.1-02-03] apply_fixes returns 3-tuple (df, spec, actions) -- loop engine handles spec updates alongside DataFrame updates
+
 ### Pending Todos
 
 (None)
@@ -420,5 +424,5 @@ CLI commands available: `astraea validate`, `astraea generate-define`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07.1-01-PLAN.md (AutoFixer Core with Issue Classification)
+Stopped at: Completed 07.1-02-PLAN.md (Validate-Fix-Revalidate Loop Engine)
 Resume file: None
