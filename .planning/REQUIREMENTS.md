@@ -50,18 +50,18 @@
 - [x] **DOM-02**: System maps Adverse Events (AE) domain with start/end dates, severity, causality, seriousness, outcome
 - [x] **DOM-03**: System maps Concomitant Medications (CM) domain with dose, route, frequency, indication
 - [x] **DOM-04**: System maps Exposure (EX) domain with precise dosing records per protocol
-- [ ] **DOM-05**: System maps Laboratory Results (LB) domain with transpose, unit standardization, normal ranges
-- [ ] **DOM-06**: System maps Vital Signs (VS) domain with transpose, standardized results
-- [ ] **DOM-07**: System maps ECG (EG) domain with pre-dose/post-dose handling
+- [x] **DOM-05**: System maps Laboratory Results (LB) domain with transpose, unit standardization, normal ranges
+- [x] **DOM-06**: System maps Vital Signs (VS) domain with transpose, standardized results
+- [x] **DOM-07**: System maps ECG (EG) domain with pre-dose/post-dose handling
 - [x] **DOM-08**: System maps Medical History (MH) domain
 - [x] **DOM-09**: System maps Disposition (DS) domain with protocol milestones
-- [ ] **DOM-10**: System maps Physical Examination (PE) domain
+- [x] **DOM-10**: System maps Physical Examination (PE) domain
 - [x] **DOM-11**: System maps Inclusion/Exclusion (IE) domain
 - [x] **DOM-12**: System maps Clinical Events (CE) domain
 - [x] **DOM-13**: System maps Protocol Deviations (DV) domain
-- [ ] **DOM-14**: System generates SUPPQUAL datasets when non-standard variables require supplemental qualifiers
-- [ ] **DOM-15**: System generates RELREC datasets for cross-domain record relationships
-- [ ] **DOM-16**: System handles Subject Visits (SV) and other trial design domains (TA, TE, TV, TI, TS)
+- [x] **DOM-14**: System generates SUPPQUAL datasets when non-standard variables require supplemental qualifiers
+- [x] **DOM-15**: System generates RELREC datasets for cross-domain record relationships
+- [x] **DOM-16**: System handles Subject Visits (SV) and other trial design domains (TA, TE, TV, TI, TS)
 
 ### Mapping Specification
 
@@ -184,13 +184,13 @@
 | DOM-11 | Phase 5 | Complete |
 | DOM-12 | Phase 5 | Complete |
 | DOM-13 | Phase 5 | Complete |
-| DOM-05 | Phase 6 | Pending |
-| DOM-06 | Phase 6 | Pending |
-| DOM-07 | Phase 6 | Pending |
-| DOM-10 | Phase 6 | Pending |
-| DOM-14 | Phase 6 | Pending |
-| DOM-15 | Phase 6 | Pending |
-| DOM-16 | Phase 6 | Pending |
+| DOM-05 | Phase 6 | Complete |
+| DOM-06 | Phase 6 | Complete |
+| DOM-07 | Phase 6 | Complete |
+| DOM-10 | Phase 6 | Complete |
+| DOM-14 | Phase 6 | Complete |
+| DOM-15 | Phase 6 | Complete |
+| DOM-16 | Phase 6 | Complete |
 | VAL-01 | Phase 7 | Pending |
 | VAL-02 | Phase 7 | Pending |
 | VAL-03 | Phase 7 | Pending |

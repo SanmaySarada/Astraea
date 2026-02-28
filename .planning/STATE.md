@@ -180,7 +180,7 @@ CLI commands available: `astraea execute-domain`
 
 **Combined test suite: 1102 tests passing (1031 pass + 86 skipped = verified)**
 
-## Phase 6 Deliverables (In Progress)
+## Phase 6 Deliverables
 
 | Component | Module | Tests | Status |
 |-----------|--------|-------|--------|
