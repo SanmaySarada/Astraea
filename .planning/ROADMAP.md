@@ -277,6 +277,31 @@ Plans:
 
 ---
 
+### Phase 7.1: Auto-Fix Validation Issues (INSERTED)
+
+**Goal:** When the Phase 7 validation engine detects issues, the system automatically fixes deterministic/mechanical issues (wrong CT case, missing DOMAIN column, truncated labels, missing required ASSIGN variables) without human intervention, and re-validates — creating a validate→fix→re-validate loop that reduces the human review burden to only genuinely ambiguous problems.
+**Depends on:** Phase 7 (needs validation framework, rules, and report infrastructure)
+**Requirements:** None (enhancement to existing VAL requirements)
+**Blocked by:** Nothing (Phase 7 complete)
+**Blocks:** Phase 8
+
+**Success Criteria:**
+1. Auto-fixer classifies each validation issue as auto-fixable (deterministic) or needs-human (ambiguous), with clear categorization rules
+2. Auto-fixable issues include: CT case normalization, missing DOMAIN/STUDYID/USUBJID ASSIGN columns, variable name/label truncation, date format corrections, file renaming to lowercase conventions
+3. System runs validate→fix→re-validate loop (max 3 iterations) and reports what was fixed, what remains
+4. Needs-human issues are presented with context and suggested fixes (not just error messages)
+5. Fix actions are logged with before/after values for audit trail
+6. CLI command `astraea auto-fix` runs the loop on generated datasets; `astraea validate --auto-fix` combines validation with auto-fixing in one step
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07.1-01-PLAN.md -- AutoFixer core: issue classification, fix functions, FixAction audit model, unit tests
+- [ ] 07.1-02-PLAN.md -- FixLoopEngine: validate-fix-revalidate loop, XPT writeback, audit trail export, unit tests
+- [ ] 07.1-03-PLAN.md -- CLI commands (auto-fix, validate --auto-fix), Rich display helpers, CLI tests
+
+---
+
 ### Phase 8: Learning System
 
 **Goal:** The system learns from accumulated human corrections across studies, retrieves relevant past corrections when mapping new data, and measurably improves accuracy over time -- the core differentiator that makes Astraea better with every use.
@@ -307,6 +332,7 @@ Plans:
 | 5 - Event and Intervention Domains | Complete | 2026-02-27 |
 | 6 - Findings Domains and Complex Transformations | Complete | 2026-02-27 |
 | 7 - Validation and Submission Readiness | Complete | 2026-02-28 |
+| 7.1 - Auto-Fix Validation Issues (INSERTED) | Not started | -- |
 | 8 - Learning System | Not started | -- |
 
 ---
