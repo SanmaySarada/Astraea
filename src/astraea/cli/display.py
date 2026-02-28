@@ -1,8 +1,8 @@
 """Rich display helpers for terminal output.
 
 Provides formatted display functions for dataset profiles, SDTM domain
-specifications, and controlled terminology codelists using Rich tables
-and panels.
+specifications, controlled terminology codelists, validation reports,
+and validation issues using Rich tables and panels.
 """
 
 from __future__ import annotations
@@ -18,6 +18,8 @@ from astraea.models.ecrf import ECRFExtractionResult, ECRFForm
 from astraea.models.mapping import ConfidenceLevel, DomainMappingSpec
 from astraea.models.profiling import DatasetProfile
 from astraea.models.sdtm import CoreDesignation, DomainSpec, VariableSpec
+from astraea.validation.report import ValidationReport
+from astraea.validation.rules.base import RuleResult, RuleSeverity
 
 
 def display_profile_summary(profiles: list[DatasetProfile], console: Console) -> None:
@@ -463,6 +465,157 @@ def display_mapping_spec(spec: DomainMappingSpec, console: Console) -> None:
         console.print(
             f"[dim]SUPPQUAL candidates:[/dim] "
             f"{', '.join(spec.suppqual_candidates)}"
+        )
+
+
+def display_validation_summary(
+    report: ValidationReport, console: Console
+) -> None:
+    """Print a validation report summary with Rich formatting.
+
+    Shows severity counts, pass rate, and submission readiness status
+    in a structured table.
+
+    Args:
+        report: ValidationReport to display.
+        console: Rich Console for output.
+    """
+    table = Table(title="Validation Summary", show_lines=True)
+    table.add_column("Metric", style="bold")
+    table.add_column("Value", justify="right")
+
+    table.add_row("Domains Validated", str(len(report.domains_validated)))
+    table.add_row("Total Findings", str(report.total_rules_run))
+
+    error_style = "bold red" if report.effective_error_count > 0 else "green"
+    table.add_row(
+        "Errors (effective)",
+        Text(str(report.effective_error_count), style=error_style),
+    )
+
+    warn_style = "yellow" if report.effective_warning_count > 0 else "green"
+    table.add_row(
+        "Warnings (effective)",
+        Text(str(report.effective_warning_count), style=warn_style),
+    )
+
+    table.add_row("Notices", str(report.notice_count))
+
+    fp_count = len(report.known_false_positive_results)
+    if fp_count > 0:
+        table.add_row("Known False Positives", str(fp_count))
+
+    table.add_row("Pass Rate", f"{report.pass_rate:.0%}")
+
+    ready_text = (
+        Text("READY", style="bold green")
+        if report.submission_ready
+        else Text("NOT READY", style="bold red")
+    )
+    table.add_row("Submission Status", ready_text)
+
+    console.print(table)
+
+    # Per-domain breakdown if available
+    if report.summary_by_domain:
+        domain_table = Table(title="Per-Domain Breakdown", show_lines=True)
+        domain_table.add_column("Domain", style="bold cyan")
+        domain_table.add_column("Errors", justify="right")
+        domain_table.add_column("Warnings", justify="right")
+        domain_table.add_column("Notices", justify="right")
+
+        for domain_code in sorted(report.summary_by_domain):
+            counts = report.summary_by_domain[domain_code]
+            err_text = Text(
+                str(counts["errors"]),
+                style="bold red" if counts["errors"] > 0 else "green",
+            )
+            warn_text = Text(
+                str(counts["warnings"]),
+                style="yellow" if counts["warnings"] > 0 else "green",
+            )
+            domain_table.add_row(
+                domain_code,
+                err_text,
+                warn_text,
+                str(counts["notices"]),
+            )
+
+        console.print(domain_table)
+
+
+def display_validation_issues(
+    results: list[RuleResult],
+    *,
+    console: Console,
+    limit: int = 20,
+) -> None:
+    """Print top validation issues sorted by severity.
+
+    Shows the most important findings first (ERROR > WARNING > NOTICE),
+    with secondary sort by affected count (descending).
+
+    Args:
+        results: List of RuleResult findings to display.
+        console: Rich Console for output.
+        limit: Maximum number of issues to show (default 20).
+    """
+
+    if not results:
+        console.print("[dim]No validation issues found.[/dim]")
+        return
+
+    # Sort: ERROR first, then WARNING, then NOTICE, then by affected count desc
+    sorted_results = sorted(
+        results,
+        key=lambda r: (
+            0 if r.severity == RuleSeverity.ERROR else (
+                1 if r.severity == RuleSeverity.WARNING else 2
+            ),
+            -r.affected_count,
+        ),
+    )
+
+    # Filter out known false positives for display
+    display_results = [r for r in sorted_results if not r.known_false_positive]
+    display_results = display_results[:limit]
+
+    table = Table(title=f"Top Issues ({len(display_results)} shown)", show_lines=True)
+    table.add_column("#", justify="right", style="dim", width=4)
+    table.add_column("Severity", no_wrap=True)
+    table.add_column("Rule", style="bold", no_wrap=True)
+    table.add_column("Domain", no_wrap=True)
+    table.add_column("Variable", no_wrap=True)
+    table.add_column("Message", max_width=50)
+
+    for idx, r in enumerate(display_results, 1):
+        if r.severity == RuleSeverity.ERROR:
+            sev_text = Text("Error", style="bold red")
+        elif r.severity == RuleSeverity.WARNING:
+            sev_text = Text("Warning", style="yellow")
+        else:
+            sev_text = Text("Notice", style="dim")
+
+        msg = r.message
+        if len(msg) > 50:
+            msg = msg[:47] + "..."
+
+        table.add_row(
+            str(idx),
+            sev_text,
+            r.rule_id,
+            r.domain or "-",
+            r.variable or "-",
+            msg,
+        )
+
+    console.print(table)
+
+    # Show count of suppressed false positives
+    fp_count = sum(1 for r in sorted_results if r.known_false_positive)
+    if fp_count > 0:
+        console.print(
+            f"[dim]{fp_count} known false positive(s) not shown[/dim]"
         )
 
 

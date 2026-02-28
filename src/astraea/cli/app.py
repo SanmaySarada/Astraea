@@ -3,7 +3,8 @@
 Provides commands for profiling SAS datasets, querying SDTM-IG domain
 specifications, looking up CDISC controlled terminology, parsing eCRF PDFs,
 classifying raw datasets to SDTM domains, reviewing mapping specifications,
-and executing mapping specs to produce SDTM XPT files.
+executing mapping specs to produce SDTM XPT files, running SDTM validation,
+and generating submission artifacts (define.xml, cSDRG).
 
 Usage:
     astraea profile <data-folder>
@@ -16,6 +17,9 @@ Usage:
     astraea resume [session-id]
     astraea sessions
     astraea execute-domain <spec-path> <data-dir>
+    astraea validate <output-dir>
+    astraea generate-define <output-dir>
+    astraea generate-csdrg <output-dir>
 """
 
 from __future__ import annotations
@@ -555,6 +559,346 @@ def execute_domain(
             f"  Char widths: {len(executor._last_char_widths)} column(s), "
             f"max {max_width} bytes"
         )
+
+
+@app.command(name="validate")
+def validate_cmd(
+    output_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing generated .xpt files"),
+    ],
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = "UNKNOWN",
+    specs_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--specs-dir",
+            help="Directory with *_spec.json files (defaults to output-dir)",
+        ),
+    ] = None,
+    format: Annotated[
+        str,
+        typer.Option("--format", help="Output format: table, json, or markdown"),
+    ] = "table",
+) -> None:
+    """Run SDTM validation on generated datasets.
+
+    Loads .xpt files and mapping specs from the output directory, runs the
+    full validation pipeline (per-domain rules, cross-domain consistency,
+    FDA TRC pre-checks, package size/naming checks), and displays results.
+
+    Exit code 0 if submission-ready, 1 if blocking issues found.
+    """
+    import pandas as pd
+    import pyreadstat
+
+    from astraea.cli.display import display_validation_issues, display_validation_summary
+    from astraea.reference import load_ct_reference, load_sdtm_reference
+    from astraea.submission.package import (
+        check_submission_size,
+        validate_file_naming,
+    )
+    from astraea.validation.engine import ValidationEngine
+    from astraea.validation.report import ValidationReport
+    from astraea.validation.rules.fda_trc import TRCPreCheck
+
+    # Validate directory
+    if not output_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {output_dir}")
+        raise typer.Exit(code=1)
+
+    # Step 1: Load .xpt files
+    console.print("[bold blue][1/4][/bold blue] Loading datasets...")
+    xpt_files = sorted(output_dir.glob("*.xpt"))
+    if not xpt_files:
+        console.print(f"[bold red]Error:[/bold red] No .xpt files found in {output_dir}")
+        raise typer.Exit(code=1)
+
+    domain_dfs: dict[str, pd.DataFrame] = {}
+    for xpt_path in xpt_files:
+        try:
+            df, _meta = pyreadstat.read_xport(str(xpt_path))
+            domain_code = xpt_path.stem.upper()
+            domain_dfs[domain_code] = df
+            console.print(f"  Loaded {xpt_path.name}: {len(df)} rows, {len(df.columns)} vars")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not read {xpt_path.name}: {e}[/yellow]")
+
+    # Step 2: Load mapping specs
+    console.print("[bold blue][2/4][/bold blue] Loading mapping specs...")
+    from astraea.models.mapping import DomainMappingSpec
+
+    search_dir = specs_dir or output_dir
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
+        search_dir.glob("*_mapping.json")
+    )
+    domain_specs: dict[str, DomainMappingSpec] = {}
+    for spec_path in spec_files:
+        try:
+            spec = DomainMappingSpec.model_validate_json(spec_path.read_text())
+            domain_specs[spec.domain.upper()] = spec
+            console.print(f"  Loaded spec: {spec.domain} ({spec_path.name})")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not load spec {spec_path.name}: {e}[/yellow]")
+
+    # Step 3: Run validation
+    console.print("[bold blue][3/4][/bold blue] Running validation...")
+    sdtm_ref = load_sdtm_reference()
+    ct_ref = load_ct_reference()
+    engine = ValidationEngine(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+
+    # Build domain tuples for domains that have both data and specs
+    domains_to_validate: dict[str, tuple[pd.DataFrame, DomainMappingSpec]] = {}
+    for domain_code in domain_dfs:
+        if domain_code in domain_specs:
+            domains_to_validate[domain_code] = (
+                domain_dfs[domain_code],
+                domain_specs[domain_code],
+            )
+
+    all_results = engine.validate_all(domains_to_validate) if domains_to_validate else []
+
+    # TRC pre-checks
+    trc = TRCPreCheck()
+    trc_results = trc.check_all(domain_dfs, output_dir, study_id)
+    all_results.extend(trc_results)
+
+    # Package checks
+    expected_domains = list(domain_specs.keys()) if domain_specs else list(domain_dfs.keys())
+    size_results = check_submission_size(output_dir)
+    naming_results = validate_file_naming(output_dir, expected_domains)
+    all_results.extend(size_results)
+    all_results.extend(naming_results)
+
+    # Step 4: Generate report
+    console.print("[bold blue][4/4][/bold blue] Generating report...")
+    all_domains = sorted(set(list(domain_dfs.keys()) + list(domain_specs.keys())))
+    report = ValidationReport.from_results(study_id, all_results, all_domains)
+
+    # Display results
+    console.print()
+    display_validation_summary(report, console)
+    console.print()
+    display_validation_issues(all_results, console=console)
+
+    # Export if requested
+    if format == "markdown":
+        md_path = output_dir / "validation_report.md"
+        md_path.write_text(report.to_markdown())
+        console.print(f"\n[green]Markdown report saved to:[/green] {md_path}")
+    elif format == "json":
+        json_path = output_dir / "validation_report.json"
+        json_path.write_text(report.model_dump_json(indent=2))
+        console.print(f"\n[green]JSON report saved to:[/green] {json_path}")
+
+    if not report.submission_ready:
+        console.print(
+            f"\n[bold red]NOT READY:[/bold red] "
+            f"{report.effective_error_count} blocking error(s)"
+        )
+        raise typer.Exit(code=1)
+    else:
+        console.print("\n[bold green]SUBMISSION READY[/bold green]")
+
+
+@app.command(name="generate-define")
+def generate_define_cmd(
+    output_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing mapping specs and .xpt files"),
+    ],
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = "UNKNOWN",
+    study_name: Annotated[
+        str,
+        typer.Option("--study-name", help="Human-readable study name"),
+    ] = "Clinical Study",
+    specs_dir: Annotated[
+        Path | None,
+        typer.Option("--specs-dir", help="Directory with spec files (defaults to output-dir)"),
+    ] = None,
+) -> None:
+    """Generate define.xml 2.0 from mapping specifications.
+
+    Loads mapping specs and optionally .xpt files (for ValueListDef test code
+    extraction), then generates a standards-compliant define.xml.
+    """
+    import pandas as pd
+    import pyreadstat
+
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.reference import load_ct_reference
+    from astraea.submission.define_xml import generate_define_xml
+
+    if not output_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {output_dir}")
+        raise typer.Exit(code=1)
+
+    # Load mapping specs
+    console.print("[bold blue][1/3][/bold blue] Loading mapping specs...")
+    search_dir = specs_dir or output_dir
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
+        search_dir.glob("*_mapping.json")
+    )
+    specs: list[DomainMappingSpec] = []
+    for spec_path in spec_files:
+        try:
+            spec = DomainMappingSpec.model_validate_json(spec_path.read_text())
+            specs.append(spec)
+            console.print(f"  Loaded: {spec.domain} ({spec_path.name})")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not load {spec_path.name}: {e}[/yellow]")
+
+    if not specs:
+        console.print("[bold red]Error:[/bold red] No mapping specs found")
+        raise typer.Exit(code=1)
+
+    # Load .xpt files for ValueListDef
+    console.print("[bold blue][2/3][/bold blue] Loading datasets for value-level metadata...")
+    generated_dfs: dict[str, pd.DataFrame] = {}
+    for xpt_path in sorted(output_dir.glob("*.xpt")):
+        try:
+            df, _meta = pyreadstat.read_xport(str(xpt_path))
+            generated_dfs[xpt_path.stem.upper()] = df
+        except Exception:
+            pass
+
+    # Generate define.xml
+    console.print("[bold blue][3/3][/bold blue] Generating define.xml...")
+    ct_ref = load_ct_reference()
+    define_path = output_dir / "define.xml"
+
+    try:
+        result_path = generate_define_xml(
+            specs=specs,
+            ct_ref=ct_ref,
+            study_id=study_id,
+            study_name=study_name,
+            output_path=define_path,
+            generated_dfs=generated_dfs if generated_dfs else None,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Error generating define.xml:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    # Count elements for display
+    from lxml import etree
+
+    tree = etree.parse(str(result_path))
+    odm_ns = "http://www.cdisc.org/ns/odm/v1.3"
+    def_ns = "http://www.cdisc.org/ns/def/v2.0"
+    n_ig = len(tree.findall(f".//{{{odm_ns}}}ItemGroupDef"))
+    n_id = len(tree.findall(f".//{{{odm_ns}}}ItemDef"))
+    n_cl = len(tree.findall(f".//{{{odm_ns}}}CodeList"))
+    n_md = len(tree.findall(f".//{{{odm_ns}}}MethodDef"))
+    n_vl = len(tree.findall(f".//{{{def_ns}}}ValueListDef"))
+
+    from rich.panel import Panel
+
+    info_lines = [
+        f"[bold]File:[/bold] {result_path}",
+        f"[bold]ItemGroupDefs:[/bold] {n_ig} domains",
+        f"[bold]ItemDefs:[/bold] {n_id} variables",
+        f"[bold]CodeLists:[/bold] {n_cl}",
+        f"[bold]MethodDefs:[/bold] {n_md}",
+        f"[bold]ValueListDefs:[/bold] {n_vl}",
+    ]
+    console.print(Panel("\n".join(info_lines), title="define.xml Generated"))
+
+
+@app.command(name="generate-csdrg")
+def generate_csdrg_cmd(
+    output_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing mapping specs"),
+    ],
+    study_id: Annotated[
+        str,
+        typer.Option("--study-id", help="Study identifier"),
+    ] = "UNKNOWN",
+    specs_dir: Annotated[
+        Path | None,
+        typer.Option("--specs-dir", help="Directory with spec files (defaults to output-dir)"),
+    ] = None,
+) -> None:
+    """Generate a cSDRG (Clinical Study Data Reviewer's Guide) template.
+
+    Loads mapping specs and any existing validation report, then generates
+    a PHUSE-structured cSDRG Markdown document.
+    """
+    from astraea.models.mapping import DomainMappingSpec
+    from astraea.submission.csdrg import generate_csdrg
+    from astraea.validation.report import ValidationReport
+
+    if not output_dir.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Directory not found: {output_dir}")
+        raise typer.Exit(code=1)
+
+    # Load mapping specs
+    console.print("[bold blue][1/2][/bold blue] Loading mapping specs...")
+    search_dir = specs_dir or output_dir
+    spec_files = sorted(search_dir.glob("*_spec.json")) + sorted(
+        search_dir.glob("*_mapping.json")
+    )
+    specs: list[DomainMappingSpec] = []
+    for spec_path in spec_files:
+        try:
+            spec = DomainMappingSpec.model_validate_json(spec_path.read_text())
+            specs.append(spec)
+            console.print(f"  Loaded: {spec.domain} ({spec_path.name})")
+        except Exception as e:
+            console.print(f"[yellow]Warning: Could not load {spec_path.name}: {e}[/yellow]")
+
+    if not specs:
+        console.print("[bold red]Error:[/bold red] No mapping specs found")
+        raise typer.Exit(code=1)
+
+    # Load existing validation report if available
+    validation_report: ValidationReport | None = None
+    report_json = output_dir / "validation_report.json"
+    if report_json.exists():
+        try:
+            validation_report = ValidationReport.model_validate_json(report_json.read_text())
+            console.print(f"  Loaded validation report: {report_json.name}")
+        except Exception:
+            pass
+
+    if validation_report is None:
+        # Create empty report
+        validation_report = ValidationReport.from_results(
+            study_id=study_id,
+            results=[],
+            domains=[s.domain for s in specs],
+        )
+
+    # Generate cSDRG
+    console.print("[bold blue][2/2][/bold blue] Generating cSDRG...")
+    csdrg_path = output_dir / "csdrg.md"
+
+    try:
+        result_path = generate_csdrg(
+            specs=specs,
+            validation_report=validation_report,
+            study_id=study_id,
+            output_path=csdrg_path,
+        )
+    except Exception as e:
+        console.print(f"[bold red]Error generating cSDRG:[/bold red] {e}")
+        raise typer.Exit(code=1) from e
+
+    from rich.panel import Panel
+
+    console.print(
+        Panel(
+            f"[bold]File:[/bold] {result_path}\n"
+            f"[bold]Domains:[/bold] {len(specs)}",
+            title="cSDRG Generated",
+        )
+    )
 
 
 def _find_primary_sas(
