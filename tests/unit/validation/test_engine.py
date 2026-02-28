@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pandas as pd
@@ -270,6 +271,44 @@ class TestValidationEngine:
         filtered = engine.filter_results(results, domain="DM")
         assert len(filtered) == 1
         assert filtered[0].domain == "DM"
+
+    def test_validate_all_without_trc_params(self, engine: ValidationEngine) -> None:
+        """validate_all() without output_dir/study_id works as before (no TRC results)."""
+        dm_df = pd.DataFrame({"STUDYID": ["S1"], "DOMAIN": ["DM"]})
+        domains = {"DM": (dm_df, _make_spec("DM"))}
+        results = engine.validate_all(domains)
+        # No TRC results should be present
+        trc_results = [r for r in results if r.category == RuleCategory.FDA_TRC]
+        assert len(trc_results) == 0
+
+    def test_validate_all_with_trc_params(
+        self, engine: ValidationEngine, tmp_path: Path
+    ) -> None:
+        """validate_all() with output_dir and study_id includes TRC results."""
+        dm_df = pd.DataFrame({"STUDYID": ["STUDY01"], "DOMAIN": ["DM"]})
+        domains = {"DM": (dm_df, _make_spec("DM"))}
+        results = engine.validate_all(
+            domains, output_dir=tmp_path, study_id="STUDY01"
+        )
+        # Should include TRC results (e.g., FDA-TRC-1735 for missing define.xml,
+        # FDA-TRC-1734 for missing TS domain)
+        trc_results = [r for r in results if r.category == RuleCategory.FDA_TRC]
+        assert len(trc_results) > 0
+        trc_rule_ids = {r.rule_id for r in trc_results}
+        # define.xml is missing in tmp_path
+        assert "FDA-TRC-1735" in trc_rule_ids
+        # TS domain is missing
+        assert "FDA-TRC-1734" in trc_rule_ids
+
+    def test_validate_all_trc_backward_compatible(
+        self, engine: ValidationEngine
+    ) -> None:
+        """Existing code calling validate_all(domains) must not break."""
+        ae_df = pd.DataFrame({"STUDYID": ["S1"], "DOMAIN": ["AE"]})
+        domains = {"AE": (ae_df, _make_spec("AE"))}
+        # Call with positional arg only -- must work without keyword args
+        results = engine.validate_all(domains)
+        assert isinstance(results, list)
 
     def test_filter_combined(self, engine: ValidationEngine) -> None:
         results = [

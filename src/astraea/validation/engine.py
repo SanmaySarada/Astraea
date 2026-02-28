@@ -7,6 +7,8 @@ methods to validate individual domains or entire studies.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 from loguru import logger
 
@@ -214,13 +216,21 @@ class ValidationEngine:
     def validate_all(
         self,
         domains: dict[str, tuple[pd.DataFrame, DomainMappingSpec]],
+        *,
+        output_dir: Path | None = None,
+        study_id: str | None = None,
     ) -> list[RuleResult]:
         """Run all registered rules across multiple domains.
 
-        Runs per-domain rules first, then cross-domain consistency checks.
+        Runs per-domain rules first, then cross-domain consistency checks,
+        and optionally FDA Technical Rejection Criteria (TRC) pre-checks
+        when output context is provided.
 
         Args:
             domains: Mapping of domain code to (DataFrame, DomainMappingSpec) tuples.
+            output_dir: Optional path to the output directory where XPT/define.xml
+                live. When provided along with study_id, TRC checks run automatically.
+            study_id: Optional study identifier for TRC consistency checks.
 
         Returns:
             Combined list of all RuleResult findings across all domains.
@@ -239,6 +249,15 @@ class ValidationEngine:
         # Run cross-domain checks after all per-domain rules
         cross_domain_results = self.validate_cross_domain(domains)
         all_results.extend(cross_domain_results)
+
+        # Run TRC checks when output context is provided
+        if output_dir is not None and study_id is not None:
+            from astraea.validation.rules.fda_trc import TRCPreCheck
+
+            trc = TRCPreCheck()
+            domain_dfs = {code: df for code, (df, _spec) in domains.items()}
+            trc_results = trc.check_all(domain_dfs, output_dir, study_id)
+            all_results.extend(trc_results)
 
         return all_results
 
