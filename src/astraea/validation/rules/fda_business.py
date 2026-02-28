@@ -193,7 +193,7 @@ class FDAB039Rule(ValidationRule):
 
         results: list[RuleResult] = []
 
-        for nr_col, nr_name in [(ornrlo_col, "ORNRLO"), (ornrhi_col, "ORNRHI")]:
+        for nr_col, _nr_name in [(ornrlo_col, "ORNRLO"), (ornrhi_col, "ORNRHI")]:
             if nr_col not in df.columns:
                 continue
 
@@ -221,7 +221,10 @@ class FDAB039Rule(ValidationRule):
                             f"where {stresn_col} is populated"
                         ),
                         affected_count=non_numeric_count,
-                        fix_suggestion=f"Ensure {nr_col} contains numeric values when {stresn_col} is populated",
+                        fix_suggestion=(
+                            f"Ensure {nr_col} contains numeric values "
+                            f"when {stresn_col} is populated"
+                        ),
                     )
                 )
 

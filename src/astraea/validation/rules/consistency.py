@@ -127,7 +127,7 @@ class CrossDomainValidator:
         results: list[RuleResult] = []
         all_studyids: set[str] = set()
 
-        for domain_code, df in domains.items():
+        for _domain_code, df in domains.items():
             if "STUDYID" not in df.columns:
                 continue
             domain_studyids = set(df["STUDYID"].dropna().unique())
@@ -327,11 +327,11 @@ class CrossDomainValidator:
                     except (ValueError, TypeError):
                         continue
 
-                    # Positive DY should be on/after RFSTDTC
-                    if dy_num > 0 and dtc_date < rfstdtc:
-                        inconsistent_count += 1
+                    # Positive DY should be on/after RFSTDTC;
                     # Negative DY should be before RFSTDTC
-                    elif dy_num < 0 and dtc_date > rfstdtc:
+                    if (dy_num > 0 and dtc_date < rfstdtc) or (
+                        dy_num < 0 and dtc_date > rfstdtc
+                    ):
                         inconsistent_count += 1
 
                 if inconsistent_count > 0:
