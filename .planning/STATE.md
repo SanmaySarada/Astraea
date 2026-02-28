@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (TS builder + PE execution complete).
+**Current focus:** Phase 6 IN PROGRESS -- Findings Domains (SUPPQUAL + XPT output tests complete).
 
 ## Current Position
 
 Phase: 6 of 8 (Findings Domains)
-Plan: 3 of 6 (TS domain builder + PE execution)
+Plan: 4 of 6 (SUPPQUAL generation + Findings XPT output tests)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 06-03-PLAN.md (TS domain builder + PE execution)
+Last activity: 2026-02-28 -- Completed 06-04-PLAN.md (SUPPQUAL generation + Findings XPT output tests)
 
-Progress: [████████████████████████████████████████████████████] ~93%
+Progress: [█████████████████████████████████████████████████████] ~95%
 
 ## Performance Metrics
 
@@ -34,7 +34,7 @@ Progress: [███████████████████████
 | 04-human-review-gate | 3/3 | ~14 min | ~4.7 min |
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
-| 06-findings-domains | 2/6 | ~9 min | ~4.5 min |
+| 06-findings-domains | 4/6 | ~15 min | ~3.8 min |
 
 ## Phase 1 Deliverables
 
@@ -193,9 +193,11 @@ CLI commands available: `astraea execute-domain`
 | VS execution tests (synthetic) | tests/integration/execution/test_vs_execution.py | 8 | Done |
 | TSConfig model + TS builder | src/astraea/execution/trial_summary.py | 20 | Done |
 | PE domain execution test | tests/integration/execution/test_pe_execution.py | 5 | Done |
-| **Total so far** | | **90 new tests** | **3/6 plans** |
+| SUPPQUAL generation tests | tests/integration/execution/test_suppqual_generation.py | 9 | Done |
+| Findings XPT output tests | tests/integration/execution/test_findings_xpt_output.py | 10 | Done |
+| **Total so far** | | **109 new tests** | **4/6 plans** |
 
-**Combined test suite: 1207 tests (1121 pass + 86 skipped)**
+**Combined test suite: 1226 tests (1140 pass + 86 skipped)**
 
 ## Accumulated Context
 
@@ -351,5 +353,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 06-03-PLAN.md (TS domain builder + PE execution)
+Stopped at: Completed 06-04-PLAN.md (SUPPQUAL generation + Findings XPT output tests)
 Resume file: None
