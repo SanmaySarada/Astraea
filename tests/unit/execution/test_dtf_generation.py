@@ -8,7 +8,6 @@ columns, and does nothing when no flag variables are in the spec.
 from __future__ import annotations
 
 import pandas as pd
-import pytest
 
 from astraea.execution.executor import DatasetExecutor
 from astraea.models.mapping import (
