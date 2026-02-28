@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 10 COMPLETE -- Tech Debt Cleanup (2/2 plans complete). ALL PHASES COMPLETE. Zero lint/type errors.
+**Current focus:** Phase 11 -- Execution Contract (most urgent post-v1 audit fix: make execution pipeline produce valid SDTM data from LLM specs)
 
 ## Current Position
 
-Phase: 10 of 10 (Tech Debt Cleanup)
-Plan: 2 of 2
-Status: Phase 10 COMPLETE -- ALL v1 PHASES COMPLETE
-Last activity: 2026-02-28 -- Completed 10-01-PLAN.md (Lint and Type Error Cleanup)
+Phase: 11 of 15 (Execution Contract)
+Plan: 1 of 4
+Status: In progress
+Last activity: 2026-02-28 -- Completed 11-01-PLAN.md (Targeted Bug Fixes)
 
-Progress: [████████████████████████████████████████████████████████████████] 100%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [█░░░] 25%
 
 ## Performance Metrics
 
@@ -437,6 +437,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-09-01-01] TABESSION renamed to TABRSESS (8 chars max for XPT v5 compliance)
 - 2026-02-28: [D-09-01-02] SV label truncated to 'Desc of Unplanned Visit' for 40-char XPT label limit
 - 2026-02-28: [D-09-01-03] TA label truncated to 'Planned Order of Element in Arm' for 40-char XPT label limit
+- 2026-02-28: [D-11-01-01] Wildcard "*" checked explicitly alongside null in known_false_positives -- null means "match all" preserved
+- 2026-02-28: [D-11-01-02] Hour-without-minute truncates to date-only per ISO 8601 (standalone "T10" is invalid)
+- 2026-02-28: [D-11-01-03] DDMonYYYY regex ordered after DD Mon YYYY to avoid false matches on spaced format
 
 ### Pending Todos
 
@@ -481,5 +484,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 10-01-PLAN.md (Lint and Type Error Cleanup) -- ALL PHASES COMPLETE
+Stopped at: Completed 11-01-PLAN.md (Targeted Bug Fixes)
 Resume file: None
