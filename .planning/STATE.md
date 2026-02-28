@@ -10,9 +10,9 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 14 of 15 (Reference Data and Transforms)
-Plan: 2 of 4
+Plan: 3 of 4
 Status: In progress
-Last activity: 2026-02-28 -- Completed 14-02-PLAN.md (Date/Time Fixes)
+Last activity: 2026-02-28 -- Completed 14-03-PLAN.md (Transform Utilities)
 
 Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 53%
 
@@ -523,6 +523,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-14-02-01] ISO datetime passthrough check placed before YYYY-MM-DD check to match more specific pattern first
 - 2026-02-28: [D-14-02-02] impute_partial_date returns date-only for YYYY/YYYY-MM inputs (no time appended unless partial time present)
 - 2026-02-28: [D-14-02-03] Timezone group placed inside T-group in validation regex so date-only strings cannot have timezone
+- 2026-02-28: [D-14-03-01] optimize_char_lengths caps computed widths at 200 bytes with warning log (XPT v5 max)
+- 2026-02-28: [D-14-03-02] Epoch overlap uses strict less-than: adjacent elements (SEENDTC == SESTDTC of next) are NOT overlaps
+- 2026-02-28: [D-14-03-03] Recoding functions return None for unrecognized values (never raise) -- conservative for clinical data
 
 ### Pending Todos
 
@@ -567,5 +570,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 14-02-PLAN.md (Date/Time Fixes)
+Stopped at: Completed 14-03-PLAN.md (Transform Utilities)
 Resume file: None
