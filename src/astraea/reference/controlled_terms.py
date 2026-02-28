@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from loguru import logger
+
 from astraea.models.controlled_terms import Codelist, CodelistTerm, CTPackage
 
 _DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "ct"
@@ -53,11 +55,14 @@ class CTReference:
             codelists=codelists,
         )
 
-        # Build reverse lookup: variable name -> codelist code
-        self._variable_to_codelist: dict[str, str] = {}
+        # Build reverse lookup: variable name -> list of codelist codes
+        self._variable_to_codelist: dict[str, list[str]] = {}
         for code, cl in codelists.items():
             for var_name in cl.variable_mappings:
-                self._variable_to_codelist[var_name.upper()] = code
+                key = var_name.upper()
+                if key not in self._variable_to_codelist:
+                    self._variable_to_codelist[key] = []
+                self._variable_to_codelist[key].append(code)
 
     @property
     def version(self) -> str:
@@ -100,11 +105,35 @@ class CTReference:
         return value in cl.terms
 
     def get_codelist_for_variable(self, variable_name: str) -> Codelist | None:
-        """Reverse lookup: given an SDTM variable name, find its codelist."""
-        code = self._variable_to_codelist.get(variable_name.upper())
-        if code is None:
+        """Reverse lookup: given an SDTM variable name, find its codelist.
+
+        Returns the first matching codelist. If multiple codelists map to
+        this variable, logs a warning. Use ``get_codelists_for_variable``
+        to retrieve all matches.
+        """
+        codes = self._variable_to_codelist.get(variable_name.upper())
+        if codes is None or len(codes) == 0:
             return None
-        return self.lookup_codelist(code)
+        if len(codes) > 1:
+            logger.warning(
+                "Variable {} maps to multiple codelists: {}. Returning first.",
+                variable_name,
+                codes,
+            )
+        return self.lookup_codelist(codes[0])
+
+    def get_codelists_for_variable(self, variable_name: str) -> list[Codelist]:
+        """Reverse lookup: given an SDTM variable name, find all matching codelists.
+
+        Returns a list of Codelist objects (may be empty if no match).
+        """
+        codes = self._variable_to_codelist.get(variable_name.upper(), [])
+        result: list[Codelist] = []
+        for code in codes:
+            cl = self.lookup_codelist(code)
+            if cl is not None:
+                result.append(cl)
+        return result
 
     def list_codelists(self) -> list[str]:
         """Return all available codelist codes."""

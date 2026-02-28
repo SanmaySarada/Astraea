@@ -358,5 +358,5 @@ class TestAllSixteenCodelists:
         assert missing == [], f"Missing codelists: {missing}"
 
     def test_total_codelist_count(self, ct: CTReference) -> None:
-        """29 total: 11 original + 16 new + 2 FDA compliance (C66785, C66789)."""
-        assert len(ct.list_codelists()) == 29
+        """30 total: 11 original + 16 new + 2 FDA compliance (C66785, C66789) + C66738."""
+        assert len(ct.list_codelists()) == 30
