@@ -11,10 +11,13 @@ Exports:
     normalize_ecg_columns: Column normalization for ECG sources.
     normalize_vs_columns: Column normalization for vital signs sources.
     merge_findings_sources: Multi-source alignment and concatenation.
+    derive_standardized_results: Derive STRESC/STRESN/STRESU from ORRES.
+    derive_nrind: Derive NRIND from STRESN and reference ranges.
 """
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 from loguru import logger
 
@@ -240,6 +243,125 @@ def merge_findings_sources(
     return merged, supp_candidates
 
 
+def derive_standardized_results(df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
+    """Derive standardized result variables (--STRESC, --STRESN, --STRESU) from original results.
+
+    For v1, NO unit conversion is performed -- ORRESU is copied directly to STRESU.
+    Unit standardization (e.g., lbs to kg, mg/dL to mmol/L) is deferred to a future version.
+
+    Args:
+        df: DataFrame containing at minimum ``{prefix}ORRES`` column.
+        domain_prefix: Two-letter SDTM domain prefix (e.g., "LB", "EG", "VS").
+
+    Returns:
+        The DataFrame with STRESC, STRESN, and optionally STRESU columns added.
+        If the ORRES column does not exist, returns the DataFrame unchanged.
+    """
+    orres_col = f"{domain_prefix}ORRES"
+    if orres_col not in df.columns:
+        return df
+
+    stresc_col = f"{domain_prefix}STRESC"
+    stresn_col = f"{domain_prefix}STRESN"
+    stresu_col = f"{domain_prefix}STRESU"
+    orresu_col = f"{domain_prefix}ORRESU"
+
+    # STRESC: character copy of ORRES
+    df[stresc_col] = df[orres_col]
+
+    # STRESN: numeric parse -- NaN for non-numeric values
+    df[stresn_col] = pd.to_numeric(df[orres_col], errors="coerce")
+
+    # STRESU: copy of ORRESU if it exists
+    if orresu_col in df.columns:
+        df[stresu_col] = df[orresu_col]
+
+    logger.debug(
+        "Derived standardized results for {} domain: STRESC, STRESN{}",
+        domain_prefix,
+        ", STRESU" if orresu_col in df.columns else "",
+    )
+    return df
+
+
+def derive_nrind(df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
+    """Derive normal range indicator (--NRIND) from standardized numeric result.
+
+    Uses reference ranges (STNRLO/STNRHI) to classify results.
+
+    Produces LOW, HIGH, NORMAL, or null based on comparison of STRESN to STNRLO/STNRHI.
+    Handles partial ranges: if only one bound is available, derives the applicable
+    indicator (LOW or HIGH) and leaves null where the missing bound would be needed.
+
+    Args:
+        df: DataFrame containing at minimum ``{prefix}STRESN`` column.
+            Optionally ``{prefix}STNRLO`` and/or ``{prefix}STNRHI``.
+        domain_prefix: Two-letter SDTM domain prefix (e.g., "LB", "EG", "VS").
+
+    Returns:
+        The DataFrame with NRIND column added.
+        If the STRESN column does not exist, returns the DataFrame unchanged.
+    """
+    stresn_col = f"{domain_prefix}STRESN"
+    if stresn_col not in df.columns:
+        return df
+
+    nrind_col = f"{domain_prefix}NRIND"
+    stnrlo_col = f"{domain_prefix}STNRLO"
+    stnrhi_col = f"{domain_prefix}STNRHI"
+
+    stresn = pd.to_numeric(df[stresn_col], errors="coerce")
+    has_lo = stnrlo_col in df.columns
+    has_hi = stnrhi_col in df.columns
+
+    if has_lo:
+        stnrlo = pd.to_numeric(df[stnrlo_col], errors="coerce")
+    if has_hi:
+        stnrhi = pd.to_numeric(df[stnrhi_col], errors="coerce")
+
+    # Build conditions and choices using np.select
+    conditions: list[pd.Series] = []
+    choices: list[str] = []
+
+    if has_lo:
+        conditions.append(stresn.notna() & stnrlo.notna() & (stresn < stnrlo))
+        choices.append("LOW")
+
+    if has_hi:
+        conditions.append(stresn.notna() & stnrhi.notna() & (stresn > stnrhi))
+        choices.append("HIGH")
+
+    if has_lo and has_hi:
+        conditions.append(
+            stresn.notna()
+            & stnrlo.notna()
+            & stnrhi.notna()
+            & (stresn >= stnrlo)
+            & (stresn <= stnrhi)
+        )
+        choices.append("NORMAL")
+
+    if conditions:
+        result = np.select(conditions, choices, default=None)
+        df[nrind_col] = pd.array(result, dtype=object)
+        # Ensure None stays as None (np.select returns 0/None as string "0"/"None")
+        valid_values = ["LOW", "HIGH", "NORMAL"]
+        df[nrind_col] = df[nrind_col].where(
+            df[nrind_col].isin(valid_values), other=None
+        )
+    else:
+        # No range columns at all -- NRIND is all null
+        df[nrind_col] = None
+
+    logger.debug(
+        "Derived NRIND for {} domain (lo={}, hi={})",
+        domain_prefix,
+        has_lo,
+        has_hi,
+    )
+    return df
+
+
 class FindingsExecutor:
     """Orchestrator for multi-source Findings domain execution.
 
@@ -261,6 +383,24 @@ class FindingsExecutor:
         self.sdtm_ref = sdtm_ref
         self.ct_ref = ct_ref
         self._executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+
+    def _derive_findings_variables(self, df: pd.DataFrame, domain_prefix: str) -> pd.DataFrame:
+        """Derive standardized results and normal range indicator for a Findings domain.
+
+        Calls derive_standardized_results (STRESC/STRESN/STRESU) then derive_nrind (NRIND)
+        in sequence. Should be called AFTER DatasetExecutor.execute() but BEFORE SUPPQUAL
+        generation.
+
+        Args:
+            df: Executed Findings DataFrame.
+            domain_prefix: Two-letter SDTM domain prefix (e.g., "LB", "EG", "VS").
+
+        Returns:
+            DataFrame with derived Findings variables added.
+        """
+        df = derive_standardized_results(df, domain_prefix)
+        df = derive_nrind(df, domain_prefix)
+        return df
 
     def execute_lb(
         self,
@@ -307,6 +447,9 @@ class FindingsExecutor:
             site_col=site_col,
             subject_col=subject_col,
         )
+
+        # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
+        lb_df = self._derive_findings_variables(lb_df, "LB")
 
         # Generate SUPPLB if requested
         supplb_df = None
@@ -376,6 +519,9 @@ class FindingsExecutor:
             subject_col=subject_col,
         )
 
+        # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
+        eg_df = self._derive_findings_variables(eg_df, "EG")
+
         # Generate SUPPEG if requested
         suppeg_df = None
         if supp_variables and not eg_df.empty:
@@ -437,6 +583,9 @@ class FindingsExecutor:
             site_col=site_col,
             subject_col=subject_col,
         )
+
+        # Derive Findings-specific variables (STRESC, STRESN, STRESU, NRIND)
+        vs_df = self._derive_findings_variables(vs_df, "VS")
 
         # Generate SUPPVS if requested
         suppvs_df = None
