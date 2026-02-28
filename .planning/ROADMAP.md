@@ -391,10 +391,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 11-01-PLAN.md -- Bug fixes: wildcard matching, ISO 8601 partial date, DDMonYYYY format, USUBJID auto-fix
-- [ ] 11-02-PLAN.md -- Derivation rule parser, column resolution helper, and all rule handler implementations
-- [ ] 11-03-PLAN.md -- LLM prompt vocabulary constraint and executor column name resolution
-- [ ] 11-04-PLAN.md -- DM real-data integration test and full test suite verification
+- [x] 11-01-PLAN.md -- Bug fixes: wildcard matching, ISO 8601 partial date, DDMonYYYY format, USUBJID auto-fix
+- [x] 11-02-PLAN.md -- Derivation rule parser, column resolution helper, and all rule handler implementations
+- [x] 11-03-PLAN.md -- LLM prompt vocabulary constraint and executor column name resolution
+- [x] 11-04-PLAN.md -- DM real-data integration test and full test suite verification
 
 ---
 
@@ -512,7 +512,7 @@ Plans:
 | 8 - Learning System | Complete | 2026-02-28 |
 | 9 - CLI Wiring — Close Audit Gaps | Complete | 2026-02-27 |
 | 10 - Tech Debt Cleanup | Complete | 2026-02-28 |
-| 11 - Execution Contract | Not Started | -- |
+| 11 - Execution Contract | Complete | 2026-02-28 |
 | 12 - Validation and Severity Fixes | Not Started | -- |
 | 13 - Define.xml and Findings Completeness | Not Started | -- |
 | 14 - Reference Data and Transforms | Not Started | -- |

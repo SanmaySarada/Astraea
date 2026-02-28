@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 11 COMPLETE -- Execution Contract (derivation rule vocabulary, handlers, column resolution, real-data acceptance test all verified)
+**Current focus:** Phase 12 -- Validation and Severity Fixes (next phase after Execution Contract)
 
 ## Current Position
 
-Phase: 11 of 15 (Execution Contract)
-Plan: 4 of 4
-Status: Phase complete
-Last activity: 2026-02-28 -- Completed 11-04-PLAN.md (DM Real-Data Integration Test)
+Phase: 12 of 15 (next: Validation and Severity Fixes)
+Plan: 0 of TBD
+Status: Phase 11 COMPLETE -- Phase 12 NOT STARTED
+Last activity: 2026-02-28 -- Completed Phase 11 (Execution Contract) -- all 4 plans executed, 1660 tests passing
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [████] 100%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 20%
 
 ## Performance Metrics
 
@@ -277,6 +277,23 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 **Combined test suite: ~1652 tests**
 
 CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea learn-optimize`
+
+## Phase 11 Deliverables
+
+| Component | Module | Tests | Status |
+|-----------|--------|-------|--------|
+| Wildcard FP matching fix | src/astraea/validation/report.py | 6 | Done |
+| ISO 8601 partial date fix | src/astraea/transforms/dates.py | 8 | Done |
+| DDMonYYYY date format | src/astraea/transforms/dates.py | 4 | Done |
+| USUBJID auto-fix classification | src/astraea/validation/autofix.py | 4 | Done |
+| Derivation rule parser | src/astraea/execution/pattern_handlers.py | 20 | Done |
+| 10+ derivation rule handlers | src/astraea/execution/pattern_handlers.py | 20 | Done |
+| LLM prompt vocabulary constraint | src/astraea/mapping/prompts.py | 8 | Done |
+| Executor column name resolution | src/astraea/execution/executor.py | 8 | Done |
+| DM real-data integration test | tests/integration/execution/test_dm_execution_real.py | 15 | Done |
+| **Total** | | **~93 new tests** | **4/4 plans COMPLETE** |
+
+**Combined test suite: 1660 tests (1541 pass + 119 skipped)**
 
 ## Accumulated Context
 
