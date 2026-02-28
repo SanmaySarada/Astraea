@@ -2,7 +2,7 @@
 
 **Project:** Astraea-SDTM
 **Created:** 2026-02-26
-**Phases:** 8
+**Phases:** 10
 
 ## Overview
 
@@ -325,6 +325,47 @@ Plans:
 
 ---
 
+### Phase 9: CLI Wiring — Close Audit Gaps
+
+**Goal:** Wire all orphaned modules into the CLI so that every built capability is reachable by users — closing the 3 integration gaps identified in the v1 milestone audit that prevent Trial Design/TS generation, learning feedback, and SUPPQUAL generation through the CLI workflow.
+**Depends on:** Phase 8 (all modules must exist)
+**Requirements:** DOM-14 (SUPPQUAL via CLI), DOM-16 (Trial Design via CLI), HITL-04 (few-shot RAG in mapping)
+**Gap Closure:** Closes GAP-1, GAP-2, GAP-3 from v1-MILESTONE-AUDIT.md
+
+**Success Criteria:**
+1. New CLI command `astraea generate-trial-design` produces TS, TA, TE, TV, TI, SV datasets from config — TS includes all FDA-mandatory parameters (GAP-1)
+2. `astraea map-domain` automatically loads `LearningRetriever` when a learning DB exists, injecting past corrections as few-shot examples into mapping prompts (GAP-2)
+3. `astraea execute-domain` routes Findings domains (LB, VS, EG) through `FindingsExecutor` instead of generic `DatasetExecutor`, enabling SUPPQUAL generation in the CLI path (GAP-3)
+4. Integration tests verify each wiring path end-to-end
+5. All ~1652 existing tests still pass
+
+Plans:
+- [ ] 09-01-PLAN.md -- Wire trial design domains into CLI (GAP-1: generate-trial-design command)
+- [ ] 09-02-PLAN.md -- Wire LearningRetriever into map-domain CLI (GAP-2: feedback loop closure)
+- [ ] 09-03-PLAN.md -- Route Findings through FindingsExecutor in CLI (GAP-3: SUPPQUAL generation)
+
+---
+
+### Phase 10: Tech Debt Cleanup
+
+**Goal:** Clean up accumulated tech debt identified across all phases — ruff style violations, orphaned modules, stale documentation, incomplete REQUIREMENTS.md checkboxes, and validation infrastructure gaps — so the codebase is clean and consistent for milestone completion.
+**Depends on:** Phase 9 (gap closure first, cleanup second)
+**Requirements:** None (quality improvement, not functional)
+
+**Success Criteria:**
+1. Zero ruff violations across `src/` and `tests/` (32 pre-existing UP042, E501, B905 violations fixed)
+2. `transform_registry.py` either wired into production code or removed
+3. REQUIREMENTS.md checkboxes all checked `[x]` (DATA-01 through DATA-07, CLI-01, CLI-04 currently unchecked)
+4. Docstring example in `transforms/dates.py` line 67 corrected
+5. `known_false_positives.json` expanded with common P21 false positives
+6. All tests pass, ruff clean, mypy clean
+
+Plans:
+- [ ] 10-01-PLAN.md -- Fix ruff violations + docstring errors + orphaned transform_registry
+- [ ] 10-02-PLAN.md -- Update REQUIREMENTS.md checkboxes + expand known_false_positives.json
+
+---
+
 ## Progress
 
 | Phase | Status | Completed |
@@ -341,6 +382,8 @@ Plans:
 | 7 - Validation and Submission Readiness | Complete | 2026-02-28 |
 | 7.1 - Auto-Fix Validation Issues (INSERTED) | Complete | 2026-02-28 |
 | 8 - Learning System | Complete | 2026-02-28 |
+| 9 - CLI Wiring — Close Audit Gaps | Pending | — |
+| 10 - Tech Debt Cleanup | Pending | — |
 
 ---
 
