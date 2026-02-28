@@ -14,6 +14,10 @@ import pandas as pd
 
 from astraea.validation.rules.base import RuleCategory, RuleResult, RuleSeverity, ValidationRule
 
+# Technical Rejection Criteria TS parameters -- missing ANY of these causes
+# immediate FDA rejection (stricter than the full 26+ warning-level list).
+_TRC_REQUIRED_TS_PARAMS: frozenset[str] = frozenset({"SSTDTC", "SDTMVER", "STYPE", "TITLE"})
+
 
 class TRCPreCheck:
     """FDA Technical Rejection Criteria pre-check.
@@ -79,14 +83,19 @@ class TRCPreCheck:
         return []
 
     def _check_ts_present(self, generated_domains: dict[str, pd.DataFrame]) -> list[RuleResult]:
-        """FDA-TRC-1734: TS domain must be present with SSTDTC parameter."""
+        """Check TS domain presence and TRC-critical parameters.
+
+        Verifies that the TS domain exists and contains all 4 Technical
+        Rejection Criteria parameters: SSTDTC, SDTMVER, STYPE, TITLE.
+        Missing any of these causes immediate FDA rejection.
+        """
         results: list[RuleResult] = []
 
         if "TS" not in generated_domains:
             results.append(
                 RuleResult(
                     rule_id="FDA-TRC-1734",
-                    rule_description="TS domain must be present with SSTDTC",
+                    rule_description="TS domain must be present with TRC parameters",
                     category=RuleCategory.FDA_TRC,
                     severity=RuleSeverity.ERROR,
                     message="TS (Trial Summary) domain is missing -- FDA will reject submission",
@@ -100,7 +109,7 @@ class TRCPreCheck:
             results.append(
                 RuleResult(
                     rule_id="FDA-TRC-1734",
-                    rule_description="TS domain must be present with SSTDTC",
+                    rule_description="TS domain must have TSPARMCD column",
                     category=RuleCategory.FDA_TRC,
                     severity=RuleSeverity.ERROR,
                     domain="TS",
@@ -110,21 +119,34 @@ class TRCPreCheck:
             )
             return results
 
-        # Check for SSTDTC parameter
+        # Check all TRC-critical TS parameters
         tsparmcds = set(ts_df["TSPARMCD"].dropna().astype(str).str.upper())
-        if "SSTDTC" not in tsparmcds:
-            results.append(
-                RuleResult(
-                    rule_id="FDA-TRC-1734",
-                    rule_description="TS domain must be present with SSTDTC",
-                    category=RuleCategory.FDA_TRC,
-                    severity=RuleSeverity.ERROR,
-                    domain="TS",
-                    variable="TSPARMCD",
-                    message="TS domain is missing SSTDTC parameter (Study Start Date)",
-                    fix_suggestion="Add SSTDTC parameter to TS domain",
+
+        _PARAM_DESCRIPTIONS: dict[str, tuple[str, str]] = {
+            "SSTDTC": ("FDA-TRC-1734", "Study Start Date"),
+            "SDTMVER": ("FDA-TRC-SDTMVER", "SDTM Version"),
+            "STYPE": ("FDA-TRC-STYPE", "Study Type"),
+            "TITLE": ("FDA-TRC-TITLE", "Trial Title"),
+        }
+
+        for param_code in sorted(_TRC_REQUIRED_TS_PARAMS):
+            if param_code not in tsparmcds:
+                rule_id, description = _PARAM_DESCRIPTIONS[param_code]
+                results.append(
+                    RuleResult(
+                        rule_id=rule_id,
+                        rule_description=f"TS domain must contain {param_code} ({description})",
+                        category=RuleCategory.FDA_TRC,
+                        severity=RuleSeverity.ERROR,
+                        domain="TS",
+                        variable="TSPARMCD",
+                        message=(
+                            f"TS domain is missing {param_code} parameter ({description}) "
+                            f"-- FDA will reject submission"
+                        ),
+                        fix_suggestion=f"Add {param_code} parameter to TS domain",
+                    )
                 )
-            )
 
         return results
 

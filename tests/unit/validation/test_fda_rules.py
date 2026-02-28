@@ -386,11 +386,12 @@ class TestTRCPreCheck:
 
     @pytest.fixture()
     def ts_df(self) -> pd.DataFrame:
+        """TS with all 4 TRC-critical params: SSTDTC, SDTMVER, STYPE, TITLE."""
         return pd.DataFrame(
             {
-                "STUDYID": ["STUDY1", "STUDY1"],
-                "TSPARMCD": ["SSTDTC", "SPONSOR"],
-                "TSVAL": ["2022-01-01", "ACME"],
+                "STUDYID": ["STUDY1"] * 5,
+                "TSPARMCD": ["SSTDTC", "SPONSOR", "SDTMVER", "STYPE", "TITLE"],
+                "TSVAL": ["2022-01-01", "ACME", "3.4", "INTERVENTIONAL", "My Trial"],
             }
         )
 
@@ -423,12 +424,72 @@ class TestTRCPreCheck:
             }
         )
         results = trc._check_ts_present({"TS": ts_no_sstdtc})
-        assert len(results) == 1
-        assert "SSTDTC" in results[0].message
+        # Missing SSTDTC, SDTMVER, STYPE, TITLE = 4 results
+        assert len(results) == 4
+        rule_ids = {r.rule_id for r in results}
+        assert "FDA-TRC-1734" in rule_ids  # SSTDTC
+        assert "FDA-TRC-SDTMVER" in rule_ids
+        assert "FDA-TRC-STYPE" in rule_ids
+        assert "FDA-TRC-TITLE" in rule_ids
 
-    def test_ts_with_sstdtc_passes(self, trc, ts_df) -> None:
+    def test_ts_with_all_trc_params_passes(self, trc, ts_df) -> None:
+        """TS with all 4 TRC-critical params should produce 0 results."""
         results = trc._check_ts_present({"TS": ts_df})
         assert len(results) == 0
+
+    def test_ts_missing_sdtmver(self, trc) -> None:
+        """TS with SSTDTC, STYPE, TITLE but no SDTMVER should flag SDTMVER."""
+        ts = pd.DataFrame(
+            {
+                "TSPARMCD": ["SSTDTC", "STYPE", "TITLE"],
+                "TSVAL": ["2022-01-01", "INTERVENTIONAL", "My Trial"],
+            }
+        )
+        results = trc._check_ts_present({"TS": ts})
+        assert len(results) == 1
+        assert results[0].rule_id == "FDA-TRC-SDTMVER"
+        assert results[0].severity == RuleSeverity.ERROR
+        assert "SDTMVER" in results[0].message
+
+    def test_ts_missing_stype(self, trc) -> None:
+        """TS with SSTDTC, SDTMVER, TITLE but no STYPE should flag STYPE."""
+        ts = pd.DataFrame(
+            {
+                "TSPARMCD": ["SSTDTC", "SDTMVER", "TITLE"],
+                "TSVAL": ["2022-01-01", "3.4", "My Trial"],
+            }
+        )
+        results = trc._check_ts_present({"TS": ts})
+        assert len(results) == 1
+        assert results[0].rule_id == "FDA-TRC-STYPE"
+        assert results[0].severity == RuleSeverity.ERROR
+
+    def test_ts_missing_title(self, trc) -> None:
+        """TS with SSTDTC, SDTMVER, STYPE but no TITLE should flag TITLE."""
+        ts = pd.DataFrame(
+            {
+                "TSPARMCD": ["SSTDTC", "SDTMVER", "STYPE"],
+                "TSVAL": ["2022-01-01", "3.4", "INTERVENTIONAL"],
+            }
+        )
+        results = trc._check_ts_present({"TS": ts})
+        assert len(results) == 1
+        assert results[0].rule_id == "FDA-TRC-TITLE"
+        assert results[0].severity == RuleSeverity.ERROR
+
+    def test_ts_missing_multiple_trc_params(self, trc) -> None:
+        """TS missing SDTMVER and TITLE should produce 2 results."""
+        ts = pd.DataFrame(
+            {
+                "TSPARMCD": ["SSTDTC", "STYPE"],
+                "TSVAL": ["2022-01-01", "INTERVENTIONAL"],
+            }
+        )
+        results = trc._check_ts_present({"TS": ts})
+        assert len(results) == 2
+        rule_ids = {r.rule_id for r in results}
+        assert "FDA-TRC-SDTMVER" in rule_ids
+        assert "FDA-TRC-TITLE" in rule_ids
 
     def test_missing_define_xml(self, trc, tmp_path) -> None:
         results = trc._check_define_xml_present(tmp_path)
