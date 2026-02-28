@@ -222,7 +222,7 @@ Plans:
 
 ### Phase 6: Findings Domains and Complex Transformations
 
-**Goal:** The system maps all Findings-class domains (requiring horizontal-to-vertical transpose), generates SUPPQUAL datasets with referential integrity, populates the mandatory TS (Trial Summary) domain, handles trial design domains, and produces actual SDTM .xpt files for all Findings domains -- the technically hardest transformations in the pipeline.
+**Goal:** The system maps all Findings-class domains (LB, EG, PE), generates SUPPQUAL datasets with referential integrity, populates the mandatory TS (Trial Summary) domain, builds SV (Subject Visits) from EDC metadata, and produces actual SDTM .xpt files for all Findings domains -- the technically hardest transformations in the pipeline.
 **Depends on:** Phase 5 (proven domain expansion pattern; transpose builds on mapping engine)
 **Requirements:** DOM-05, DOM-06, DOM-07, DOM-10, DOM-14, DOM-15, DOM-16
 
@@ -234,7 +234,15 @@ Plans:
 5. System maps PE, SV, and trial design domains (TA, TE, TV, TI) correctly with proper sort order and variable order
 6. All generated Findings datasets include --DY, --SEQ, EPOCH, VISITNUM, LBNRIND/VSNRIND (normal range indicators), and date imputation flags where applicable
 
-**Plans:** (created by /gsd:plan-phase)
+**Plans:** 6 plans
+
+Plans:
+- [ ] 06-01-PLAN.md -- TRANSPOSE handler + SUPPQUAL generator (foundational components)
+- [ ] 06-02-PLAN.md -- LB + EG domain execution (FindingsExecutor, multi-source merge, synthetic tests)
+- [ ] 06-03-PLAN.md -- TS domain builder + PE domain execution (config-driven TS, minimal PE)
+- [ ] 06-04-PLAN.md -- SUPPQUAL integration + Findings XPT output tests (SUPPLB, SUPPEG, roundtrips)
+- [ ] 06-05-PLAN.md -- LLM mapping specs for LB, EG, PE (real Fakedata, requires API key)
+- [ ] 06-06-PLAN.md -- SV domain builder + TS integration with DM data
 
 ---
 
