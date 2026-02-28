@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 8 COMPLETE -- Learning System (5/5 plans complete). ALL PHASES COMPLETE.
+**Current focus:** Phase 9 -- CLI Wiring Gap Closure (2/3 plans complete).
 
 ## Current Position
 
-Phase: 8 of 8 (Learning System)
-Plan: 5 of 5 (DSPy Optimizer and Learning CLI)
-Status: COMPLETE -- All 8 phases finished
-Last activity: 2026-02-28 -- Completed 08-05-PLAN.md (DSPy optimizer and learning CLI)
+Phase: 9 of 10 (CLI Wiring Gap Closure)
+Plan: 2 of 3 (Wire LearningRetriever into map-domain)
+Status: In progress
+Last activity: 2026-02-28 -- Completed 09-02-PLAN.md (LearningRetriever wiring)
 
-Progress: [████████████████████████████████████████████████████████████] 100%
+Progress: [████████████████████████████████████████████████████████████] ~96%
 
 ## Performance Metrics
 
@@ -478,5 +478,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-05-PLAN.md (DSPy optimizer and learning CLI) -- ALL PHASES COMPLETE
-Resume file: None
+Stopped at: Completed 09-02-PLAN.md (LearningRetriever wiring into map-domain)
+Resume file: .planning/phases/09-cli-wiring/09-03-PLAN.md
