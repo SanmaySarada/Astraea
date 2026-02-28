@@ -549,21 +549,82 @@ def execute_domain(
 
     # Step 4: Execute
     console.print("[bold blue][4/4][/bold blue] Executing mapping...")
+    _FINDINGS_DOMAINS = {"LB", "VS", "EG"}
+
     try:
         sdtm_ref = load_sdtm_reference()
         ct_ref = load_ct_reference()
-        executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
-
         output_dir_path = Path(output_dir)
         output_dir_path.mkdir(parents=True, exist_ok=True)
         xpt_path = output_dir_path / f"{domain.lower()}.xpt"
 
-        executor.execute_to_xpt(
-            spec,
-            raw_dfs,
-            xpt_path,
-            cross_domain=cross_domain,
-        )
+        if domain in _FINDINGS_DOMAINS:
+            from astraea.execution.findings import FindingsExecutor
+            from astraea.io.xpt_writer import write_xpt_v5
+
+            findings_executor = FindingsExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+
+            # Dispatch to domain-specific method
+            execute_method = {
+                "LB": findings_executor.execute_lb,
+                "VS": findings_executor.execute_vs,
+                "EG": findings_executor.execute_eg,
+            }[domain]
+
+            main_df, supp_df = execute_method(
+                spec,
+                raw_dfs,
+                cross_domain=cross_domain,
+                study_id=spec.study_id,
+            )
+
+            # Build column labels from spec for XPT
+            column_labels: dict[str, str] = {}
+            for m in spec.variable_mappings:
+                if m.sdtm_variable in main_df.columns:
+                    column_labels[m.sdtm_variable] = m.sdtm_label
+
+            # Write main domain XPT
+            write_xpt_v5(
+                main_df,
+                xpt_path,
+                table_name=domain,
+                column_labels=column_labels,
+                table_label=spec.domain_label,
+            )
+            console.print(f"  Main domain: {len(main_df)} rows -> {xpt_path}")
+
+            # Write SUPPQUAL if generated
+            if supp_df is not None and not supp_df.empty:
+                supp_xpt_path = output_dir_path / f"supp{domain.lower()}.xpt"
+                supp_labels = {
+                    "STUDYID": "Study Identifier",
+                    "RDOMAIN": "Related Domain Abbreviation",
+                    "USUBJID": "Unique Subject Identifier",
+                    "IDVAR": "Identifying Variable",
+                    "IDVARVAL": "Identifying Variable Value",
+                    "QNAM": "Qualifier Variable Name",
+                    "QLABEL": "Qualifier Variable Label",
+                    "QVAL": "Data Value",
+                    "QORIG": "Origin",
+                    "QEVAL": "Evaluator",
+                }
+                write_xpt_v5(
+                    supp_df,
+                    supp_xpt_path,
+                    table_name=f"SUPP{domain}",
+                    column_labels=supp_labels,
+                    table_label=f"Supplemental Qualifiers for {domain}",
+                )
+                console.print(f"  SUPPQUAL: {len(supp_df)} rows -> {supp_xpt_path}")
+        else:
+            executor = DatasetExecutor(sdtm_ref=sdtm_ref, ct_ref=ct_ref)
+            executor.execute_to_xpt(
+                spec,
+                raw_dfs,
+                xpt_path,
+                cross_domain=cross_domain,
+            )
     except Exception as e:
         console.print(f"[bold red]Error during execution:[/bold red] {e}")
         raise typer.Exit(code=1) from e
@@ -573,14 +634,8 @@ def execute_domain(
     console.print(f"  Domain:  {domain} ({spec.domain_label})")
     console.print(f"  Output:  {xpt_path}")
     console.print(f"  Sources: {len(raw_dfs)} dataset(s)")
-
-    # Show char width summary
-    if executor._last_char_widths:
-        max_width = max(executor._last_char_widths.values())
-        console.print(
-            f"  Char widths: {len(executor._last_char_widths)} column(s), "
-            f"max {max_width} bytes"
-        )
+    if domain in _FINDINGS_DOMAINS:
+        console.print("  Executor: FindingsExecutor (multi-source merge + SUPPQUAL)")
 
 
 @app.command(name="validate")
