@@ -75,7 +75,7 @@ class TestRuleSeverity:
         assert RuleSeverity.NOTICE.display_name == "Notice"
 
     def test_all_values(self) -> None:
-        assert len(RuleSeverity) == 3
+        assert len(RuleSeverity) == 4
 
 
 # ---------------------------------------------------------------------------
