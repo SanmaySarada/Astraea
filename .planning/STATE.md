@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4, 5, 6 complete).
+**Current focus:** Phase 7 COMPLETE -- Validation and Submission Readiness (all 7 plans complete).
 
 ## Current Position
 
 Phase: 7 of 8 (Validation and Submission Readiness)
-Plan: 6 of N (cSDRG, Package Assembly, Submission Reporting)
-Status: In progress
-Last activity: 2026-02-28 -- Completed 07-06-PLAN.md (cSDRG, package, reporting)
+Plan: 7 of 7 (CLI Integration and End-to-End Tests)
+Status: Phase complete
+Last activity: 2026-02-28 -- Completed 07-07-PLAN.md (CLI integration, end-to-end tests)
 
-Progress: [██████████████████████████████████████████████████████] ~99%
+Progress: [████████████████████████████████████████████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 38
+- Total plans completed: 39
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 | 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
-| 07-validation-submission | 6/? | ~27 min | ~4.5 min |
+| 07-validation-submission | 7/7 | ~32 min | ~4.6 min |
 
 ## Phase 1 Deliverables
 
@@ -233,9 +233,15 @@ CLI commands available: `astraea execute-domain`
 | RuleResult false-positive fields | src/astraea/validation/rules/base.py | -- | Done |
 | ValidationReport enhancements | src/astraea/validation/report.py | -- | Done |
 | Submission package validator | src/astraea/submission/package.py | 11 | Done |
-| **Total** | | **199 new tests** | **Plans 1, 2, 3, 4, 5, 6 complete** |
+| CLI commands (validate, generate-define, generate-csdrg) | src/astraea/cli/app.py, display.py | -- | Done |
+| Validation display helpers | src/astraea/cli/display.py | -- | Done |
+| Validation integration tests (6) | tests/integration/validation/ | 6 | Done |
+| define.xml integration tests (4) | tests/integration/submission/ | 4 | Done |
+| **Total** | | **209 new tests** | **7/7 plans COMPLETE** |
 
-**Combined test suite: 1481 tests (1362 pass + 119 skipped)**
+**Combined test suite: 1491 tests (1238 unit/validation pass + ~253 skipped/LLM)**
+
+CLI commands available: `astraea validate`, `astraea generate-define`, `astraea generate-csdrg`
 
 ## Accumulated Context
 
@@ -368,6 +374,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-28: [D-07-06-01] Jinja2 inline string template for cSDRG (not file-based) to keep template co-located with generator logic
 - 2026-02-28: [D-07-06-02] known_false_positive field added directly to RuleResult (not post-processing wrapper) for clean downstream access
 - 2026-02-28: [D-07-06-03] SPLIT_GUIDANCE uses base domain code (strip underscore suffixes) for lookup to handle split domain files
+- 2026-02-28: [D-07-07-01] validate command searches for *_spec.json and *_mapping.json patterns for spec loading
+- 2026-02-28: [D-07-07-02] display_validation_summary and display_validation_issues use top-level imports (not lazy) -- display-only helpers
+- 2026-02-28: [D-07-07-03] generate-csdrg creates empty ValidationReport if no existing validation_report.json found
 
 ### Pending Todos
 
@@ -406,5 +415,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-06-PLAN.md (cSDRG, Package Assembly, Submission Reporting)
+Stopped at: Completed 07-07-PLAN.md (CLI Integration and End-to-End Tests) -- Phase 7 COMPLETE
 Resume file: None
