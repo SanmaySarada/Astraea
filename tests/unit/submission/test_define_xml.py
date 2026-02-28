@@ -117,9 +117,17 @@ def _mock_ct_ref_with_sex() -> MagicMock:
         extensible=False,
         variable_mappings=["SEX"],
         terms={
-            "M": CodelistTerm(submission_value="M", nci_preferred_term="Male", definition="Male"),
+            "M": CodelistTerm(
+                submission_value="M",
+                nci_preferred_term="Male",
+                definition="Male",
+                nci_code="C20197",
+            ),
             "F": CodelistTerm(
-                submission_value="F", nci_preferred_term="Female", definition="Female"
+                submission_value="F",
+                nci_preferred_term="Female",
+                definition="Female",
+                nci_code="C16576",
             ),
         },
     )
@@ -269,6 +277,87 @@ def test_codelist_generation(tmp_path: Path) -> None:
     cl_ref = item_def.find("odm:CodeListRef", NS)
     assert cl_ref is not None
     assert cl_ref.get("CodeListOID") == "CL.C66731"
+
+
+def test_codelist_nci_alias(tmp_path: Path) -> None:
+    """CodeListItem includes Alias with NCI C-code when nci_code is populated."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm(
+            "SEX",
+            "Sex",
+            codelist_code="C66731",
+            core=CoreDesignation.EXP,
+            pattern=MappingPattern.LOOKUP_RECODE,
+        ),
+    ]
+    spec = _make_spec(mappings=vms)
+    ct = _mock_ct_ref_with_sex()
+    generate_define_xml([spec], ct, STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    root = tree.getroot()
+
+    cl = root.find(".//odm:CodeList", NS)
+    assert cl is not None
+    items = cl.findall("odm:CodeListItem", NS)
+    assert len(items) == 2
+
+    # Check Alias elements on each CodeListItem
+    for item in items:
+        coded = item.get("CodedValue")
+        alias = item.find("odm:Alias", NS)
+        assert alias is not None, f"Missing Alias on CodeListItem {coded}"
+        assert alias.get("Context") == "nci:ExtCodeID"
+        if coded == "M":
+            assert alias.get("Name") == "C20197"
+        elif coded == "F":
+            assert alias.get("Name") == "C16576"
+
+
+def test_codelist_nci_alias_empty_code(tmp_path: Path) -> None:
+    """Alias is NOT emitted when nci_code is empty string."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm(
+            "SEX",
+            "Sex",
+            codelist_code="C66731",
+            core=CoreDesignation.EXP,
+            pattern=MappingPattern.LOOKUP_RECODE,
+        ),
+    ]
+    spec = _make_spec(mappings=vms)
+
+    # Create a CT ref with empty nci_code
+    ct = MagicMock()
+    sex_cl = Codelist(
+        code="C66731",
+        name="Sex",
+        extensible=False,
+        variable_mappings=["SEX"],
+        terms={
+            "M": CodelistTerm(
+                submission_value="M", nci_preferred_term="Male", definition="Male", nci_code=""
+            ),
+            "F": CodelistTerm(
+                submission_value="F", nci_preferred_term="Female", definition="Female"
+            ),
+        },
+    )
+    ct.lookup_codelist.side_effect = lambda code: sex_cl if code == "C66731" else None
+    generate_define_xml([spec], ct, STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    root = tree.getroot()
+
+    cl = root.find(".//odm:CodeList", NS)
+    assert cl is not None
+    items = cl.findall("odm:CodeListItem", NS)
+    # Neither M nor F has nci_code populated -> no Alias
+    for item in items:
+        alias = item.find("odm:Alias", NS)
+        assert alias is None, f"Unexpected Alias on CodeListItem {item.get('CodedValue')}"
 
 
 def test_method_def(tmp_path: Path) -> None:
@@ -521,3 +610,97 @@ def test_output_file_written(tmp_path: Path) -> None:
     # Should parse without error
     tree = etree.parse(str(out))  # noqa: S320
     assert tree.getroot() is not None
+
+
+# ── MED-06/07/08 Tests ─────────────────────────────────────────────
+
+
+def _mock_sdtm_ref_with_keys(domain: str, key_variables: list[str]) -> MagicMock:
+    """Create a mock SDTMReference that returns key_variables for a domain."""
+    ref = MagicMock()
+    domain_spec = MagicMock()
+    domain_spec.key_variables = key_variables
+
+    def get_domain_spec(d: str) -> MagicMock | None:
+        if d.upper() == domain.upper():
+            return domain_spec
+        return None
+
+    ref.get_domain_spec.side_effect = get_domain_spec
+    return ref
+
+
+def test_key_sequence_on_item_ref(tmp_path: Path) -> None:
+    """MED-06: ItemRef has KeySequence for key variables, numbered independently."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm("STUDYID", "Study Identifier"),
+        _make_vm("DOMAIN", "Domain Abbreviation"),
+        _make_vm("USUBJID", "Unique Subject Identifier"),
+        _make_vm("AESEQ", "Sequence Number", dtype="Num"),
+        _make_vm("AETERM", "Reported Term for the Adverse Event"),
+    ]
+    spec = _make_spec(
+        domain="AE",
+        label="Adverse Events",
+        domain_class="Events",
+        structure="One record per AE per subject",
+        mappings=vms,
+    )
+    sdtm_ref = _mock_sdtm_ref_with_keys("AE", ["STUDYID", "USUBJID", "AESEQ"])
+    generate_define_xml(
+        [spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out, sdtm_ref=sdtm_ref
+    )
+
+    tree = _parse(out)
+    root = tree.getroot()
+    item_refs = root.findall(".//odm:ItemGroupDef/odm:ItemRef", NS)
+
+    # Build dict of variable -> ItemRef element
+    ref_map = {ir.get("ItemOID"): ir for ir in item_refs}
+
+    # STUDYID is key #1
+    assert ref_map["IT.AE.STUDYID"].get("KeySequence") == "1"
+    # USUBJID is key #2
+    assert ref_map["IT.AE.USUBJID"].get("KeySequence") == "2"
+    # AESEQ is key #3
+    assert ref_map["IT.AE.AESEQ"].get("KeySequence") == "3"
+    # DOMAIN and AETERM are NOT key variables
+    assert ref_map["IT.AE.DOMAIN"].get("KeySequence") is None
+    assert ref_map["IT.AE.AETERM"].get("KeySequence") is None
+
+
+def test_def_label_on_item_group(tmp_path: Path) -> None:
+    """MED-07: ItemGroupDef has def:Label equal to domain_label."""
+    out = tmp_path / "define.xml"
+    spec = _make_spec(label="Demographics")
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    ig = tree.getroot().find(".//odm:ItemGroupDef", NS)
+    assert ig is not None
+    assert ig.get(f"{{{DEFINE_NS}}}Label") == "Demographics"
+
+
+def test_seq_integer_datatype(tmp_path: Path) -> None:
+    """MED-08: --SEQ variables have DataType='integer', others have 'float'."""
+    out = tmp_path / "define.xml"
+    vms = [
+        _make_vm("AESEQ", "Sequence Number", dtype="Num"),
+        _make_vm("AGE", "Age", dtype="Num"),
+    ]
+    spec = _make_spec(
+        domain="AE",
+        label="Adverse Events",
+        domain_class="Events",
+        structure="One record per AE per subject",
+        mappings=vms,
+    )
+    generate_define_xml([spec], _mock_ct_ref(), STUDY_ID, STUDY_NAME, out)
+
+    tree = _parse(out)
+    items = tree.getroot().findall(".//odm:ItemDef", NS)
+    item_map = {it.get("Name"): it for it in items}
+
+    assert item_map["AESEQ"].get("DataType") == "integer"
+    assert item_map["AGE"].get("DataType") == "float"

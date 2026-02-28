@@ -20,6 +20,7 @@ from astraea.models.mapping import (
 )
 from astraea.models.sdtm import CoreDesignation
 from astraea.reference.controlled_terms import CTReference
+from astraea.reference.sdtm_ig import SDTMReference
 
 # ── XML namespace constants ──────────────────────────────────────────
 ODM_NS = "http://www.cdisc.org/ns/odm/v1.3"
@@ -48,6 +49,7 @@ def generate_define_xml(
     *,
     sdtm_ig_version: str = "3.4",
     generated_dfs: dict[str, pd.DataFrame] | None = None,
+    sdtm_ref: SDTMReference | None = None,
 ) -> Path:
     """Generate a define.xml 2.0 file from domain mapping specifications.
 
@@ -60,6 +62,7 @@ def generate_define_xml(
         sdtm_ig_version: SDTM-IG version string (default '3.4').
         generated_dfs: Optional dict of domain -> DataFrame for ValueListDef
             test code extraction.
+        sdtm_ref: Optional SDTM-IG reference for key_variables lookup.
 
     Returns:
         Path to the generated define.xml file.
@@ -85,7 +88,13 @@ def generate_define_xml(
 
     # 1. ItemGroupDef per domain
     for spec in specs:
-        _add_item_group(mdv, spec, method_oids, comment_oids)
+        # Look up key_variables from SDTM-IG reference if available
+        key_variables: list[str] | None = None
+        if sdtm_ref:
+            domain_spec = sdtm_ref.get_domain_spec(spec.domain)
+            if domain_spec and domain_spec.key_variables:
+                key_variables = domain_spec.key_variables
+        _add_item_group(mdv, spec, method_oids, comment_oids, key_variables=key_variables)
 
     # 2. ItemDef per variable (all domains)
     for spec in specs:
@@ -170,6 +179,8 @@ def _add_item_group(
     spec: DomainMappingSpec,
     method_oids: dict[tuple[str, str], str],
     comment_oids: dict[tuple[str, str], str],
+    *,
+    key_variables: list[str] | None = None,
 ) -> None:
     """Add an ItemGroupDef element for one domain."""
     ig = etree.SubElement(mdv, f"{{{ODM_NS}}}ItemGroupDef")
@@ -182,6 +193,7 @@ def _add_item_group(
     ig.set("Purpose", "Tabulation")
     ig.set(f"{{{DEFINE_NS}}}Structure", spec.structure)
     ig.set(f"{{{DEFINE_NS}}}Class", spec.domain_class)
+    ig.set(f"{{{DEFINE_NS}}}Label", spec.domain_label)
     ig.set(f"{{{DEFINE_NS}}}ArchiveLocationID", f"LF.{spec.domain}")
 
     # Description
@@ -196,6 +208,11 @@ def _add_item_group(
         ir.set("ItemOID", f"IT.{spec.domain}.{vm.sdtm_variable}")
         ir.set("OrderNumber", str(idx))
         ir.set("Mandatory", "Yes" if vm.core == CoreDesignation.REQ else "No")
+
+        # KeySequence for key variables (independent of OrderNumber)
+        if key_variables and vm.sdtm_variable in key_variables:
+            key_seq = key_variables.index(vm.sdtm_variable) + 1
+            ir.set("KeySequence", str(key_seq))
 
         key = (spec.domain, vm.sdtm_variable)
         if key in method_oids:
@@ -219,6 +236,9 @@ def _add_item_def(mdv: etree._Element, domain: str, vm: VariableMapping) -> None
         it.set("DataType", "text")
         length = vm.length or 200
         it.set("Length", str(length))
+    elif vm.sdtm_variable.endswith("SEQ"):
+        it.set("DataType", "integer")
+        it.set("Length", str(vm.length or 8))
     else:
         it.set("DataType", "float")
         it.set("Length", str(vm.length or 8))
@@ -279,6 +299,12 @@ def _add_codelists(
             dt = etree.SubElement(decode, f"{{{ODM_NS}}}TranslatedText")
             dt.set(f"{{{XML_NS}}}lang", "en")
             dt.text = term.nci_preferred_term or sv
+
+            # NCI C-code via Alias element (define.xml 2.0)
+            if term.nci_code:
+                alias = etree.SubElement(cli, f"{{{ODM_NS}}}Alias")
+                alias.set("Context", "nci:ExtCodeID")
+                alias.set("Name", term.nci_code)
 
 
 # ── MethodDef ────────────────────────────────────────────────────────

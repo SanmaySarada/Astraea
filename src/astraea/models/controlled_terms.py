@@ -23,6 +23,9 @@ class CodelistTerm(BaseModel):
     nci_preferred_term: str = Field(
         default="", description="NCI preferred term (may differ from submission value)"
     )
+    nci_code: str = Field(
+        default="", description="NCI concept code for this term (e.g., 'C20197' for Male)"
+    )
 
 
 class Codelist(BaseModel):
