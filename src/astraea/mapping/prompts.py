@@ -74,6 +74,10 @@ When identifying suppqual_candidates, follow these rules:
 2. **QORIG (Origin) values:** Each SUPPQUAL record must specify origin. \
 Valid QORIG values are: "CRF", "DERIVED", "ASSIGNED", "PROTOCOL", "COLLECTED".
 
+If past mapping examples are provided below, use them as reference for \
+similar variables. Adapt the patterns to the current source data -- do not \
+copy them blindly.
+
 3. **EDC system variables are NOT SUPPQUAL candidates.** Exclude these \
 categories from suppqual_candidates:
    - EDC administrative columns (projectid, instanceId, DataPageId, \

@@ -8,6 +8,7 @@ WHAT to map; deterministic code validates and enriches HOW.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from loguru import logger
 
@@ -28,6 +29,9 @@ from astraea.models.profiling import DatasetProfile
 from astraea.models.sdtm import CoreDesignation
 from astraea.reference.controlled_terms import CTReference
 from astraea.reference.sdtm_ig import SDTMReference
+
+if TYPE_CHECKING:
+    from astraea.learning.retriever import LearningRetriever
 
 _DEFAULT_MODEL = "claude-sonnet-4-20250514"
 _DEFAULT_TEMPERATURE = 0.1
@@ -60,6 +64,7 @@ class MappingEngine:
         llm_client: AstraeaLLMClient,
         sdtm_ref: SDTMReference,
         ct_ref: CTReference,
+        learning_retriever: LearningRetriever | None = None,
     ) -> None:
         """Initialize the mapping engine with its dependencies.
 
@@ -67,12 +72,16 @@ class MappingEngine:
             llm_client: Anthropic API client for LLM calls.
             sdtm_ref: SDTM-IG reference for domain specs.
             ct_ref: CT reference for codelist validation.
+            learning_retriever: Optional retriever for injecting past
+                mapping examples into LLM prompts. When None (default),
+                the engine works identically to pre-learning-system behavior.
         """
         self._llm = llm_client
         self._sdtm = sdtm_ref
         self._ct = ct_ref
         self._context_builder = MappingContextBuilder(sdtm_ref, ct_ref)
         self._transforms = AVAILABLE_TRANSFORMS
+        self._learning = learning_retriever
 
     def resolve_transform(self, name: str) -> bool:
         """Check if a named transform is available in the registry.
@@ -139,9 +148,21 @@ class MappingEngine:
             cross_domain_profiles=cross_domain_profiles,
         )
 
+        # Step 2.5: Inject learning examples if available
+        examples_section = None
+        if self._learning is not None:
+            examples_section = self._learning.get_examples_section(
+                domain=domain,
+                source_profiles=source_profiles,
+                max_examples=5,
+            )
+
         # Step 3: Append user instructions
         user_instructions = MAPPING_USER_INSTRUCTIONS.format(domain=domain)
-        full_prompt = prompt + "\n" + user_instructions
+        if examples_section:
+            full_prompt = prompt + "\n\n" + examples_section + "\n\n" + user_instructions
+        else:
+            full_prompt = prompt + "\n" + user_instructions
 
         # Step 4: Call LLM for structured proposal
         logger.info(
