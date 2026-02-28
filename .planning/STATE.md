@@ -10,11 +10,11 @@ See: .planning/PROJECT.md
 ## Current Position
 
 Phase: 11 of 15 (Execution Contract)
-Plan: 2 of 4
+Plan: 3 of 4
 Status: In progress
-Last activity: 2026-02-28 -- Completed 11-02-PLAN.md (Derivation Rule Handlers)
+Last activity: 2026-02-28 -- Completed 11-03-PLAN.md (Prompt Vocabulary and Column Resolution)
 
-Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [██░░] 50%
+Progress: [████████████████████████████████████████████████████████████████] v1.0 100% | v1.1 [███░] 75%
 
 ## Performance Metrics
 
@@ -443,6 +443,9 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 - 2026-02-28: [D-11-01-01] Wildcard "*" checked explicitly alongside null in known_false_positives -- null means "match all" preserved
 - 2026-02-28: [D-11-01-02] Hour-without-minute truncates to date-only per ISO 8601 (standalone "T10" is invalid)
 - 2026-02-28: [D-11-01-03] DDMonYYYY regex ordered after DD Mon YYYY to avoid false matches on spaced format
+- 2026-02-28: [D-11-03-01] Wildcard "*" checked explicitly alongside null in known_false_positives -- null means "match all" preserved
+- 2026-02-28: [D-11-03-02] Executor resolves source_variable through alias map BEFORE handler dispatch -- handlers get resolved_source in kwargs
+- 2026-02-28: [D-11-03-03] cross_domain_dfs populated from raw_dfs keys not in spec.source_datasets -- zero-config for callers
 
 ### Pending Todos
 
@@ -487,5 +490,5 @@ CLI commands available: `astraea learn-ingest`, `astraea learn-stats`, `astraea 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 11-02-PLAN.md (Derivation Rule Handlers)
+Stopped at: Completed 11-03-PLAN.md (Prompt Vocabulary and Column Resolution)
 Resume file: None
