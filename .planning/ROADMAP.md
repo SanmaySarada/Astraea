@@ -342,9 +342,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md -- Wire trial design domains into CLI (GAP-1: generate-trial-design command)
-- [ ] 09-02-PLAN.md -- Wire LearningRetriever into map-domain CLI (GAP-2: feedback loop closure)
-- [ ] 09-03-PLAN.md -- Route Findings through FindingsExecutor in CLI (GAP-3: SUPPQUAL generation)
+- [x] 09-01-PLAN.md -- Wire trial design domains into CLI (GAP-1: generate-trial-design command)
+- [x] 09-02-PLAN.md -- Wire LearningRetriever into map-domain CLI (GAP-2: feedback loop closure)
+- [x] 09-03-PLAN.md -- Route Findings through FindingsExecutor in CLI (GAP-3: SUPPQUAL generation)
 
 ---
 
@@ -385,7 +385,7 @@ Plans:
 | 7 - Validation and Submission Readiness | Complete | 2026-02-28 |
 | 7.1 - Auto-Fix Validation Issues (INSERTED) | Complete | 2026-02-28 |
 | 8 - Learning System | Complete | 2026-02-28 |
-| 9 - CLI Wiring — Close Audit Gaps | Pending | — |
+| 9 - CLI Wiring — Close Audit Gaps | Complete | 2026-02-27 |
 | 10 - Tech Debt Cleanup | Pending | — |
 
 ---
