@@ -339,6 +339,8 @@ Plans:
 4. Integration tests verify each wiring path end-to-end
 5. All ~1652 existing tests still pass
 
+**Plans:** 3 plans
+
 Plans:
 - [ ] 09-01-PLAN.md -- Wire trial design domains into CLI (GAP-1: generate-trial-design command)
 - [ ] 09-02-PLAN.md -- Wire LearningRetriever into map-domain CLI (GAP-2: feedback loop closure)
