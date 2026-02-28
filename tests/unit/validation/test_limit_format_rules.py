@@ -291,7 +291,7 @@ class TestASCIIRule:
     def test_rule_metadata(self) -> None:
         rule = ASCIIRule()
         assert rule.rule_id == "ASTR-F002"
-        assert rule.severity == RuleSeverity.WARNING
+        assert rule.severity == RuleSeverity.ERROR
 
     def test_ascii_only_no_findings(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         df = pd.DataFrame({"AETERM": ["Headache", "Nausea"]})
@@ -300,13 +300,13 @@ class TestASCIIRule:
         results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 0
 
-    def test_non_ascii_warning(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
+    def test_non_ascii_error(self, sdtm_ref: SDTMReference, ct_ref: CTReference) -> None:
         df = pd.DataFrame({"AETERM": ["Headache", "Na\u00fcsea"]})
         spec = _make_spec()
         rule = ASCIIRule()
         results = rule.evaluate("AE", df, spec, sdtm_ref, ct_ref)
         assert len(results) == 1
-        assert results[0].severity == RuleSeverity.WARNING
+        assert results[0].severity == RuleSeverity.ERROR
         assert results[0].variable == "AETERM"
         assert "fix_common_non_ascii" in (results[0].fix_suggestion or "")
 

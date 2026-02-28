@@ -11,6 +11,7 @@ from astraea.models.mapping import DomainMappingSpec
 from astraea.validation.rules.base import RuleSeverity
 from astraea.validation.rules.fda_business import (
     FDAB009Rule,
+    FDAB015Rule,
     FDAB030Rule,
     FDAB039Rule,
     FDAB055Rule,
@@ -91,11 +92,20 @@ def mock_ct_ref() -> MagicMock:
         ]
     }
 
+    # C66731: Sex -- non-extensible codelist
+    sex_codelist = MagicMock()
+    sex_codelist.terms = {
+        val: MagicMock()
+        for val in ["M", "F", "U", "UNDIFFERENTIATED"]
+    }
+
     def lookup_codelist(code):
         if code == "C66790":
             return ethnic_codelist
         if code == "C74457":
             return race_codelist
+        if code == "C66731":
+            return sex_codelist
         return None
 
     ct_ref.lookup_codelist = lookup_codelist
@@ -135,7 +145,7 @@ class TestFDAB057:
         results = rule.evaluate("DM", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
         assert len(results) == 1
         assert results[0].rule_id == "FDAB057"
-        assert results[0].severity == RuleSeverity.WARNING
+        assert results[0].severity == RuleSeverity.ERROR
         assert "Latino" in results[0].message
 
     def test_skips_non_dm_domain(self, dm_spec, mock_sdtm_ref, mock_ct_ref) -> None:
@@ -150,6 +160,46 @@ class TestFDAB057:
         results = rule.evaluate("DM", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
         assert len(results) == 1
         assert "missing ETHNIC" in results[0].message
+
+
+# ---------------------------------------------------------------------------
+# FDAB015: DM.SEX
+# ---------------------------------------------------------------------------
+
+
+class TestFDAB015:
+    def test_rule_metadata(self) -> None:
+        rule = FDAB015Rule()
+        assert rule.rule_id == "FDAB015"
+        assert rule.severity == RuleSeverity.ERROR
+
+    def test_valid_sex_no_findings(self, dm_spec, mock_sdtm_ref, mock_ct_ref) -> None:
+        rule = FDAB015Rule()
+        df = pd.DataFrame({"SEX": ["M", "F"], "USUBJID": ["S1", "S2"]})
+        results = rule.evaluate("DM", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
+        assert len(results) == 0
+
+    def test_invalid_sex_detected(self, dm_spec, mock_sdtm_ref, mock_ct_ref) -> None:
+        rule = FDAB015Rule()
+        df = pd.DataFrame({"SEX": ["Male", "Female"], "USUBJID": ["S1", "S2"]})
+        results = rule.evaluate("DM", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
+        assert len(results) == 1
+        assert results[0].rule_id == "FDAB015"
+        assert results[0].severity == RuleSeverity.ERROR
+        assert "Male" in results[0].message
+
+    def test_missing_sex_column(self, dm_spec, mock_sdtm_ref, mock_ct_ref) -> None:
+        rule = FDAB015Rule()
+        df = pd.DataFrame({"USUBJID": ["S1"]})
+        results = rule.evaluate("DM", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
+        assert len(results) == 1
+        assert "missing SEX" in results[0].message
+
+    def test_skips_non_dm(self, dm_spec, mock_sdtm_ref, mock_ct_ref) -> None:
+        rule = FDAB015Rule()
+        df = pd.DataFrame({"SEX": ["BAD"]})
+        results = rule.evaluate("AE", df, dm_spec, mock_sdtm_ref, mock_ct_ref)
+        assert len(results) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -307,11 +357,11 @@ class TestFDAB030:
 
 
 class TestGetFDABusinessRules:
-    def test_returns_five_rules(self) -> None:
+    def test_returns_six_rules(self) -> None:
         rules = get_fda_business_rules()
-        assert len(rules) == 5
+        assert len(rules) == 6
         rule_ids = {r.rule_id for r in rules}
-        assert rule_ids == {"FDAB057", "FDAB055", "FDAB039", "FDAB009", "FDAB030"}
+        assert rule_ids == {"FDAB057", "FDAB055", "FDAB015", "FDAB039", "FDAB009", "FDAB030"}
 
 
 # ---------------------------------------------------------------------------

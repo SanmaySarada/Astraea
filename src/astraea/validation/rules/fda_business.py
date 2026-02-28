@@ -33,7 +33,7 @@ class FDAB057Rule(ValidationRule):
     rule_id: str = "FDAB057"
     description: str = "DM.ETHNIC values must conform to CT codelist C66790"
     category: RuleCategory = RuleCategory.FDA_BUSINESS
-    severity: RuleSeverity = RuleSeverity.WARNING
+    severity: RuleSeverity = RuleSeverity.ERROR
 
     def evaluate(
         self,
@@ -389,11 +389,84 @@ class FDAB030Rule(ValidationRule):
         ]
 
 
+class FDAB015Rule(ValidationRule):
+    """FDAB015: DM.SEX values must conform to CT codelist C66731.
+
+    Checks that SEX values in the DM domain use the correct controlled
+    terminology from the non-extensible codelist C66731 (M, F, U,
+    UNDIFFERENTIATED).
+    """
+
+    rule_id: str = "FDAB015"
+    description: str = "DM.SEX values must conform to CT codelist C66731"
+    category: RuleCategory = RuleCategory.FDA_BUSINESS
+    severity: RuleSeverity = RuleSeverity.ERROR
+
+    def evaluate(
+        self,
+        domain: str,
+        df: pd.DataFrame,
+        spec: DomainMappingSpec,
+        sdtm_ref: SDTMReference,
+        ct_ref: CTReference,
+    ) -> list[RuleResult]:
+        if domain != "DM":
+            return []
+        if "SEX" not in df.columns:
+            return [
+                RuleResult(
+                    rule_id=self.rule_id,
+                    rule_description=self.description,
+                    category=self.category,
+                    severity=self.severity,
+                    domain=domain,
+                    variable="SEX",
+                    message="DM domain is missing SEX variable",
+                    fix_suggestion="Add SEX variable to DM domain",
+                )
+            ]
+
+        results: list[RuleResult] = []
+        valid_terms: set[str] = set()
+        codelist = ct_ref.lookup_codelist("C66731")
+        if codelist:
+            valid_terms = set(codelist.terms.keys())
+
+        if valid_terms:
+            sex_values = df["SEX"].dropna().unique()
+            invalid = [str(v) for v in sex_values if str(v) not in valid_terms]
+            if invalid:
+                results.append(
+                    RuleResult(
+                        rule_id=self.rule_id,
+                        rule_description=self.description,
+                        category=self.category,
+                        severity=self.severity,
+                        domain=domain,
+                        variable="SEX",
+                        message=(
+                            f"Invalid SEX values found: {invalid}. "
+                            f"Valid values from C66731: {sorted(valid_terms)}"
+                        ),
+                        affected_count=sum(
+                            1 for v in df["SEX"].dropna() if str(v) not in valid_terms
+                        ),
+                        fix_suggestion=(
+                            f"Map SEX values to C66731 controlled terminology: "
+                            f"{sorted(valid_terms)}"
+                        ),
+                    )
+                )
+
+        return results
+
+
 def get_fda_business_rules() -> list[ValidationRule]:
     """Return all FDA Business Rule instances for engine registration."""
     return [
         FDAB057Rule(),
         FDAB055Rule(),
+        FDAB015Rule(),
         FDAB039Rule(),
         FDAB009Rule(),
         FDAB030Rule(),

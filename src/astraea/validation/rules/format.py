@@ -101,7 +101,7 @@ class ASCIIRule(ValidationRule):
     rule_id: str = "ASTR-F002"
     description: str = "Character variables must contain ASCII-only data"
     category: RuleCategory = RuleCategory.FORMAT
-    severity: RuleSeverity = RuleSeverity.WARNING
+    severity: RuleSeverity = RuleSeverity.ERROR
 
     def evaluate(
         self,
@@ -130,7 +130,7 @@ class ASCIIRule(ValidationRule):
                     rule_id=self.rule_id,
                     rule_description=self.description,
                     category=self.category,
-                    severity=RuleSeverity.WARNING,
+                    severity=RuleSeverity.ERROR,
                     domain=domain,
                     variable=col,
                     message=(f"Column '{col}' contains {count} non-ASCII value(s)"),
