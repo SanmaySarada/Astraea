@@ -355,15 +355,16 @@ Plans:
 **Requirements:** None (quality improvement, not functional)
 
 **Success Criteria:**
-1. Zero ruff violations across `src/` and `tests/` (32 pre-existing UP042, E501, B905 violations fixed)
-2. `transform_registry.py` either wired into production code or removed
+1. Zero ruff violations across `src/` and `tests/` (139 violations: E501, F401, I001, UP042, etc.)
+2. Zero mypy errors across `src/` (122 errors: unused type:ignore, missing type params, attr-defined)
 3. REQUIREMENTS.md checkboxes all checked `[x]` (DATA-01 through DATA-07, CLI-01, CLI-04 currently unchecked)
-4. Docstring example in `transforms/dates.py` line 67 corrected
-5. `known_false_positives.json` expanded with common P21 false positives
-6. All tests pass, ruff clean, mypy clean
+4. `known_false_positives.json` expanded with common P21 false positives (currently 1 entry)
+5. All tests pass, ruff clean, mypy clean
+
+**Plans:** 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md -- Fix ruff violations + docstring errors + orphaned transform_registry
+- [ ] 10-01-PLAN.md -- Fix all ruff lint violations (139) and mypy type errors (122)
 - [ ] 10-02-PLAN.md -- Update REQUIREMENTS.md checkboxes + expand known_false_positives.json
 
 ---
