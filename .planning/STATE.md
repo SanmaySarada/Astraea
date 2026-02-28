@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4 complete).
+**Current focus:** Phase 7 IN PROGRESS -- Validation and Submission Readiness (plans 1, 2, 3, 4, 5 complete).
 
 ## Current Position
 
 Phase: 7 of 8 (Validation and Submission Readiness)
-Plan: 3 of N (Cross-Domain & FDA Validation Rules)
+Plan: 5 of N (Define.xml 2.0 Generator)
 Status: In progress
-Last activity: 2026-02-28 -- Completed 07-03-PLAN.md (cross-domain & FDA rules)
+Last activity: 2026-02-28 -- Completed 07-05-PLAN.md (define.xml 2.0 generator)
 
-Progress: [██████████████████████████████████████████████████████] ~97%
+Progress: [██████████████████████████████████████████████████████] ~98%
 
 ## Performance Metrics
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 04.1-fda-compliance | 5/5 | ~25 min | ~5.0 min |
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 | 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
-| 07-validation-submission | 3/? | ~14 min | ~4.7 min |
+| 07-validation-submission | 5/? | ~20 min | ~4.0 min |
 
 ## Phase 1 Deliverables
 
@@ -227,9 +227,10 @@ CLI commands available: `astraea execute-domain`
 | FDA Business Rules (FDAB*) | src/astraea/validation/rules/fda_business.py | 31 | Done |
 | FDA TRC pre-checks | src/astraea/validation/rules/fda_trc.py | -- | Done |
 | Engine cross-domain + test fixes | src/astraea/validation/engine.py | -- | Done |
-| **Total** | | **165 new tests** | **Plans 1, 2, 3, 4 complete** |
+| Define.xml 2.0 generator | src/astraea/submission/define_xml.py | 11 | Done |
+| **Total** | | **176 new tests** | **Plans 1, 2, 3, 4, 5 complete** |
 
-**Combined test suite: 1447 tests (1328 pass + 119 skipped)**
+**Combined test suite: 1458 tests (1339 pass + 119 skipped)**
 
 ## Accumulated Context
 
@@ -356,6 +357,9 @@ CLI commands available: `astraea execute-domain`
 - 2026-02-28: [D-07-03-01] CrossDomainValidator is standalone class (not ValidationRule subclass) because it needs multi-domain access
 - 2026-02-28: [D-07-03-02] TRCPreCheck is standalone -- checks submission-level artifacts (define.xml, file naming), not per-domain data
 - 2026-02-28: [D-07-03-03] get_consistency_rules() and get_fda_trc_rules() return empty lists since their validators are invoked directly by the engine
+- 2026-02-28: [D-07-05-01] lxml used for XML generation with proper namespace handling (not xml.etree.ElementTree)
+- 2026-02-28: [D-07-05-02] CommentDef generated for SUPPQUAL candidates and variables with 'non-standard' in notes field
+- 2026-02-28: [D-07-05-03] ValueListDef only generated for Findings domains with TRANSPOSE pattern and actual data available
 
 ### Pending Todos
 
@@ -394,5 +398,5 @@ CLI commands available: `astraea execute-domain`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 07-03-PLAN.md (Cross-Domain & FDA Validation Rules)
+Stopped at: Completed 07-05-PLAN.md (Define.xml 2.0 Generator)
 Resume file: None
