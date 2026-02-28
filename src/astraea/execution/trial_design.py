@@ -34,7 +34,7 @@ def build_ta_domain(
 
     Returns:
         TA domain DataFrame with columns: STUDYID, DOMAIN, ARMCD,
-        ARM, TAETORD, ETCD, ELEMENT, TABESSION, EPOCH.
+        ARM, TAETORD, ETCD, ELEMENT, TABRSESS, EPOCH.
     """
     rows: list[dict[str, object]] = []
 
@@ -48,7 +48,7 @@ def build_ta_domain(
     for arm_def in config.arms:
         arm_names[arm_def.armcd] = arm_def.arm
 
-    # Track session number per arm (TABESSION)
+    # Track session number per arm (TABRSESS)
     arm_session_counter: dict[str, int] = {}
 
     for arm_def in config.arms:
@@ -64,7 +64,7 @@ def build_ta_domain(
                 "TAETORD": arm_def.taetord,
                 "ETCD": arm_def.etcd,
                 "ELEMENT": element_lookup.get(arm_def.etcd, arm_def.etcd),
-                "TABESSION": arm_session_counter[arm_def.armcd],
+                "TABRSESS": arm_session_counter[arm_def.armcd],
                 "EPOCH": element_lookup.get(arm_def.etcd, ""),
             }
         )

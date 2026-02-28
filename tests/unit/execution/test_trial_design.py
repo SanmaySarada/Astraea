@@ -78,7 +78,7 @@ class TestBuildTA:
 
     def test_ta_columns(self, basic_config: TrialDesignConfig) -> None:
         ta = build_ta_domain(basic_config, STUDY_ID)
-        expected_cols = {"STUDYID", "DOMAIN", "ARMCD", "ARM", "TAETORD", "ETCD", "ELEMENT", "TABESSION", "EPOCH"}
+        expected_cols = {"STUDYID", "DOMAIN", "ARMCD", "ARM", "TAETORD", "ETCD", "ELEMENT", "TABRSESS", "EPOCH"}
         assert expected_cols == set(ta.columns)
         assert (ta["DOMAIN"] == "TA").all()
         assert (ta["STUDYID"] == STUDY_ID).all()
