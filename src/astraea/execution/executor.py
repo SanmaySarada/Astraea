@@ -170,6 +170,9 @@ class DatasetExecutor:
         if spec.domain.upper() != "DM":
             self._generate_seq(result_df, spec)
 
+        # Step f.5: Generate --DTF and --TMF imputation flag columns
+        result_df = self._generate_dtf_tmf_flags(result_df, spec)
+
         # Step g + h: Enforce variable column order and drop unmapped
         result_df = self._enforce_column_order(result_df, spec)
 
@@ -500,6 +503,30 @@ class DatasetExecutor:
             result_df[seq_var] = generate_seq(result_df, domain, sort_keys)
         except Exception as exc:
             logger.warning("Failed to generate {}: {}", seq_var, exc)
+
+    def _generate_dtf_tmf_flags(
+        self, result_df: pd.DataFrame, spec: DomainMappingSpec
+    ) -> pd.DataFrame:
+        """Generate --DTF and --TMF date/time imputation flag columns.
+
+        For v1, creates empty DTF/TMF columns as infrastructure. Actual imputation
+        flag generation requires date/time imputation logic (current pipeline truncates,
+        not imputes, partial dates per SDTM-IG rules).
+
+        TODO: When date imputation is added, use get_date_imputation_flag() from
+        astraea.transforms.imputation to populate DTF values. Add analogous
+        get_time_imputation_flag() for TMF values.
+        """
+        flag_vars = [
+            vm
+            for vm in spec.variable_mappings
+            if vm.sdtm_variable.endswith("DTF") or vm.sdtm_variable.endswith("TMF")
+        ]
+        for vm in flag_vars:
+            if vm.sdtm_variable not in result_df.columns:
+                result_df[vm.sdtm_variable] = ""
+                logger.debug("Created imputation flag column: {}", vm.sdtm_variable)
+        return result_df
 
     def _enforce_column_order(
         self,
