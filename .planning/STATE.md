@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md
 
 **Core value:** Given any clinical study's raw data and eCRF, produce accurate SDTM-compliant datasets with minimal human intervention -- and get better with every correction.
-**Current focus:** Phase 8 IN PROGRESS -- Learning System (3/4 plans complete).
+**Current focus:** Phase 8 COMPLETE -- Learning System (4/4 plans complete). ALL PHASES COMPLETE.
 
 ## Current Position
 
 Phase: 8 of 8 (Learning System)
-Plan: 3 of 4 (Ingestion Pipeline and Accuracy Metrics)
-Status: In progress
-Last activity: 2026-02-28 -- Completed 08-03-PLAN.md (Ingestion pipeline and accuracy metrics)
+Plan: 4 of 4 (Cross-Study Template Library)
+Status: COMPLETE -- All 8 phases finished
+Last activity: 2026-02-28 -- Completed 08-04-PLAN.md (Cross-study template library)
 
-Progress: [███████████████████████████████████████████████████████████░] 98%
+Progress: [████████████████████████████████████████████████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 39
+- Total plans completed: 40
 - Average duration: ~3.4 minutes
 
 **By Phase:**
@@ -36,6 +36,8 @@ Progress: [███████████████████████
 | 05-event-intervention | 7/7 | ~31 min | ~4.4 min |
 | 06-findings-domains | 6/6 | ~23 min | ~3.8 min |
 | 07-validation-submission | 7/7 | ~32 min | ~4.6 min |
+| 07.1-autofix | 3/3 | ~10 min | ~3.3 min |
+| 08-learning-system | 4/4 | ~12 min | ~3.0 min |
 
 ## Phase 1 Deliverables
 
@@ -267,9 +269,10 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 | MappingEngine learning integration | src/astraea/mapping/engine.py | 6 | Done |
 | Accuracy metrics computation | src/astraea/learning/metrics.py | 11 | Done |
 | Review-to-learning ingestion | src/astraea/learning/ingestion.py | 7 | Done |
-| **Total** | | **64 new tests** | **3/4 plans complete** |
+| Cross-study template library | src/astraea/learning/template_library.py | 26 | Done |
+| **Total** | | **90 new tests** | **4/4 plans COMPLETE** |
 
-**Combined test suite: ~1602 tests**
+**Combined test suite: ~1628 tests**
 
 ## Accumulated Context
 
@@ -421,6 +424,9 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 - 2026-02-28: [D-08-03-01] Deterministic example_id as f'{study_id}_{domain}_{sdtm_variable}' for idempotent ingestion
 - 2026-02-28: [D-08-03-02] was_corrected flag excludes REJECT and ADD correction types (only tracks actual corrections)
 - 2026-02-28: [D-08-03-03] ingest_session skips non-COMPLETED domain reviews rather than erroring
+- 2026-02-28: [D-08-04-01] Keywords extracted from both source variable names and mapping logic for richer matching
+- 2026-02-28: [D-08-04-02] SQLite UNIQUE on domain column ensures one template per domain with INSERT OR REPLACE
+- 2026-02-28: [D-08-04-03] Weighted average for accuracy recalculation: existing_weight = len(source_study_ids) - 1
 
 ### Pending Todos
 
@@ -465,5 +471,5 @@ CLI commands available: `astraea auto-fix`, `astraea validate --auto-fix`
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-03-PLAN.md (Ingestion pipeline and accuracy metrics)
+Stopped at: Completed 08-04-PLAN.md (Cross-study template library) -- ALL PHASES COMPLETE
 Resume file: None
