@@ -127,11 +127,13 @@ class TestValidationEngine:
     def test_creation_with_mocks(self, engine: ValidationEngine) -> None:
         assert engine is not None
 
-    def test_no_rules_initially(self, engine: ValidationEngine) -> None:
-        # No default rule modules exist yet, so should be empty
-        assert engine.rules == []
+    def test_default_rules_loaded(self, engine: ValidationEngine) -> None:
+        # Default rules are auto-registered from terminology, presence,
+        # limits, format, FDA business rule modules
+        assert len(engine.rules) > 0
 
     def test_register_adds_rule(self, engine: ValidationEngine) -> None:
+        initial_count = len(engine.rules)
         rule = CountingRule(
             rule_id="T-001",
             description="Count rows",
@@ -139,8 +141,8 @@ class TestValidationEngine:
             severity=RuleSeverity.NOTICE,
         )
         engine.register(rule)
-        assert len(engine.rules) == 1
-        assert engine.rules[0].rule_id == "T-001"
+        assert len(engine.rules) == initial_count + 1
+        assert engine.rules[-1].rule_id == "T-001"
 
     def test_validate_domain_runs_rules(
         self, engine: ValidationEngine, small_df: pd.DataFrame
@@ -153,14 +155,18 @@ class TestValidationEngine:
         )
         engine.register(rule)
         results = engine.validate_domain("AE", small_df, _make_spec("AE"))
-        assert len(results) == 2  # one per row
-        assert all(r.domain == "AE" for r in results)
+        # Should include results from CountingRule (one per row) plus default rules
+        counting_results = [r for r in results if r.rule_id == "T-001"]
+        assert len(counting_results) == 2  # one per row
+        assert all(r.domain == "AE" for r in counting_results)
 
-    def test_validate_domain_no_rules_returns_empty(
+    def test_validate_domain_returns_default_rule_results(
         self, engine: ValidationEngine, small_df: pd.DataFrame
     ) -> None:
+        # Default rules produce results (may be empty for clean data)
         results = engine.validate_domain("AE", small_df, _make_spec("AE"))
-        assert results == []
+        # All results should have domain set to AE
+        assert all(r.domain == "AE" for r in results if r.domain is not None)
 
     def test_validate_all_runs_across_domains(
         self, engine: ValidationEngine
@@ -180,8 +186,10 @@ class TestValidationEngine:
             "DM": (dm_df, _make_spec("DM")),
         }
         results = engine.validate_all(domains)
-        assert len(results) == 2  # one error per domain
-        domains_found = {r.domain for r in results}
+        # Should include at least one error per domain from ErrorRule
+        error_results = [r for r in results if r.rule_id == "E-001"]
+        assert len(error_results) == 2  # one error per domain
+        domains_found = {r.domain for r in error_results}
         assert domains_found == {"AE", "DM"}
 
     def test_validate_domain_handles_rule_exception(
@@ -195,9 +203,10 @@ class TestValidationEngine:
         )
         engine.register(rule)
         results = engine.validate_domain("AE", small_df, _make_spec("AE"))
-        assert len(results) == 1
-        assert "Rule execution failed" in results[0].message
-        assert results[0].severity == RuleSeverity.WARNING
+        boom_results = [r for r in results if r.rule_id == "BOOM"]
+        assert len(boom_results) == 1
+        assert "Rule execution failed" in boom_results[0].message
+        assert boom_results[0].severity == RuleSeverity.WARNING
 
     def test_filter_by_category(self, engine: ValidationEngine) -> None:
         results = [
