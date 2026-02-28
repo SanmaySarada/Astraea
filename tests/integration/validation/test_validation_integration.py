@@ -404,13 +404,13 @@ class TestFullValidationPipeline:
                 "USUBJID": ["TEST-001-001-001"],
             }
         )
-        # Create TS DataFrame with SSTDTC
+        # Create TS DataFrame with all TRC-critical parameters
         ts_df = pd.DataFrame(
             {
-                "STUDYID": ["TEST-001"],
-                "DOMAIN": ["TS"],
-                "TSPARMCD": ["SSTDTC"],
-                "TSVAL": ["2022-01-01"],
+                "STUDYID": ["TEST-001"] * 4,
+                "DOMAIN": ["TS"] * 4,
+                "TSPARMCD": ["SSTDTC", "SDTMVER", "STYPE", "TITLE"],
+                "TSVAL": ["2022-01-01", "3.4", "INTERVENTIONAL", "Test Study"],
             }
         )
 

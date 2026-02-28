@@ -58,7 +58,13 @@ def dm_df() -> pd.DataFrame:
 
 @pytest.fixture
 def ts_config() -> TSConfig:
-    """TSConfig with study-specific values matching the HAE trial."""
+    """TSConfig with study-specific values matching the HAE trial.
+
+    Includes additional_params for all FDA-mandatory TS parameters
+    that are not covered by TSConfig's named fields (expanded in 12-02).
+    """
+    from astraea.models.trial_design import TSParameter
+
     return TSConfig(
         study_id="PHA022121-C301",
         study_title="A Phase 3 Study of C1-INH in HAE",
@@ -69,6 +75,24 @@ def ts_config() -> TSConfig:
         trial_phase="PHASE III TRIAL",
         planned_enrollment=120,
         number_of_arms=3,
+        additional_params=[
+            TSParameter(tsparmcd="PLANSUB", tsparm="Planned Number of Subjects", tsval="120"),
+            TSParameter(tsparmcd="RANDOM", tsparm="Trial is Randomized", tsval="Y"),
+            TSParameter(tsparmcd="SEXPOP", tsparm="Sex of Participants", tsval="BOTH"),
+            TSParameter(tsparmcd="TBLIND", tsparm="Trial Blinding Schema", tsval="DOUBLE BLIND"),
+            TSParameter(tsparmcd="TCNTRL", tsparm="Control Type", tsval="PLACEBO"),
+            TSParameter(tsparmcd="OBJPRIM", tsparm="Trial Primary Objective", tsval="EFFICACY"),
+            TSParameter(tsparmcd="REGID", tsparm="Registry Identifier", tsval="NCT00000000"),
+            TSParameter(tsparmcd="OUTMSPRI", tsparm="Primary Outcome Measure", tsval="HAE attack rate"),
+            TSParameter(tsparmcd="FCNTRY", tsparm="Planned Country of Inv Sites", tsval="USA"),
+            TSParameter(tsparmcd="AGEMIN", tsparm="Planned Minimum Age of Subjects", tsval="P12Y"),
+            TSParameter(tsparmcd="AGEMAX", tsparm="Planned Maximum Age of Subjects", tsval="P99Y"),
+            TSParameter(tsparmcd="LENGTH", tsparm="Trial Length", tsval="P52W"),
+            TSParameter(tsparmcd="STOPRULE", tsparm="Study Stop Rules", tsval="See protocol"),
+            TSParameter(tsparmcd="ADAPT", tsparm="Adaptive Design", tsval="N"),
+            TSParameter(tsparmcd="ACTSUB", tsparm="Actual Number of Subjects", tsval="115"),
+            TSParameter(tsparmcd="HLTSUBJI", tsparm="Healthy Subject Indicator", tsval="N"),
+        ],
     )
 
 
