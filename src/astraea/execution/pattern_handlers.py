@@ -707,14 +707,73 @@ def handle_combine(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object)
 
 
 def handle_split(df: pd.DataFrame, mapping: VariableMapping, **kwargs: object) -> pd.Series:
-    """Stub for SPLIT pattern -- complex domain-specific implementation deferred to Phase 5/6.
+    """Extract part of a source column using SUBSTRING, DELIMITER_PART, or REGEX_GROUP.
 
-    Returns a Series of None with a warning.
+    Derivation rule keywords:
+    - ``SUBSTRING(column, start, end)`` -- ``df[col].str[start:end]``
+    - ``DELIMITER_PART(column, delimiter, index)`` -- ``df[col].str.split(delim).str[index]``
+    - ``REGEX_GROUP(column, pattern, group_index)`` -- ``df[col].str.extract(pattern)[group]``
+
+    Fallback behaviour:
+    - No derivation_rule but source_variable exists: return source column copy.
+    - Unrecognized derivation_rule: log warning, return source column unchanged.
+    - No source data at all: return None series.
     """
-    logger.warning(
-        "SPLIT pattern not yet implemented for {}; returning None series",
-        mapping.sdtm_variable,
-    )
+    rule = mapping.derivation_rule or ""
+
+    if rule:
+        keyword, args = parse_derivation_rule(rule)
+
+        if keyword == "SUBSTRING" and len(args) >= 3:
+            col = _resolve_column(df, args[0], kwargs)
+            if col is None:
+                logger.warning("SPLIT/SUBSTRING: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                return pd.Series(None, index=df.index, dtype="object")
+            start = int(args[1])
+            end = int(args[2])
+            return df[col].astype(str).str[start:end]
+
+        if keyword == "DELIMITER_PART" and len(args) >= 3:
+            col = _resolve_column(df, args[0], kwargs)
+            if col is None:
+                logger.warning("SPLIT/DELIMITER_PART: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                return pd.Series(None, index=df.index, dtype="object")
+            delimiter = args[1]
+            index = int(args[2])
+            return df[col].astype(str).str.split(delimiter).str[index]
+
+        if keyword == "REGEX_GROUP" and len(args) >= 2:
+            col = _resolve_column(df, args[0], kwargs)
+            if col is None:
+                logger.warning("SPLIT/REGEX_GROUP: column '{}' not found for {}", args[0], mapping.sdtm_variable)
+                return pd.Series(None, index=df.index, dtype="object")
+            pattern = args[1]
+            group_index = int(args[2]) if len(args) >= 3 else 0
+            extracted = df[col].astype(str).str.extract(pattern)
+            if group_index < len(extracted.columns):
+                return extracted.iloc[:, group_index]
+            logger.warning("SPLIT/REGEX_GROUP: group_index {} out of range for {}", group_index, mapping.sdtm_variable)
+            return pd.Series(None, index=df.index, dtype="object")
+
+        # Unrecognized rule -- fall through to source column fallback
+        logger.warning(
+            "SPLIT: unrecognized derivation rule '{}' for {}; falling back to source column",
+            rule,
+            mapping.sdtm_variable,
+        )
+
+    # Fallback: copy source column if available
+    src = mapping.source_variable
+    if src:
+        col = _resolve_column(df, src, kwargs)
+        if col is not None:
+            return df[col].copy()
+        # Try resolved alias from executor
+        resolved: str | None = kwargs.get("resolved_source")  # type: ignore[assignment]
+        if resolved and resolved in df.columns:
+            return df[resolved].copy()
+
+    # No source data at all
     return pd.Series(None, index=df.index, dtype="object")
 
 
